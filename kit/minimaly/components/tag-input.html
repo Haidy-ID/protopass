@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tag input</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Empty</span><span class="col">Tags</span><span class="col">Disabled</span>
+    <span class="row">Live with suggestions: focus, type, ↑ ↓, Enter; a comma adds what is typed</span>
+    <div style="display: flex; align-items: flex-start; gap: 24px; grid-column: 1 / -1">
+      <div class="combobox" id="live" style="width: 300px"><div class="tag-input"><span class="chip">Research</span><input placeholder="Add a label" aria-label="Labels"></div><ul class="popover combobox__list"><li class="combobox__option" data-value="Design"><i class="icon" data-icon="tag"></i><span class="combobox__text"><span class="combobox__title">Design</span></span></li><li class="combobox__option" data-value="Research"><i class="icon" data-icon="tag"></i><span class="combobox__text"><span class="combobox__title">Research</span></span></li><li class="combobox__option" data-value="Engineering"><i class="icon" data-icon="tag"></i><span class="combobox__text"><span class="combobox__title">Engineering</span></span></li><li class="combobox__option" data-value="Marketing"><i class="icon" data-icon="tag"></i><span class="combobox__text"><span class="combobox__title">Marketing</span></span></li><li class="combobox__option" data-value="Urgent"><i class="icon" data-icon="tag"></i><span class="combobox__text"><span class="combobox__title">Urgent</span></span></li><li class="combobox__empty">No label matches. Enter adds it.</li></ul></div>
+      <span id="tags" class="field__hint" aria-live="polite"></span>
+    </div>
+    <span class="row">Tag input (Enter or comma adds, Backspace removes the last, a duplicate shakes)</span>
+    <div class="tag-input" style="width: 200px"><input placeholder="Add a tag" aria-label="Tags"></div>
+    <div class="tag-input" style="width: 200px"><span class="chip">design</span><span class="chip">research</span><span class="chip">q4</span><input placeholder="Add a tag" aria-label="Tags"></div>
+    <div class="tag-input" style="width: 200px"><span class="chip">design</span><span class="chip">research</span><input placeholder="Add a tag" aria-label="Tags" disabled></div>
+    <span class="row">Hover, duplicate refused, in an invalid field</span>
+    <div class="tag-input" data-force="hover" style="width: 200px"><span class="chip">design</span><input placeholder="Add a tag" aria-label="Tags"></div>
+    <div class="tag-input" style="width: 200px"><span class="chip">design</span><span class="chip" data-invalid>research</span><input aria-label="Tags" value="Research"></div>
+    <div class="field" data-invalid style="width: 200px"><label class="field__label">Topics</label><div class="tag-input"><input placeholder="Add a topic"></div><p class="field__hint">Up to five.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>Add at least one topic.</p></div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: show the tags of the live input.
+    document.getElementById("live").addEventListener("change", (e) => { if (e.detail) document.getElementById("tags").textContent = `Tags: ${e.detail.value.join(", ")}`; });
+  </script>
+</body>
+</html>

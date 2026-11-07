@@ -1,0 +1,91 @@
+{
+  "title": "Lend an item",
+  "status": "draft",
+  "updated": "2026-10-20",
+  "intent": "Record an item loan in a few seconds without turning the product into an inventory-management system.",
+  "ds": "Minimaly",
+  "components": [
+    "button",
+    "input",
+    "field",
+    "list",
+    "avatar",
+    "badge",
+    "icon"
+  ],
+  "viewport": {
+    "width": 390,
+    "height": 780
+  },
+  "devices": [
+    "mobile",
+    "tablet",
+    "desktop"
+  ],
+  "screens": [
+    {
+      "id": "home",
+      "label": "Home",
+      "file": "screens/home.html"
+    },
+    {
+      "id": "add-loan",
+      "label": "Add Loan",
+      "file": "screens/add-loan.html",
+      "states": [
+        {
+          "name": "Default",
+          "note": "Empty form, Confirm needs Item and Person"
+        },
+        {
+          "name": "Loading",
+          "note": "Confirm pending, fields locked"
+        },
+        {
+          "name": "Error",
+          "note": "Inline message under the field, values kept"
+        }
+      ]
+    },
+    {
+      "id": "confirm",
+      "label": "Confirmation",
+      "file": "screens/confirm.html"
+    }
+  ],
+  "flows": [
+    {
+      "name": "Lend an item",
+      "statement": "As a lender, I should be able to note who borrowed what in a few seconds.",
+      "steps": [
+        "home",
+        "add-loan",
+        "add-loan:loading",
+        "confirm",
+        "home"
+      ]
+    },
+    {
+      "name": "Fix an incomplete loan",
+      "statement": "As a lender, I should be told what is missing without retyping what I entered.",
+      "steps": [
+        "add-loan:error",
+        "add-loan",
+        "confirm"
+      ]
+    }
+  ],
+  "qa": [
+    {
+      "q": "What happens to the values if Confirm fails?",
+      "a": "They stay in the form; the error sits under the field at fault."
+    },
+    {
+      "q": "Is the return date required?",
+      "a": "No: a loan without a return date stays open until marked returned."
+    }
+  ],
+  "questions": [
+    "Should duplicate Item names be allowed?"
+  ]
+}

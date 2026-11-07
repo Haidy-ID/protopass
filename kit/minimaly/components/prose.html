@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Prose</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Long-form reading: 18 px on a 1.7 line, one measure wide</span>
+    <span class="row">Article</span>
+    <article class="prose" style="width: 640px">
+      <section>
+        <h2>Offline first, for real</h2>
+        <p>Researchers spend weeks without a signal. The app had to treat the network as a <a href="#">rare event</a>, not a given: every write lands on the device first, then syncs.</p>
+        <ul><li>Writes never wait for the network.</li><li>Conflicts merge field by field, not note by note.</li><li>A <code>sync</code> badge says what is still local.</li></ul>
+        <pre class="code"><code><span class="code__comment">// A note merges per field: the latest edit of each field wins.</span>
+<span class="code__keyword">const</span> merged = { ...older, ...pickNewest(older, newer) };</code></pre>
+        <blockquote class="quote"><p>“It is the first app that did not lose a day of my notes.”</p><footer>Ana, botanist, after six weeks in the Azores</footer></blockquote>
+      </section>
+    </article>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

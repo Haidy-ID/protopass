@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Reasoning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Thinking</span><span class="col">Done</span><span class="col">Open</span>
+    <span class="row">Reasoning</span>
+    <div style="width: 200px"><details class="reasoning" data-state="thinking"><summary><i class="icon" data-icon="sparkle"></i><span class="typing__dots" aria-hidden="true"><i></i><i></i><i></i></span>Thinking…<i class="icon" data-icon="caret-right"></i></summary><p class="reasoning__body">The user asks if the loan is overdue. The loan has no return date, so it cannot be overdue: it stays open until marked returned. I should say that and offer to set a date.</p></details></div>
+    <div style="width: 200px"><details class="reasoning" data-state="done"><summary><i class="icon" data-icon="sparkle"></i><span class="typing__dots" aria-hidden="true"><i></i><i></i><i></i></span>Thought for 12s<i class="icon" data-icon="caret-right"></i></summary><p class="reasoning__body">The user asks if the loan is overdue. The loan has no return date, so it cannot be overdue: it stays open until marked returned. I should say that and offer to set a date.</p></details></div>
+    <div style="width: 240px"><details class="reasoning" data-state="done" open><summary><i class="icon" data-icon="sparkle"></i><span class="typing__dots" aria-hidden="true"><i></i><i></i><i></i></span>Thought for 12s<i class="icon" data-icon="caret-right"></i></summary><p class="reasoning__body">The user asks if the loan is overdue. The loan has no return date, so it cannot be overdue: it stays open until marked returned. I should say that and offer to set a date.</p></details></div>
+    <span class="row">Live: thinks, then answers</span>
+    <div style="width: 240px; display: flex; flex-direction: column; gap: 4px"><div id="live"><details class="reasoning" data-state="thinking"><summary><i class="icon" data-icon="sparkle"></i><span class="typing__dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Thinking…</span><i class="icon" data-icon="caret-right"></i></summary><p class="reasoning__body">The user asks if the loan is overdue. The loan has no return date, so it cannot be overdue: it stays open until marked returned. I should say that and offer to set a date.</p></details></div><button class="btn" id="again" style="align-self: flex-start">Think again</button></div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: thinks for 3 s, then shows how long it took.
+    const live = document.querySelector("#live .reasoning");
+    const think = () => {
+      live.dataset.state = "thinking";
+      live.querySelector("summary > span:last-of-type").textContent = "Thinking…";
+      setTimeout(() => { live.dataset.state = "done"; live.querySelector("summary > span:last-of-type").textContent = "Thought for 3s"; }, 3000);
+    };
+    document.getElementById("again").onclick = think;
+    think();
+  </script>
+</body>
+</html>

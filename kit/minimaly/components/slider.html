@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Slider</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Default</span><span class="col">Hover</span><span class="col">Disabled</span>
+    <span class="row">Slider (drag, or ← → Home End PageUp PageDown)</span>
+    <div class="slider" style="width: 200px"><input type="range" min="0" max="100" value="40" aria-label="Volume"></div>
+    <div class="slider" data-force="hover" style="width: 200px"><input type="range" min="0" max="100" value="40" aria-label="Volume"></div>
+    <div class="slider" style="width: 200px"><input type="range" min="0" max="100" value="40" aria-label="Volume" disabled></div>
+    <span class="row">Label, value and scale</span>
+    <div class="slider" data-unit="%" data-scale style="width: 200px"><label class="slider__label">Opacity</label><output class="slider__value"></output><input type="range" min="0" max="100" value="64"></div>
+    <div class="slider" data-unit="%" data-scale data-force="hover" style="width: 200px"><label class="slider__label">Opacity</label><output class="slider__value"></output><input type="range" min="0" max="100" value="64"></div>
+    <div class="slider" data-unit="%" data-scale style="width: 200px"><label class="slider__label">Opacity</label><output class="slider__value"></output><input type="range" min="0" max="100" value="64" disabled></div>
+    <span class="row">Step marks</span>
+    <div class="slider" data-marks data-scale style="width: 200px"><label class="slider__label">Temperature</label><output class="slider__value"></output><input type="range" min="0" max="1" step="0.1" value="0.7"></div>
+    <div class="slider" data-marks data-scale data-force="hover" style="width: 200px"><label class="slider__label">Temperature</label><output class="slider__value"></output><input type="range" min="0" max="1" step="0.1" value="0.7"></div>
+    <div class="slider" data-marks data-scale style="width: 200px"><label class="slider__label">Temperature</label><output class="slider__value"></output><input type="range" min="0" max="1" step="0.1" value="0.7" disabled></div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

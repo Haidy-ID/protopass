@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Segmented</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">Text</span><span class="col">Icon</span>
+    <span class="row">Segmented</span>
+    <span class="segmented" role="group" aria-label="Mode"><button class="btn" aria-pressed="true"><i class="icon" data-icon="frame-corners"></i>Canvas<span class="btn__count">12</span></button><button class="btn" aria-pressed="false"><i class="icon" data-icon="play"></i>Prototype<span class="btn__count">3</span></button></span>
+    <span class="segmented" role="group" aria-label="Device"><button class="btn" data-variant="icon" aria-pressed="true" aria-label="Mobile"><i class="icon" data-icon="device-mobile"></i></button><button class="btn" data-variant="icon" aria-pressed="false" aria-label="Tablet"><i class="icon" data-icon="device-tablet"></i></button><button class="btn" data-variant="icon" aria-pressed="false" aria-label="Desktop"><i class="icon" data-icon="desktop"></i></button></span>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

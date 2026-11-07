@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Date picker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Empty</span><span class="col">Picked</span><span class="col">Disabled</span>
+    <span class="row">Live: click, ↓ or Enter opens; arrows, PageUp, PageDown, Home, End; Enter picks</span>
+    <div class="date-picker" id="live" data-placeholder="Pick a date" aria-label="Due date" style="width: 200px"></div>
+    <div class="date-picker" id="bounded" data-placeholder="Within the next 3 weeks" aria-label="Return date" style="width: 200px"></div>
+    <span id="choice" class="field__hint" aria-live="polite"></span>
+    <span class="row">Date picker</span>
+    <div class="date-picker" data-placeholder="Pick a date" aria-label="Start date" style="width: 200px"></div>
+    <div class="date-picker" data-value="2026-10-23" aria-label="Start date" style="width: 200px"></div>
+    <div class="date-picker" data-value="2026-10-23" aria-label="Start date" aria-disabled="true" style="width: 200px"></div>
+    <span class="row">In a field: default, invalid</span>
+    <div class="field" style="width: 200px"><label class="field__label">Return date</label><div class="date-picker" data-placeholder="Pick a date"></div><p class="field__hint">When the item comes back.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>Pick a return date.</p></div>
+    <div class="field" data-invalid style="width: 200px"><label class="field__label">Return date</label><div class="date-picker" data-placeholder="Pick a date"></div><p class="field__hint">When the item comes back.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>Pick a return date.</p></div>
+    <span></span>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: the second picker accepts the next three weeks; say what was picked.
+    const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const today = new Date();
+    const bounded = document.getElementById("bounded");
+    bounded.dataset.min = iso(today);
+    bounded.dataset.max = iso(new Date(today.getFullYear(), today.getMonth(), today.getDate() + 21));
+    for (const el of [document.getElementById("live"), bounded]) el.addEventListener("change", (e) => { document.getElementById("choice").textContent = `Picked: ${e.detail.value}`; });
+  </script>
+</body>
+</html>

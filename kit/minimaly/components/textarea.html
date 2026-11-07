@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Textarea</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Empty</span><span class="col">Filled</span><span class="col">Full</span>
+    <span class="row">Counter</span>
+    <label class="textarea" data-max="140" style="width: 220px"><textarea placeholder="What changed?" aria-label="Note"></textarea></label>
+    <label class="textarea" data-max="140" style="width: 220px"><textarea aria-label="Note">Return date is now optional: a loan without one stays open until marked returned.</textarea></label>
+    <label class="textarea" data-max="20" style="width: 220px"><textarea aria-label="Note">Twenty characters!!!</textarea></label>
+    <span class="row">Filled</span>
+    <label class="textarea" data-variant="filled" style="width: 220px"><textarea placeholder="Add a note" aria-label="Note"></textarea></label>
+    <label class="textarea" data-variant="filled" style="width: 220px"><textarea aria-label="Note">Keys handed over at the desk.</textarea></label>
+    <label class="textarea" data-variant="filled" data-max="20" style="width: 220px"><textarea aria-label="Note">Twenty characters!!!</textarea></label>
+  <script src="../ds.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Pane</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">A side panel: head, then a body that scrolls on its own</span>
+    <span class="row">Pane</span>
+    <section class="pane" aria-label="Changes" style="width: 360px; height: 260px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden">
+      <div class="pane__head"><h2 class="pane__title">Changes</h2><span class="badge">3 FILES</span><button class="btn" data-variant="icon" aria-label="Close" data-tip="Close the panel"><i class="icon" data-icon="x"></i></button></div>
+      <div class="pane__body">
+        <ul class="list" aria-label="Changed files">
+          <li class="list__item"><span class="list__lead"><i class="icon" data-icon="file-css"></i></span><span class="list__body"><span class="list__title">screens/screens.css</span><span class="list__meta">+3 −2</span></span></li>
+          <li class="list__item"><span class="list__lead"><i class="icon" data-icon="file-html"></i></span><span class="list__body"><span class="list__title">screens/book.html</span><span class="list__meta">+12 −4</span></span></li>
+          <li class="list__item"><span class="list__lead"><i class="icon" data-icon="file-code"></i></span><span class="list__body"><span class="list__title">topic.json</span><span class="list__meta">+1</span></span></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

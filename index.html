@@ -1,0 +1,23 @@
+<!doctype html>
+<!-- Home: the most recent topics, then one card per group of protopass.json → groups with its latest topics. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protopass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="kit/viewer.css">
+</head>
+<body class="landing">
+  <header class="topbar"><a class="brand" id="brand" href="./"></a><span class="topbar__end"><a class="btn" data-variant="ghost" href="kit/playground/" data-tip="Browse the components of the design systems: variants, states and usage"><i class="icon" data-icon="puzzle-piece"></i>Components</a></span></header>
+  <main class="page">
+    <h1 id="title"></h1>
+    <p class="intent" id="intro"></p>
+    <section class="recent" id="recent"></section>
+    <div class="groups" id="groups"></div>
+  </main>
+  <script src="kit/home.js"></script>
+  <script src="kit/minimaly/ds.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Breadcrumb</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">Default</span><span class="col">Hover</span>
+    <span class="row">List</span>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><span class="breadcrumb__sep">/</span><span aria-current="page">My prototypes</span></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><span class="breadcrumb__sep">/</span><span aria-current="page">My prototypes</span></nav>
+    <span class="row">Topic</span>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><span class="breadcrumb__sep">/</span><a href="#">My prototypes</a><span class="breadcrumb__sep">/</span><a href="#">Lending</a><span class="breadcrumb__sep">/</span><span aria-current="page">Lend an item</span></nav>
+    <nav class="breadcrumb" aria-label="Breadcrumb"><span class="breadcrumb__sep">/</span><a href="#" data-force="hover">My prototypes</a><span class="breadcrumb__sep">/</span><a href="#">Lending</a><span class="breadcrumb__sep">/</span><span aria-current="page">Lend an item</span></nav>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

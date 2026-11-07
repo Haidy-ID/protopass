@@ -1,0 +1,1121 @@
+/* Minimaly components.
+   Variants through data-variant, states through native attributes (disabled, aria-pressed).
+   data-force="hover" pins the hover state for specimen pages. Tokens only, no raw values. */
+
+/* Borders and padding stay inside the declared size (32 px controls), whatever the page reset. */
+:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel),
+:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel) * { box-sizing: border-box; }
+
+/* Motion: keyframes shared by the components and the pages built on them.
+   enter = fade up (page sections, cards), pop-in = fade and grow (tooltips, popovers), fade-in, fade-out.
+   Usage: animation: enter var(--duration-slow) var(--ease-out) both; stagger siblings with var(--duration-stagger). */
+@keyframes enter { from { opacity: 0; transform: translateY(8px); } }
+@keyframes enter-down { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(4px) scale(0.96); } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes spin { to { transform: rotate(1turn); } }
+/* swap-in = new content replacing old in place (a panel, a label): rises out of a light blur. */
+@keyframes swap-in { from { opacity: 0; transform: translateY(4px); filter: blur(var(--blur-swap)); } }
+/* shake = "no, there is an error": a short damped shake, played once when an error appears (refused value, failed step,
+   async button error, critical toast or banner). Persistent tones (critical badge, menu item) never shake. */
+@keyframes shake { 15% { transform: translateX(-5px); } 35% { transform: translateX(4px); } 55% { transform: translateX(-3px); } 75% { transform: translateX(2px); } }
+
+/* Pages of the same site crossfade into each other on navigation (cross-document view transition). */
+@view-transition { navigation: auto; }
+
+/* Button: default, primary, ghost, icon (square, icon only). aria-pressed="true" = toggled on. */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-xs);
+  height: var(--control-height); padding: 0 var(--spacing-md);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm);
+  background: var(--color-surface-raised); color: var(--color-text-primary);
+  font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-family);
+  text-decoration: none; white-space: nowrap; cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out);
+}
+/* Press: the button gives a little under the pointer. */
+.btn:active { transform: scale(0.97); }
+.btn .icon { color: var(--color-text-secondary); transition: color var(--duration-fast) var(--ease-out), transform var(--duration-spring) var(--ease-spring); }
+.btn:hover, .btn[data-force="hover"] { background: var(--color-surface-hover); border-color: var(--color-border-strong); }
+.btn:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+.btn[aria-pressed="true"] { background: var(--color-accent-subtle); border-color: var(--color-accent-border); color: var(--color-accent); }
+.btn[aria-pressed="true"] .icon { color: var(--color-accent); }
+.btn[data-variant="primary"] { background: var(--color-ink); border-color: var(--color-ink); color: var(--color-on-ink); }
+.btn[data-variant="primary"] .icon { color: var(--color-on-ink); }
+.btn[data-variant="primary"]:hover, .btn[data-variant="primary"][data-force="hover"] { background: var(--color-ink); opacity: 0.85; }
+/* Large: a website's call to action (a hero, a closing block). Tool screens keep 32 px. */
+.btn[data-size="lg"] { height: var(--size-row); padding: 0 var(--spacing-lg); font-size: var(--font-size-md); }
+/* Soft: a quiet filled button, for secondary actions that sit on raised surfaces next to a primary. */
+.btn[data-variant="soft"] { border-color: transparent; background: var(--color-surface-sunken); }
+.btn[data-variant="soft"]:hover, .btn[data-variant="soft"][data-force="hover"] { border-color: transparent; background: var(--color-surface-hover); }
+.btn[data-variant="ghost"] { border-color: transparent; background: none; }
+.btn[data-variant="ghost"]:hover, .btn[data-variant="ghost"][data-force="hover"] { border-color: transparent; background: var(--color-surface-hover); }
+.btn[data-variant="icon"] { width: var(--control-height); padding: 0; border-color: transparent; background: none; }
+.btn[data-variant="icon"]:hover, .btn[data-variant="icon"][data-force="hover"] { border-color: transparent; background: var(--color-surface-hover); }
+/* Pressed beats the transparent ghost and icon looks: a toggle on stays visible (Inspect). */
+.btn:is([data-variant="ghost"], [data-variant="icon"])[aria-pressed="true"] { background: var(--color-accent-subtle); border-color: var(--color-accent-border); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+/* Async button: ds.js builds one .btn__label per state (idle, busy, done, error) from data-busy, data-done, data-error or data-copy.
+   They share one grid cell: the button is as wide as its longest label from the start and never resizes. The label crossfades. */
+.btn[data-state] { display: inline-grid; }
+.btn__label { display: inline-flex; grid-area: 1 / 1; align-items: center; justify-content: center; gap: var(--spacing-xs); opacity: 0; visibility: hidden; transform: translateY(6px) scale(0.96); filter: blur(var(--blur-swap));
+  transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-spring) var(--ease-spring), filter var(--duration-base) var(--ease-out), visibility var(--duration-base); }
+/* The leaving label rises out while the new one rises in from below, both through a blur. */
+.btn[data-state="idle"] > .btn__label:not([data-for="idle"]), .btn:not([data-state="idle"]) > [data-for="idle"] { transform: translateY(-6px) scale(0.96); }
+:is(.btn[data-state="idle"] > [data-for="idle"], .btn[data-state="busy"] > [data-for="busy"], .btn[data-state="done"] > [data-for="done"], .btn[data-state="error"] > [data-for="error"]) { opacity: 1; visibility: visible; transform: none; filter: none; }
+/* Done: the check lands with a bounce and a small turn. */
+.btn[data-state="done"] > [data-for="done"] .icon { animation: check-land var(--duration-spring) var(--ease-bounce); }
+@keyframes check-land { from { opacity: 0; transform: scale(0.4) rotate(-30deg); } }
+.btn[data-state="error"] > [data-for="error"] { animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.btn[aria-busy="true"] { cursor: progress; }
+.btn__label[data-for="busy"] .icon { animation: spin calc(var(--duration-slow) * 2.5) linear infinite; }
+.btn__label[data-for="done"] .icon { color: var(--color-status-success); }
+.btn__label[data-for="error"] .icon { color: var(--color-status-critical); }
+.btn[data-variant="primary"] .btn__label .icon { color: var(--color-on-ink); }
+
+/* Badge: status label, not clickable. Mono, tinted by tone. */
+.badge {
+  display: inline-flex; align-items: center; width: fit-content; height: 20px; padding: 0 var(--spacing-sm);
+  border-radius: var(--radius-sm); background: var(--color-status-neutral-subtle); color: var(--color-status-neutral);
+  font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-mono); white-space: nowrap;
+  transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out);
+}
+/* A leading status icon carries the tone in shape too, not only in color. */
+.badge { gap: var(--spacing-xs); }
+.badge .icon { --icon-size: var(--size-icon-sm); }
+.badge[data-variant="critical"] { background: var(--color-status-critical-subtle); color: var(--color-status-critical); }
+.badge[data-variant="warning"] { background: var(--color-status-warning-subtle); color: var(--color-status-warning); }
+.badge[data-variant="success"] { background: var(--color-status-success-subtle); color: var(--color-status-success); }
+.badge[data-variant="accent"] { background: var(--color-accent-subtle); color: var(--color-accent); box-shadow: inset 0 0 0 var(--stroke-width-subtle) var(--color-accent-border); }
+
+/* Chip: tag for a value or an entity, not clickable (a clickable filter is a .btn with aria-pressed). */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--spacing-xs); height: 22px; padding: 0 var(--spacing-sm);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken); color: var(--color-text-primary);
+  font: var(--font-weight-medium) var(--font-size-xs)/1 var(--font-family); white-space: nowrap;
+}
+.chip .icon { --icon-size: var(--size-icon-sm); color: var(--color-text-secondary); }
+.chip[data-variant="round"] { border-radius: var(--radius-full); background: var(--color-surface-raised); }
+.chip[data-variant="accent"] { background: var(--color-accent-subtle); border-color: var(--color-accent-border); color: var(--color-accent); }
+.chip[data-variant="accent"] .icon { color: var(--color-accent); }
+
+/* Avatar: initials or photo in a circle. .avatars stacks them with an overlap. */
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 24px; height: 24px; overflow: hidden;
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-full);
+  background: var(--color-surface-sunken); color: var(--color-text-secondary);
+  font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family);
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar[data-variant="lg"] { width: var(--size-lead); height: var(--size-lead); font-size: var(--font-size-sm); }
+.avatars { display: inline-flex; }
+.avatars .avatar + .avatar { margin-left: calc(var(--spacing-xs) * -1); box-shadow: 0 0 0 var(--stroke-width-mid) var(--color-surface-raised); }
+/* A hovered avatar in a stack rises above its neighbours. */
+.avatars .avatar { position: relative; transition: transform var(--duration-spring) var(--ease-spring); }
+.avatars .avatar:hover { z-index: 1; transform: translateY(-3px); }
+/* Its neighbours follow a little, the effect fading with distance. */
+.avatars .avatar:hover + .avatar, .avatars .avatar:has(+ .avatar:hover) { transform: translateY(-1px); }
+
+/* Kbd: keyboard shortcut. */
+.kbd {
+  display: inline-flex; align-items: center; height: 18px; padding: 0 var(--spacing-xs);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-xs);
+  color: var(--color-text-secondary); font: var(--font-size-xs)/1 var(--font-family-mono);
+}
+
+/* Card: raised surface with an optional head (mono uppercase title, tag, actions) and a body. */
+.card { width: 100%; overflow: hidden; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out); }
+.card__head { display: flex; align-items: center; gap: var(--spacing-md); min-height: 44px; padding: var(--spacing-xs) var(--spacing-lg); }
+.card__head + * { border-top: var(--stroke-width-subtle) solid var(--color-border); }
+.card__title { margin: 0; font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-mono); text-transform: uppercase; }
+.card__tag { flex: 1; color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+.card__body { padding: var(--spacing-lg); }
+/* Foot: the actions on what the card shows (apply, reject), after a short note. */
+.card__foot { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-md) var(--spacing-lg); border-top: var(--stroke-width-subtle) solid var(--color-border); }
+.card__note { flex: 1; min-width: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.card[data-variant="accent"] { border-color: var(--color-accent); }
+/* A card that is a link: lifts on hover, accent ring on keyboard focus. */
+a.card { display: block; color: inherit; text-decoration: none; transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), transform var(--duration-spring) var(--ease-spring); }
+a.card:hover, a.card[data-force="hover"] { border-color: var(--color-border-strong); box-shadow: var(--shadow-md); transform: translateY(calc(var(--spacing-xs) * -1)); }
+a.card:focus-visible { outline: 0; box-shadow: 0 0 0 var(--stroke-width-mid) var(--color-accent); }
+
+/* Divider: horizontal rule with a centered label. Accent by default, quiet for low emphasis. */
+.divider { display: flex; align-items: center; gap: var(--spacing-md); }
+.divider__line { flex: 1; height: var(--stroke-width-subtle); background: var(--color-accent); }
+.divider > span:not(.divider__line) { padding: var(--spacing-xs) var(--spacing-sm); border-radius: var(--radius-full); background: var(--color-accent); color: var(--color-on-accent); font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-mono); }
+.divider[data-variant="quiet"] .divider__line { background: var(--color-border); }
+.divider[data-variant="quiet"] > span:not(.divider__line) { border: var(--stroke-width-subtle) solid var(--color-border); background: var(--color-surface-raised); color: var(--color-text-tertiary); font-weight: var(--font-weight-regular); }
+
+/* Tooltip: dark bubble. Position it from the page (position: fixed or absolute). */
+.tooltip {
+  display: flex; flex-direction: column; gap: var(--spacing-xs); max-width: 280px; padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md); background: var(--color-text-primary); box-shadow: var(--shadow-md);
+  color: var(--color-surface-raised); font-size: var(--font-size-xs); line-height: var(--line-height-normal);
+  transform-origin: bottom center;
+}
+.tooltip[data-side="bottom"] { transform-origin: top center; }
+.tooltip strong { display: inline-flex; align-items: center; gap: var(--spacing-xs); font-weight: var(--font-weight-semibold); }
+.tooltip__lead { opacity: 0.7; }
+
+/* Popover: floating panel for filters or menus. Position it from the page. */
+.popover {
+  display: flex; flex-direction: column; gap: var(--spacing-sm); width: 300px; padding: var(--spacing-md);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg);
+  background: var(--color-surface-raised); box-shadow: var(--shadow-lg);
+  transform-origin: top left;
+}
+/* Tooltips and popovers open and close natively: the hidden attribute animates both ways (display is discrete),
+   from the side they are attached to (data-side, set by ds.js). Opening springs, closing is shorter and plain. */
+.tooltip, .popover {
+  transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-spring) var(--ease-spring), filter var(--duration-base) var(--ease-out),
+    display var(--duration-base) allow-discrete;
+}
+.popover[data-side="top"] { transform-origin: bottom left; }
+/* --from: where it comes out of, toward its trigger. A popover sits below its trigger, a tooltip above, unless data-side flips them. */
+.popover, .tooltip[data-side="bottom"] { --from: -4px; }
+.tooltip, .popover[data-side="top"] { --from: 4px; }
+.tooltip[hidden], .popover[hidden] { display: none; opacity: 0; transform: translateY(var(--from)) scale(0.94); filter: blur(2px); transition-duration: var(--duration-fast); transition-timing-function: var(--ease-in); }
+@starting-style {
+  .tooltip:not([hidden]), .popover:not([hidden]) { opacity: 0; transform: translateY(var(--from)) scale(0.94); filter: blur(2px); }
+}
+/* Moving along a group of tooltips: the bubble glides to its neighbour and the text swaps, no pop-in per neighbour. */
+.tooltip[data-instant] { transition: left var(--duration-base) var(--ease-out), top var(--duration-base) var(--ease-out); }
+.popover__label { margin: 0; color: var(--color-text-tertiary); font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-mono); text-transform: uppercase; }
+.popover__foot { display: flex; justify-content: flex-end; gap: var(--spacing-sm); }
+/* Select menu: the list of a .select, opened by ds.js under its box. The chosen option carries a check. */
+.select__menu { position: fixed; z-index: 1000; width: max-content; max-width: 360px; max-height: 320px; overflow: auto; gap: 0; padding: var(--spacing-xs); }
+.select__option {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); min-height: var(--control-height); padding: 0 var(--spacing-sm);
+  border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-text-primary); font: var(--font-weight-regular) var(--font-size-sm)/var(--line-height-tight) var(--font-family); text-align: left; cursor: pointer;
+}
+.select__option:hover, .select__option:focus-visible { background: var(--color-surface-hover); outline: 0; }
+.select__option .icon { color: var(--color-accent); visibility: hidden; }
+.select__option[aria-selected="true"] { font-weight: var(--font-weight-medium); }
+.select__option[aria-selected="true"] .icon { visibility: visible; }
+
+/* Combobox: a search field whose results drop under it, each with an icon, a title and a detail line. Typing filters
+   the options; ↑ ↓ move, Enter picks, Escape closes. The list is a .popover, so it opens and closes like one. */
+.combobox { position: relative; display: inline-flex; flex-direction: column; }
+.combobox > .input { width: 100%; }
+.combobox__list { position: absolute; top: calc(100% + var(--spacing-xs)); left: 0; right: 0; z-index: 1000; width: auto; max-height: 320px; overflow: auto; gap: 0; margin: 0; padding: var(--spacing-xs); list-style: none; }
+.combobox__option { display: flex; align-items: center; gap: var(--spacing-md); min-height: var(--control-height); padding: var(--spacing-sm); border-radius: var(--radius-md); cursor: pointer; transition: background var(--duration-fast) var(--ease-out); }
+.combobox__option[hidden] { display: none; }
+.combobox__option > .icon:first-child { color: var(--color-text-secondary); }
+.combobox__text { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.combobox__title { overflow: hidden; color: var(--color-text-primary); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); white-space: nowrap; text-overflow: ellipsis; }
+.combobox__meta { overflow: hidden; color: var(--color-text-tertiary); font-size: var(--font-size-xs); white-space: nowrap; text-overflow: ellipsis; }
+.combobox__option > .icon:last-child:not(:first-child) { --icon-size: var(--size-icon-sm); color: var(--color-text-secondary); opacity: 0; transform: translateX(-4px); transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-spring) var(--ease-spring); }
+.combobox__option:hover, .combobox__option[aria-selected="true"], .combobox__option[data-force="hover"] { background: var(--color-surface-hover); }
+.combobox__option[aria-selected="true"] > .icon:last-child:not(:first-child) { opacity: 1; transform: none; }
+.combobox__empty { padding: var(--spacing-sm); color: var(--color-text-tertiary); font-size: var(--font-size-sm); }
+
+/* Icon: Phosphor icon inlined by ds.js. 16 px by default, --icon-size to change it, color follows the text. */
+.icon { display: inline-flex; align-items: center; justify-content: center; flex: none; width: var(--icon-size, 16px); height: var(--icon-size, 16px); color: inherit; }
+.icon svg { width: 100%; height: 100%; fill: currentColor; }
+/* Icons inlined by ds.js fade in instead of popping into place. */
+.icon svg { animation: fade-in var(--duration-base) var(--ease-out); }
+.icon[data-icon-error] { outline: var(--stroke-width-subtle) dashed var(--color-status-critical); }
+
+/* Input: text field in a 32 px box, optional leading icon. <label class="input"> so the whole box focuses the field. */
+.input {
+  display: inline-flex; align-items: center; gap: var(--spacing-sm); height: var(--control-height); padding: 0 var(--spacing-md);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm);
+  background: var(--color-surface-raised); color: var(--color-text-tertiary); cursor: text;
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.input:hover { border-color: var(--color-border-strong); }
+/* Focus ring as a box-shadow rather than an outline, so it fades in with the border. */
+.input:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+.input input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: none; color: var(--color-text-primary); font: var(--font-size-sm)/var(--line-height-tight) var(--font-family); }
+.input input::placeholder { color: var(--color-text-tertiary); }
+/* Add-ons: a unit or currency before or after the value (.input__addon), a trailing action (.btn), a number stepper.
+   They sit flush against the border as segments of the box, so the whole box stays 32 px high. */
+.input__addon { display: flex; align-items: center; align-self: stretch; padding: 0 var(--spacing-md); background: var(--color-surface-sunken); color: var(--color-text-secondary); white-space: nowrap; }
+.input > :is(.input__addon, .btn, .input__stepper):first-child { margin-left: calc(var(--spacing-md) * -1); border-right: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-xs) 0 0 var(--radius-xs); }
+.input > :is(.input__addon, .btn, .input__stepper):last-child { margin-right: calc(var(--spacing-md) * -1); border-left: var(--stroke-width-subtle) solid var(--color-border); border-radius: 0 var(--radius-xs) var(--radius-xs) 0; }
+.input > .btn { align-self: stretch; height: auto; border-width: 0; }
+.input > .btn:last-child { border-left-width: var(--stroke-width-subtle); }
+.input > .btn[data-variant="primary"] { border-color: var(--color-ink); }
+.input input[type="number"] { appearance: textfield; font-variant-numeric: tabular-nums; }
+.input input[type="number"]::-webkit-inner-spin-button, .input input[type="number"]::-webkit-outer-spin-button { margin: 0; appearance: none; }
+.input__stepper { display: flex; flex-direction: column; align-self: stretch; }
+.input__stepper button { display: flex; flex: 1; align-items: center; justify-content: center; width: 24px; padding: 0; border: 0; background: none; color: var(--color-text-secondary); cursor: pointer; transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.input__stepper button + button { border-top: var(--stroke-width-subtle) solid var(--color-border); }
+.input__stepper button:hover, .input__stepper button[data-force="hover"] { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.input__stepper .icon { --icon-size: var(--size-icon-sm); }
+
+/* Select: native select in a 32 px box, optional inline label before the value, chevron drawn in CSS. */
+.select {
+  position: relative; display: inline-flex; align-items: center; gap: var(--spacing-xs); height: var(--control-height); padding: 0 var(--spacing-md);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm);
+  background: var(--color-surface-raised); cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out);
+}
+.select:hover { border-color: var(--color-border-strong); }
+.select:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+/* Trimmed to cap height so the label sits on the optical center of the box. */
+.select__label { color: var(--color-text-tertiary); font-size: var(--font-size-sm); line-height: 1; white-space: nowrap; text-box: trim-both cap alphabetic; }
+.select select {
+  appearance: none; height: 100%; padding: 0 var(--spacing-xl) 0 0; border: 0; outline: 0; background: none; cursor: pointer;
+  color: var(--color-text-primary); font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-family);
+}
+/* Chevron: a caret-down icon in its 16 px square, centered on the box, clicks pass through to the select. */
+/* Phosphor draws caret-down 1/32 of its box below center (0.5 px at 16 px): lifted by the same amount. */
+.select__icon { position: absolute; top: 50%; right: var(--spacing-md); transform: translateY(calc(-50% - var(--icon-size, 16px) / 32)); color: var(--color-text-secondary); pointer-events: none;
+  transition: transform var(--duration-spring) var(--ease-spring), color var(--duration-fast) var(--ease-out); }
+/* The caret dips on hover: the box opens downward. */
+.select:hover .select__icon { transform: translateY(calc(-50% - var(--icon-size, 16px) / 32 + 2px)); color: var(--color-text-primary); }
+
+/* Breadcrumb: where the page sits, after the brand. Each parent is a link, the current page comes last (aria-current) and is not.
+   Separators are .breadcrumb__sep spans, one before each item, so the trail reads on from the brand. */
+.breadcrumb { display: inline-flex; align-items: center; gap: var(--spacing-2xs); min-width: 0; font-size: var(--font-size-md); color: var(--color-text-tertiary); }
+.breadcrumb a {
+  display: inline-flex; align-items: center; height: var(--control-height); padding: 0 var(--spacing-xs); border-radius: var(--radius-sm);
+  color: var(--color-text-secondary); text-decoration: none; white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+}
+.breadcrumb a:hover, .breadcrumb a[data-force="hover"] { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.breadcrumb a:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+.breadcrumb__sep { color: var(--color-text-tertiary); }
+.breadcrumb [aria-current="page"] { overflow: hidden; padding: 0 var(--spacing-xs); color: var(--color-text-primary); font-weight: var(--font-weight-medium); white-space: nowrap; text-overflow: ellipsis; }
+
+/* Segmented: one toggle made of joined .btn, one of them pressed (aria-pressed="true"). */
+/* The whole group is one control high, like a button next to it. */
+/* content-box on purpose: inside a border-box parent (card, shell) the options would shrink below 32 px. */
+.segmented { position: relative; box-sizing: content-box; display: inline-flex; height: var(--control-height); padding: 2px; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-sunken); }
+.segmented .btn { position: relative; height: 100%; border-color: transparent; background: none; color: var(--color-text-secondary); }
+.segmented .btn[data-variant="icon"] { width: calc(var(--control-height) - 4px); }
+.segmented .btn:hover, .segmented .btn[data-force="hover"] { border-color: transparent; background: var(--color-surface-hover); }
+.segmented .btn[aria-pressed="true"] { border-color: transparent; background: none; color: var(--color-text-primary); }
+/* The raised look is one indicator placed by ds.js under the pressed option: it slides to the next one instead of jumping. */
+.segmented__indicator { position: absolute; top: 2px; bottom: 2px; left: 0; box-sizing: border-box; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); }
+.segmented__indicator[data-ready] { transition: transform var(--duration-spring) var(--ease-spring), width var(--duration-spring) var(--ease-spring); }
+/* The newly pressed segment settles in with a small pop. */
+.segmented .btn[aria-pressed="true"] .icon { animation: pop-in var(--duration-spring) var(--ease-bounce); }
+.segmented .btn[aria-pressed="true"] .icon { color: var(--color-text-primary); }
+
+/* Accordion: a list of questions, each unfolds its answer. Native <details>, so it opens with the keyboard and without script. */
+.accordion__item { border-bottom: var(--stroke-width-subtle) solid var(--color-border); }
+.accordion__item:last-child { border-bottom: 0; }
+.accordion__item summary {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); padding: var(--spacing-md) 0; list-style: none; cursor: pointer;
+  color: var(--color-text-primary); font-weight: var(--font-weight-semibold); user-select: none; transition: color var(--duration-fast) var(--ease-out);
+}
+.accordion__item summary::-webkit-details-marker { display: none; }
+.accordion__item summary:hover { color: var(--color-accent); }
+.accordion__item summary:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+.accordion__item summary .icon { color: var(--color-text-secondary); transition: transform var(--duration-base) var(--ease-out); }
+.accordion__item[open] summary .icon { transform: rotate(180deg); }
+.accordion__body { padding: 0 0 var(--spacing-md); color: var(--color-text-secondary); }
+/* The answer slides open and closed: its height animates from 0 to auto, its text fades in. */
+.accordion { interpolate-size: allow-keywords; }
+.accordion__item::details-content { height: 0; overflow: hidden; transition: height var(--duration-slow) var(--ease-out), content-visibility var(--duration-slow) allow-discrete; }
+.accordion__item[open]::details-content { height: auto; }
+.accordion__body { opacity: 0; transform: translateY(-4px); transition: opacity var(--duration-slow) var(--ease-out), transform var(--duration-slow) var(--ease-out); }
+.accordion__item[open] .accordion__body { opacity: 1; transform: none; }
+
+/* Value: a figure that changes live. Tabular digits, so a new value of the same length never jitters (Inter digits are proportional).
+   ds.js sets data-trend for --duration-flash when the text changes: a tint, and an arrow outside the box so nothing moves. */
+.value { position: relative; border-radius: var(--radius-xs); font-variant-numeric: tabular-nums; }
+.value[data-trend] { animation: value-flash var(--duration-flash) var(--ease-out); }
+@keyframes value-flash { from { background: var(--color-flash); box-shadow: 0 0 0 var(--spacing-xs) var(--color-flash); color: var(--color-accent); } }
+/* The arrow is a pseudo-element on purpose: it only lives during the flash, so Copy to Figma never meets it. */
+.value:is([data-trend="up"], [data-trend="down"])::after { position: absolute; left: 100%; padding-left: var(--spacing-xs); color: var(--color-accent); animation: fade-out var(--duration-flash) var(--ease-in) both; }
+.value[data-trend="up"]::after { content: "↑"; }
+.value[data-trend="down"]::after { content: "↓"; }
+/* Digits that changed roll in, from below when the value rises, from above when it falls, through a blur. ds.js wraps them. */
+.value__char { display: inline-block; animation: digit-in var(--duration-spring) var(--ease-spring) both; animation-delay: calc(var(--i, 0) * var(--duration-stagger)); }
+@keyframes digit-in { from { opacity: 0; transform: translateY(var(--dy, 0.5em)); filter: blur(var(--blur-swap)); } }
+.value[data-trend="down"] .value__char { --dy: -0.5em; }
+
+/* Skeleton: holds the height of content still loading, one bar per line of text. Built by loadInto() in ds.js.
+   Invisible for its first --delay-show, so a fast answer never shows it. The last bar is shorter, like the end of a paragraph. */
+.skeleton { display: flex; flex-direction: column; animation: fade-in var(--duration-base) var(--ease-out) var(--delay-show) both; }
+.skeleton > span { height: var(--spacing-sm); margin-block: calc((1em * var(--line-height-normal) - var(--spacing-sm)) / 2); border-radius: var(--radius-xs); background: var(--color-border); }
+.skeleton > span:last-child:not(:first-child) { width: 60%; }
+.skeleton[data-variant="block"] { border-radius: var(--radius-lg); background: var(--color-border); }
+
+/* Tabs: a row of sections, one selected. One 2 px indicator, placed by ds.js, slides under the selected tab.
+   Selected and idle tabs share the same weight, so selecting never changes a tab's width. */
+.tabs { position: relative; display: flex; gap: var(--spacing-lg); border-bottom: var(--stroke-width-subtle) solid var(--color-border); }
+.tabs__tab {
+  display: inline-flex; align-items: center; gap: var(--spacing-xs); height: var(--control-height); padding: 0; border: 0; background: none;
+  color: var(--color-text-secondary); font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-family); white-space: nowrap; cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+.tabs__tab:hover, .tabs__tab[data-force="hover"] { color: var(--color-text-primary); }
+.tabs__tab[aria-selected="true"] { color: var(--color-text-primary); }
+/* Count after a tab or a segmented option label: mono, quiet, never part of the accessible name's emphasis. */
+:is(.tabs__count, .btn__count) { color: var(--color-text-tertiary); font: var(--font-weight-regular) var(--font-size-xs)/1 var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.tabs__tab:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; border-radius: var(--radius-xs); }
+.tabs__tab:disabled { opacity: 0.4; cursor: not-allowed; }
+.tabs__indicator { position: absolute; bottom: -1px; left: 0; height: 2px; border-radius: var(--radius-full); background: var(--color-text-primary); }
+.tabs__indicator[data-ready] { transition: transform var(--duration-spring) var(--ease-spring), width var(--duration-spring) var(--ease-spring); }
+.tabs__panel { padding-top: var(--spacing-lg); }
+.tabs__panel:not([hidden]) { animation: swap-in var(--duration-slow) var(--ease-out); }
+
+/* Menu: actions under a button (data-menu) or on right-click (data-context-menu). A .popover with menu rows. */
+.menu { position: fixed; z-index: 1000; width: 224px; max-width: calc(100vw - 16px); max-height: 320px; overflow: auto; gap: 0; padding: var(--spacing-xs); }
+.menu__item {
+  display: flex; align-items: center; gap: var(--spacing-sm); width: 100%; min-height: var(--control-height); padding: 0 var(--spacing-sm);
+  border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-text-primary);
+  font: var(--font-weight-regular) var(--font-size-sm)/var(--line-height-tight) var(--font-family); text-align: left; cursor: pointer;
+}
+.menu__item .icon { color: var(--color-text-secondary); }
+.menu__item .kbd { margin-left: auto; }
+.menu__item:hover, .menu__item:focus-visible, .menu__item[data-force="hover"] { background: var(--color-surface-hover); outline: 0; }
+.menu__item[data-variant="critical"], .menu__item[data-variant="critical"] .icon { color: var(--color-status-critical); }
+.menu__item:disabled, .menu__item[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
+.menu__separator { height: var(--stroke-width-subtle); margin: var(--spacing-xs) calc(var(--spacing-xs) * -1); border: 0; background: var(--color-border); }
+.popover.menu[hidden] { display: none; }
+
+/* Modal and drawer: native <dialog>, opened by data-open="<id>" or showModal(). Esc closes the top one; data-close closes;
+   a press that starts and ends on the backdrop closes unless data-static. The page under it does not scroll. */
+.modal, .drawer {
+  display: flex; flex-direction: column; padding: 0; border: var(--stroke-width-subtle) solid var(--color-border); background: var(--color-surface-raised);
+  color: var(--color-text-primary); box-shadow: var(--shadow-lg);
+  opacity: 0; transition: opacity var(--duration-base) var(--ease-in), transform var(--duration-base) var(--ease-in), display var(--duration-base) allow-discrete, overlay var(--duration-base) allow-discrete;
+}
+.modal:not([open]), .drawer:not([open]) { display: none; }
+.modal[open], .drawer[open] { opacity: 1; transform: none; transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-spring) var(--ease-spring), display var(--duration-base) allow-discrete, overlay var(--duration-base) allow-discrete; }
+.modal::backdrop, .drawer::backdrop { background: color-mix(in srgb, var(--color-scrim) 40%, transparent); opacity: 0; transition: opacity var(--duration-base) var(--ease-out), display var(--duration-base) allow-discrete, overlay var(--duration-base) allow-discrete; }
+.modal[open]::backdrop, .drawer[open]::backdrop { opacity: 1; }
+@starting-style {
+  .modal[open], .drawer[open], .modal[open]::backdrop, .drawer[open]::backdrop { opacity: 0; }
+}
+.modal { width: min(440px, calc(100vw - 32px)); max-height: min(78vh, 620px); border-radius: var(--radius-xl); transform: translateY(12px) scale(0.95); }
+@starting-style { .modal[open] { transform: translateY(12px) scale(0.95); } }
+.drawer { position: fixed; inset: 0 0 0 auto; width: min(320px, calc(100% - 40px)); max-width: none; height: 100%; max-height: none; margin: 0; border-width: 0 0 0 var(--stroke-width-subtle); transform: translateX(100%); }
+.drawer[data-side="left"] { inset: 0 auto 0 0; border-width: 0 var(--stroke-width-subtle) 0 0; transform: translateX(-100%); }
+@starting-style { .drawer[open] { transform: translateX(100%); } .drawer[data-side="left"][open] { transform: translateX(-100%); } }
+/* 48 + the body's 4 px top padding: the content starts 52 px down, with room above it for focus rings. */
+.dialog__head { display: flex; align-items: center; gap: var(--spacing-sm); min-height: 48px; padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-lg); }
+.dialog__title { flex: 1; min-width: 0; margin: 0; overflow: hidden; font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); white-space: nowrap; text-overflow: ellipsis; }
+/* The scroll box clips at its padding: the top padding leaves room for focus rings. */
+.dialog__body { flex: 1; overflow: auto; overscroll-behavior: contain; padding: var(--spacing-xs) var(--spacing-lg) var(--spacing-lg); color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--line-height-normal); }
+.dialog__foot { display: flex; justify-content: flex-end; gap: var(--spacing-sm); padding: var(--spacing-md) var(--spacing-lg); border-top: var(--stroke-width-subtle) solid var(--color-border); }
+html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
+
+/* Toast: short news about something that just happened, bottom right. Built by toast() in ds.js. */
+.toasts { position: fixed; right: var(--spacing-lg); bottom: var(--spacing-lg); z-index: 1100; display: flex; flex-direction: column; align-items: flex-end; gap: var(--spacing-sm); pointer-events: none; }
+.toast {
+  display: flex; align-items: center; gap: var(--spacing-sm); max-width: 360px; min-height: var(--size-row); padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-lg); background: var(--color-text-primary); box-shadow: var(--shadow-md); color: var(--color-surface-raised);
+  font-size: var(--font-size-sm); line-height: var(--line-height-normal); pointer-events: auto;
+  animation: toast-in var(--duration-spring) var(--ease-spring);
+}
+/* In: rises and settles from a blur. Out: slides toward the edge it came from and blurs away. */
+@keyframes toast-in { from { opacity: 0; transform: translateY(16px) scale(0.94); filter: blur(var(--blur-swap)); } }
+.toast[data-leaving] { animation: toast-out var(--duration-base) var(--ease-in) forwards; }
+@keyframes toast-out { to { opacity: 0; transform: translateX(24px) scale(0.96); filter: blur(var(--blur-swap)); } }
+.toast__text { flex: 1; padding: var(--spacing-xs) 0; }
+.toast > .icon { color: inherit; }
+.toast[data-variant="success"] > .icon { color: var(--color-status-success); }
+.toast[data-variant="critical"] > .icon { color: var(--color-status-critical); }
+/* Critical: once settled, it shakes no. */
+.toast[data-variant="critical"]:not([data-leaving]) { animation: toast-in var(--duration-spring) var(--ease-spring), shake calc(var(--duration-slow) * 1.4) var(--ease-out) var(--duration-spring); }
+.toast .btn { height: var(--control-height); border-color: transparent; background: none; color: inherit; }
+.toast .btn:hover { background: color-mix(in srgb, var(--color-surface-raised) 14%, transparent); border-color: transparent; }
+.toast .btn .icon { color: inherit; }
+
+/* Message: one turn of a conversation. data-from="user": the person's words in a bubble on the right. data-from="agent":
+   the agent's turn, its name first, then its blocks (reasoning, tool calls, a stream). .thread stacks the turns. */
+.thread { display: flex; flex-direction: column; gap: var(--spacing-xl); width: 100%; max-width: 680px; margin: 0 auto; }
+.message { display: flex; flex-direction: column; gap: var(--spacing-sm); min-width: 0; }
+.message[data-from="user"] { align-self: flex-end; align-items: flex-end; gap: var(--spacing-xs); max-width: 80%; }
+.message__text { margin: 0; color: var(--color-text-primary); font-size: var(--font-size-md); line-height: var(--line-height-normal); }
+.message[data-from="user"] .message__text { padding: var(--spacing-sm) var(--spacing-md); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
+.message__who { display: flex; align-items: center; gap: var(--spacing-xs); color: var(--color-agent); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+.message > .tool-call + .tool-call { margin-top: calc(var(--spacing-xs) * -1); }
+/* Actions (copy, retry) wait under the turn and show on hover or keyboard focus. */
+.message__actions { display: flex; gap: 2px; opacity: 0; transition: opacity var(--duration-fast) var(--ease-out); }
+.message[data-from="agent"] .message__actions { margin-left: calc(var(--spacing-sm) * -1); }
+.message:is(:hover, :focus-within) .message__actions, .message__actions[data-force="hover"] { opacity: 1; }
+
+/* Composer: where a person writes to an agent. A form: the field grows with the text, actions sit under it, Send waits
+   for text. Enter sends, Shift+Enter breaks the line. aria-busy="true" while the agent answers: Send gives way to Stop. */
+.composer { display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-sm); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); cursor: text;
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
+.composer:hover { border-color: var(--color-border-strong); }
+.composer:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+.composer[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+.composer__input { field-sizing: content; min-height: calc(var(--font-size-md) * var(--line-height-normal) * 2); max-height: 200px; margin: 0; padding: var(--spacing-xs) var(--spacing-xs) 0; border: 0; outline: 0; background: none; resize: none;
+  color: var(--color-text-primary); font: var(--font-size-md)/var(--line-height-normal) var(--font-family); }
+.composer__input::placeholder { color: var(--color-text-tertiary); }
+.composer__bar { display: flex; align-items: center; gap: var(--spacing-xs); cursor: default; }
+.composer__bar > :is(.composer__send, .composer__stop) { margin-left: auto; }
+.composer__stop { display: none; }
+.composer[aria-busy="true"] .composer__send { display: none; }
+.composer[aria-busy="true"] .composer__stop { display: inline-flex; animation: pop-in var(--duration-spring) var(--ease-bounce); }
+
+/* Reasoning: the agent's thinking, folded under one line. data-state="thinking" shows the typing dots and an agent
+   violet label; once done, a sparkle and the time it took. Native <details>: click, Enter and Space open it. */
+.reasoning { interpolate-size: allow-keywords; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.reasoning summary { display: inline-flex; align-items: center; gap: var(--spacing-xs); min-height: var(--control-height); list-style: none; cursor: pointer; transition: color var(--duration-fast) var(--ease-out); }
+.reasoning summary::-webkit-details-marker { display: none; }
+.reasoning summary:hover, .reasoning summary[data-force="hover"] { color: var(--color-text-primary); }
+.reasoning summary:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; border-radius: var(--radius-xs); }
+.reasoning summary .icon:last-child { --icon-size: var(--size-icon-sm); transition: transform var(--duration-base) var(--ease-out); }
+.reasoning[open] summary .icon:last-child { transform: rotate(90deg); }
+/* Thinking: the dancing dots of typing stand in for the icon, and the label turns agent violet. */
+.reasoning[data-state="thinking"] summary { color: var(--color-agent); }
+.reasoning summary .typing__dots { padding: var(--spacing-xs) var(--spacing-md); }
+.reasoning:not([data-state="thinking"]) summary .typing__dots, .reasoning[data-state="thinking"] summary > .icon:first-child { display: none; }
+.reasoning::details-content { height: 0; overflow: hidden; transition: height var(--duration-slow) var(--ease-out), content-visibility var(--duration-slow) allow-discrete; }
+.reasoning[open]::details-content { height: auto; }
+.reasoning__body { margin: 0 0 var(--spacing-sm) 7px; padding: var(--spacing-xs) 0 var(--spacing-xs) var(--spacing-md); border-left: var(--stroke-width-mid) solid var(--color-agent-border); color: var(--color-text-tertiary); line-height: var(--line-height-normal); }
+
+/* Tool call: one action the agent takes (a search, a read, a write), its target and its outcome. data-state: running,
+   done, failed. ds.js adds the status mark; the page only changes data-state. The result folds under the row. */
+.tool-call { interpolate-size: allow-keywords; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); font-size: var(--font-size-sm); }
+.tool-call summary { display: flex; align-items: center; gap: var(--spacing-sm); min-height: var(--control-height); padding: var(--spacing-xs) var(--spacing-sm); list-style: none; cursor: pointer; border-radius: inherit; transition: background var(--duration-fast) var(--ease-out); }
+.tool-call summary::-webkit-details-marker { display: none; }
+.tool-call summary:hover, .tool-call summary[data-force="hover"] { background: var(--color-surface-hover); }
+.tool-call summary:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: -2px; }
+.tool-call__icon { color: var(--color-text-secondary); }
+.tool-call__name { color: var(--color-text-primary); font-weight: var(--font-weight-medium); white-space: nowrap; }
+.tool-call__target { flex: 1; min-width: 0; overflow: hidden; color: var(--color-text-tertiary); font: var(--font-size-xs)/1 var(--font-family-mono); white-space: nowrap; text-overflow: ellipsis; }
+.tool-call__status { display: grid; flex: none; place-items: center; width: var(--size-mark); height: var(--size-mark); }
+.tool-call__status > * { grid-area: 1 / 1; display: none; }
+.tool-call__spinner { width: 14px; height: 14px; box-sizing: border-box; border: var(--stroke-width-mid) solid var(--color-agent-border); border-top-color: var(--color-agent); border-radius: var(--radius-full); animation: spin calc(var(--duration-slow) * 2.5) linear infinite; }
+.tool-call[data-state="running"] .tool-call__spinner { display: block; }
+.tool-call[data-state="done"] .tool-call__status [data-icon="check-circle"] { display: inline-flex; color: var(--color-status-success); animation: pop-in var(--duration-spring) var(--ease-bounce); }
+.tool-call[data-state="failed"] .tool-call__status [data-icon="x-circle"] { display: inline-flex; color: var(--color-status-critical); animation: pop-in var(--duration-spring) var(--ease-bounce); }
+.tool-call[data-state="running"] .tool-call__name { color: var(--color-agent); }
+.tool-call[data-state="failed"] { border-color: color-mix(in srgb, var(--color-status-critical) 30%, transparent); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.tool-call::details-content { height: 0; overflow: hidden; transition: height var(--duration-slow) var(--ease-out), content-visibility var(--duration-slow) allow-discrete; }
+.tool-call[open]::details-content { height: auto; }
+.tool-call__result { margin: 0; padding: var(--spacing-sm) var(--spacing-md); border-top: var(--stroke-width-subtle) solid var(--color-border); color: var(--color-text-secondary); font: var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); white-space: pre-wrap; }
+.tool-call[data-state="failed"] .tool-call__result { color: var(--color-status-critical); }
+@media (prefers-reduced-motion: reduce) { .tool-call__spinner { animation: none; } }
+
+/* Citation: a numbered source inside an agent's answer. The number opens the source; its tooltip names it. */
+.cite { display: inline-flex; align-items: center; justify-content: center; min-width: var(--size-mark); height: var(--size-mark); margin: 0 1px; padding: 0 var(--spacing-xs); vertical-align: 1px; border-radius: var(--radius-sm); background: var(--color-agent-subtle); color: var(--color-agent); font: var(--font-weight-semibold) 10px/1 var(--font-family-mono); text-decoration: none; transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.cite:hover, .cite[data-force="hover"] { background: var(--color-agent); color: var(--color-on-accent); }
+.cite:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+
+/* Streaming text: an agent's answer revealed word by word by streamText(). A caret follows the last word while it streams. */
+.stream { margin: 0; color: var(--color-text-primary); font-size: var(--font-size-md); line-height: var(--line-height-normal); }
+/* The caret only lives while the text streams: a pseudo-element is enough, Copy to Figma never meets it. */
+.stream[aria-busy="true"]::after { content: ""; display: inline-block; width: 2px; height: 1em; margin-left: 2px; vertical-align: text-bottom; background: var(--color-agent); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Typing: the agent is working on an answer. Three dots in agent violet, and what it is doing in words.
+   ds.js makes the dots dance (wave, ping-pong, wave, Newton's cradle); they stay still under reduced motion. */
+.typing { display: inline-flex; align-items: center; gap: var(--spacing-sm); color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.typing__dots { display: inline-flex; gap: 3px; padding: var(--spacing-sm) var(--spacing-md); border-radius: var(--radius-full); background: var(--color-agent-subtle); }
+.typing__dots i { width: 5px; height: 5px; border-radius: var(--radius-full); background: var(--color-agent); }
+
+/* Steps: the plan of a run, one row per step. data-state on each li: done, active, failed, or nothing (pending).
+   The meta (a duration, a count) shows once its step is done; its room is kept, so rows never shift. */
+.steps { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; font-size: var(--font-size-md); }
+.steps > li { display: flex; align-items: center; gap: var(--spacing-sm); min-height: var(--control-height); color: var(--color-text-tertiary); transition: color var(--duration-base) var(--ease-out); }
+/* The mark is a real element built by ds.js (ring, spinner, check, cross): CSS shows the one matching data-state. */
+.steps__mark { display: grid; flex: none; place-items: center; width: var(--size-mark); height: var(--size-mark); box-sizing: border-box; border: var(--stroke-width-mid) solid var(--color-border-strong); border-radius: var(--radius-full); color: var(--color-on-accent); transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out); }
+.steps__mark > * { grid-area: 1 / 1; display: none; }
+.steps__mark .icon { --icon-size: 10px; }
+.steps__spinner { width: var(--size-mark); height: var(--size-mark); box-sizing: border-box; border: var(--stroke-width-mid) solid var(--color-agent-border); border-top-color: var(--color-agent); border-radius: var(--radius-full); animation: spin calc(var(--duration-slow) * 2.5) linear infinite; }
+.steps > li[data-state="active"] { color: var(--color-text-primary); }
+.steps > li[data-state="active"] .steps__mark { border-color: transparent; }
+.steps > li[data-state="active"] .steps__spinner { display: block; }
+.steps > li[data-state="done"] { color: var(--color-text-secondary); }
+.steps > li[data-state="done"] .steps__mark { border-color: var(--color-status-success); background: var(--color-status-success); animation: pop-in var(--duration-spring) var(--ease-bounce); }
+.steps > li[data-state="done"] .steps__mark [data-icon="check"] { display: inline-flex; }
+.steps > li[data-state="failed"] { color: var(--color-status-critical); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.steps > li[data-state="failed"] .steps__mark { border-color: var(--color-status-critical); background: var(--color-status-critical); }
+.steps > li[data-state="failed"] .steps__mark [data-icon="x"] { display: inline-flex; }
+@media (prefers-reduced-motion: reduce) { .steps__spinner { animation: none; } }
+.steps__meta { margin-left: auto; color: var(--color-text-tertiary); font: var(--font-weight-regular) var(--font-size-xs)/1 var(--font-family-mono); visibility: hidden; }
+.steps > li[data-state="done"] .steps__meta { visibility: visible; animation: fade-in var(--duration-base) var(--ease-out); }
+
+/* Stepper: the stages of a process, side by side (an application, an onboarding). data-state on each li: done, current
+   (with aria-current="step"), or nothing (to do). ds.js draws the marks and the dashed lines between them. */
+.stepper { display: flex; margin: 0; padding: 0; list-style: none; font-size: var(--font-size-sm); }
+.stepper > li { display: flex; flex: 1; flex-direction: column; align-items: center; gap: 2px; min-width: 0; text-align: center; }
+.stepper__track { display: flex; align-items: center; align-self: stretch; margin-bottom: var(--spacing-sm); }
+/* Each stage holds the half lines on both sides of its mark: they keep a gap to the mark and meet the next stage's half,
+   so one continuous line runs from mark to mark. */
+.stepper__line { position: relative; flex: 1; border-top: var(--stroke-width-subtle) dashed var(--color-border-strong); }
+.stepper__line:first-child { margin-right: var(--spacing-sm); }
+.stepper__line:last-child { margin-left: var(--spacing-sm); }
+.stepper > li:first-child .stepper__line:first-child, .stepper > li:last-child .stepper__line:last-child { visibility: hidden; }
+/* A finished stage draws a solid line over the dashed one, toward the next stage: its own half first, then the next one's. */
+.stepper__fill { position: absolute; top: calc(var(--stroke-width-subtle) * -1); right: 0; left: 0; border-top: var(--stroke-width-subtle) solid var(--color-status-success); transform: scaleX(0); transform-origin: left; transition: transform var(--duration-slow) var(--ease-in); }
+.stepper > li[data-state="done"] .stepper__line:last-child .stepper__fill { transform: none; transition-timing-function: var(--ease-out); }
+.stepper > li[data-state="done"] + li .stepper__line:first-child .stepper__fill { transform: none; transition-timing-function: var(--ease-out); transition-delay: var(--duration-slow); }
+.stepper__mark { display: grid; flex: none; place-items: center; width: 24px; height: 24px; border-radius: var(--radius-full); background: var(--color-surface-sunken); color: var(--color-text-tertiary); transition: background var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out); }
+.stepper__mark > .icon { --icon-size: 14px; grid-area: 1 / 1; display: none; }
+.stepper > li:not([data-state]) .stepper__mark [data-icon="circle-dashed"] { display: inline-flex; }
+.stepper > li[data-state="current"] .stepper__mark { background: var(--color-accent-subtle); color: var(--color-accent); animation: halo calc(var(--duration-slow) * 6) var(--ease-out) infinite; }
+@keyframes halo { from { box-shadow: 0 0 0 0 var(--color-accent-border); } 60%, to { box-shadow: 0 0 0 6px transparent; } }
+.stepper > li[data-state="current"] .stepper__mark [data-icon="circle-half"] { display: inline-flex; animation: pop-in var(--duration-spring) var(--ease-bounce); }
+.stepper > li[data-state="done"] .stepper__mark { background: var(--color-status-success-subtle); color: var(--color-status-success); }
+.stepper > li[data-state="done"] .stepper__mark [data-icon="check"] { display: inline-flex; animation: pop-in var(--duration-spring) var(--ease-bounce); }
+.stepper__status { color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+/* The status words swap through a blur when a stage starts or ends; the label brightens. */
+.stepper > li:is([data-state="current"], [data-state="done"]) .stepper__status { animation: swap-in var(--duration-slow) var(--ease-out); }
+.stepper__label { max-width: 100%; overflow: hidden; color: var(--color-text-secondary); font-weight: var(--font-weight-medium); white-space: nowrap; text-overflow: ellipsis; transition: color var(--duration-base) var(--ease-out); }
+.stepper > li:is([data-state="current"], [data-state="done"]) .stepper__label { color: var(--color-text-primary); }
+@media (prefers-reduced-motion: reduce) { .stepper > li[data-state="current"] .stepper__mark { animation: none; } }
+
+/* Progress: a run with a measurable end. setProgress() moves the fill and the readout together, in whole percents,
+   so they never disagree. Without a value yet, the fill crawls towards a third and waits there. */
+.progress { display: grid; grid-template-columns: 1fr auto; gap: var(--spacing-xs) var(--spacing-md); font-size: var(--font-size-sm); }
+.progress__label { color: var(--color-text-secondary); }
+.progress__value { color: var(--color-text-primary); font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.progress__track { grid-column: 1 / -1; height: 4px; overflow: hidden; border-radius: var(--radius-full); background: var(--color-surface-hover); }
+.progress__fill { width: calc(var(--progress, 0) * 1%); height: 100%; border-radius: inherit; background: var(--color-accent); transition: width var(--duration-slow) var(--ease-out); }
+.progress[data-state="unknown"] .progress__fill { width: 35%; transition: width calc(var(--duration-slow) * 20) cubic-bezier(0.1, 0.6, 0.3, 1); }
+.progress[data-state="done"] .progress__fill { background: var(--color-status-success); }
+
+/* Pagination: built by ds.js from data-pages and data-page. Always the same number of slots, each as wide as the
+   largest page number, so moving through pages never moves the arrows. */
+.pagination { --slot: calc(var(--digits, 1) * 1ch + var(--spacing-lg) + 2 * var(--stroke-width-subtle)); display: inline-flex; align-items: center; gap: 2px; }
+.pagination .btn:not([data-variant]) { width: var(--slot); padding: 0; }
+.pagination .btn { padding: 0; font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.pagination .btn:not([aria-current]) { border-color: transparent; background: none; }
+.pagination .btn[aria-current="page"] { background: var(--color-accent-subtle); border-color: var(--color-accent-border); color: var(--color-accent); }
+/* Same font as the page buttons: 1ch is measured in the element's own font, so a gap is exactly a slot wide. */
+.pagination__gap { display: inline-grid; place-items: center; width: var(--slot); color: var(--color-text-tertiary); font: var(--font-weight-medium) var(--font-size-sm)/1 var(--font-family-mono); }
+
+/* Table: data rows. data-sortable makes header buttons sort: ascending, descending, then back to the original order.
+   Rows glide to their new place instead of jumping. */
+.table { width: 100%; border-collapse: collapse; font-size: var(--font-size-md); }
+.table th, .table td { height: var(--size-row); padding: 0 var(--spacing-md); border-bottom: var(--stroke-width-subtle) solid var(--color-border); text-align: left; white-space: nowrap; }
+.table th { height: var(--control-height); color: var(--color-text-tertiary); font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-mono); text-transform: uppercase; }
+.table td { color: var(--color-text-primary); font-variant-numeric: tabular-nums; }
+.table [data-align="end"] { text-align: right; }
+.table tbody tr { background: var(--color-surface-raised); }
+.table tbody tr:hover { background: var(--color-surface-hover); }
+.table th button { display: inline-flex; align-items: center; gap: var(--spacing-xs); height: 100%; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-transform: inherit; cursor: pointer; }
+.table th button:hover, .table th[aria-sort]:not([aria-sort="none"]) button { color: var(--color-text-primary); }
+.table__sort { opacity: 0.4; transition: opacity var(--duration-fast) var(--ease-out); }
+.table th:is([aria-sort="ascending"], [aria-sort="descending"]) .table__sort { opacity: 1; }
+
+/* Diff: what a change does to a file. A head (icon, path, + and − counts), hunks, then numbered lines: data-kind="add"
+   or "del" tint them; unchanged lines stay plain. Static: the page writes the lines. */
+.diff { overflow: hidden; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); }
+.diff__head { display: flex; align-items: center; gap: var(--spacing-sm); height: var(--control-height); padding: 0 var(--spacing-md); border-bottom: var(--stroke-width-subtle) solid var(--color-border); background: var(--color-surface-sunken); font: var(--font-size-xs)/1 var(--font-family-mono); }
+.diff__path { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.diff__stat { display: flex; gap: var(--spacing-xs); font-variant-numeric: tabular-nums; }
+.diff__stat [data-kind="add"], .diff__line[data-kind="add"] .diff__sign { color: var(--color-status-success); }
+.diff__stat [data-kind="del"], .diff__line[data-kind="del"] .diff__sign { color: var(--color-status-critical); }
+.diff__hunk { padding: var(--spacing-xs) var(--spacing-md); color: var(--color-text-secondary); background: var(--color-surface-sunken); font: var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); }
+.diff__line { display: flex; overflow: hidden; font: var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); white-space: pre; }
+.diff__line code { font: inherit; }
+.diff__num { flex: none; width: 40px; padding-right: var(--spacing-sm); color: var(--color-text-secondary); text-align: right; font-variant-numeric: tabular-nums; }
+.diff__sign { flex: none; width: var(--spacing-lg); text-align: center; }
+.diff__line[data-kind="add"] { background: var(--color-status-success-subtle); }
+.diff__line[data-kind="del"] { background: var(--color-status-critical-subtle); }
+
+/* Table of contents with scroll spy: the link of the section being read carries aria-current, set by ds.js. */
+.toc { display: flex; flex-direction: column; gap: 2px; border-left: var(--stroke-width-subtle) solid var(--color-border); font-size: var(--font-size-sm); }
+.toc a { display: flex; align-items: center; min-height: var(--control-height); margin-left: -1px; padding: 0 var(--spacing-md); border-left: 2px solid transparent; color: var(--color-text-secondary); text-decoration: none; transition: color var(--duration-fast) var(--ease-out), border-color var(--duration-base) var(--ease-out); }
+.toc a:hover { color: var(--color-text-primary); }
+.toc a[aria-current] { border-left-color: var(--color-accent); color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
+
+/* Sticky header: stays on top of a scrolling page. Once content passes under it, ds.js sets data-stuck: a hairline
+   appears and the subtitle fades out. Its height never changes, so the content under it never jumps. */
+.sticky-header { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: var(--spacing-md); height: var(--size-bar); padding: 0 var(--spacing-lg); border-bottom: var(--stroke-width-subtle) solid transparent; background: var(--color-surface-raised); transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
+.sticky-header[data-stuck] { border-bottom-color: var(--color-border); box-shadow: var(--shadow-sm); }
+.sticky-header__titles { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.sticky-header__title { margin: 0; overflow: hidden; font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); white-space: nowrap; text-overflow: ellipsis; }
+.sticky-header__subtitle { overflow: hidden; color: var(--color-text-tertiary); font-size: var(--font-size-xs); white-space: nowrap; text-overflow: ellipsis; transition: opacity var(--duration-base) var(--ease-out); }
+.sticky-header[data-stuck] .sticky-header__subtitle { opacity: 0; }
+
+/* Hold to confirm: a .btn with data-hold for an action that cannot be undone. Holding fills it; letting go early drains
+   it faster than it filled. Only a full hold fires the "confirm" event. Built by ds.js. */
+.btn[data-hold] { position: relative; overflow: hidden; isolation: isolate; }
+/* Holding and confirmed speak in critical red: the fill, the border, the label and its icon, the check included. */
+.btn__fill { position: absolute; inset: 0; z-index: -1; background: color-mix(in srgb, var(--color-status-critical) 16%, transparent); transform: scaleX(0); transform-origin: left; }
+.btn[data-hold]:is([data-holding], [data-state="done"]) { border-color: var(--color-status-critical); color: var(--color-status-critical); }
+.btn[data-hold]:is([data-holding], [data-state="done"]) .icon { color: var(--color-status-critical); }
+
+
+/* Field: a label, its control, an optional hint and an error. Works around .input, .select, .textarea or a group of choices.
+   data-invalid shows the error, tints the control and shakes it once. ds.js links the label, hint and error to the control. */
+.field { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
+.field__label { display: flex; align-items: baseline; gap: var(--spacing-xs); color: var(--color-text-primary); font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-family); }
+.field__required { color: var(--color-status-critical); }
+.field__optional { color: var(--color-text-secondary); font-weight: var(--font-weight-regular); }
+.field__hint { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-xs); line-height: var(--line-height-normal); }
+.field__error { display: flex; align-items: center; gap: var(--spacing-xs); margin: 0; color: var(--color-status-critical); font-size: var(--font-size-xs); line-height: var(--line-height-normal); }
+.field__error .icon { --icon-size: 14px; }
+.field > :is(.input, .select, .textarea) { width: 100%; }
+/* The error takes no room until it shows: it unfolds under the control, and the hint gives it its place. */
+.field__error { interpolate-size: allow-keywords; height: 0; overflow: hidden; opacity: 0; transform: translateY(-2px);
+  transition: height var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out); }
+.field[data-invalid] .field__error { height: auto; opacity: 1; transform: none; }
+.field[data-invalid] .field__hint { display: none; }
+.field[data-invalid] > :is(.input, .select, .textarea) { border-color: var(--color-status-critical); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.field[data-invalid] > :is(.input, .select, .textarea):focus-within { box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-status-critical); }
+.field:has(:disabled) { opacity: 0.4; }
+.field__choices { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+.field__choices[data-variant="row"] { flex-direction: row; flex-wrap: wrap; gap: var(--spacing-lg); }
+
+/* Checkbox, radio, switch: a native input inside its label, so the whole row toggles it and the keyboard works.
+   The box, dot and track are real elements (Copy to Figma keeps them). ds.js draws the check inside .checkbox__box. */
+.checkbox, .radio, .switch { position: relative; display: inline-flex; align-items: center; gap: var(--spacing-sm); min-height: var(--control-height); color: var(--color-text-primary); font-size: var(--font-size-sm); cursor: pointer; user-select: none; }
+.checkbox > input, .radio > input, .switch > input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+.checkbox__box, .radio__dot { display: inline-grid; place-items: center; flex: none; width: var(--size-mark); height: var(--size-mark); border: var(--stroke-width-mid) solid var(--color-border-strong); background: var(--color-surface-raised);
+  transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-spring) var(--ease-bounce), transform var(--duration-fast) var(--ease-out); }
+.checkbox__box { border-radius: var(--radius-xs); color: var(--color-on-ink); }
+.checkbox__box svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+/* The check draws itself along its path when checked, and erases faster when unchecked. */
+.checkbox__box path { stroke-dasharray: 16; stroke-dashoffset: 16; transition: stroke-dashoffset var(--duration-fast) var(--ease-in); }
+.checkbox__dash { display: none; }
+.checkbox > input:checked + .checkbox__box { border-color: var(--color-ink); background: var(--color-ink); }
+.checkbox > input:checked + .checkbox__box .checkbox__check { stroke-dashoffset: 0; transition: stroke-dashoffset var(--duration-slow) var(--ease-out) calc(var(--duration-fast) / 2); }
+.checkbox > input:indeterminate + .checkbox__box { border-color: var(--color-ink); background: var(--color-ink); }
+.checkbox > input:indeterminate + .checkbox__box .checkbox__check { display: none; }
+.checkbox > input:indeterminate + .checkbox__box .checkbox__dash { display: inline; stroke-dashoffset: 0; }
+.radio__dot { border-radius: var(--radius-full); }
+/* The dot grows from the ring with a bounce: an inset shadow, which Copy to Figma keeps. */
+.radio > input:checked + .radio__dot { border-color: var(--color-ink); box-shadow: inset 0 0 0 4px var(--color-ink); }
+.switch__track { position: relative; display: inline-flex; align-items: center; flex: none; width: 30px; height: 18px; padding: 2px; border-radius: var(--radius-full); background: var(--color-border-strong); transition: background var(--duration-base) var(--ease-out); }
+.switch__thumb { width: 14px; height: 14px; border-radius: var(--radius-full); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); transition: transform var(--duration-spring) var(--ease-spring), width var(--duration-fast) var(--ease-out); }
+.switch > input:checked + .switch__track { background: var(--color-ink); }
+.switch > input:checked + .switch__track .switch__thumb { transform: translateX(12px); }
+/* Pressing stretches the thumb toward where it will go, like a finger pushing it. */
+.switch:active .switch__thumb { width: 17px; }
+.switch:active > input:checked + .switch__track .switch__thumb { transform: translateX(9px); }
+.checkbox:active .checkbox__box, .radio:active .radio__dot { transform: scale(0.9); }
+.checkbox:hover .checkbox__box, .radio:hover .radio__dot, .checkbox[data-force="hover"] .checkbox__box, .radio[data-force="hover"] .radio__dot { border-color: var(--color-ink); }
+:is(.checkbox, .radio, .switch) > input:focus-visible + * { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+:is(.checkbox, .radio, .switch):has(> input:disabled) { opacity: 0.4; cursor: not-allowed; }
+.checkbox__text, .radio__text, .switch__text { display: flex; flex-direction: column; }
+.checkbox__text small, .radio__text small, .switch__text small { color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+
+/* Textarea: multi-line text that grows with its content up to max-height (field-sizing). data-max shows a counter. */
+.textarea { position: relative; display: flex; flex-direction: column; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); cursor: text;
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
+.textarea:hover { border-color: var(--color-border-strong); }
+/* Filled: a sunken field for writing inside raised cards; it rises to the raised surface while focused. */
+.textarea[data-variant="filled"] { background: var(--color-surface-sunken); transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
+.textarea[data-variant="filled"]:focus-within { background: var(--color-surface-raised); }
+.textarea:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+.textarea textarea { field-sizing: content; min-height: calc(var(--control-height) * 2.5); max-height: 280px; padding: var(--spacing-sm) var(--spacing-md); border: 0; outline: 0; background: none; color: var(--color-text-primary); font: var(--font-size-sm)/var(--line-height-normal) var(--font-family); resize: none; }
+.textarea textarea::placeholder { color: var(--color-text-tertiary); }
+.textarea__count { align-self: flex-end; padding: 0 var(--spacing-sm) var(--spacing-xs); color: var(--color-text-tertiary); font: var(--font-size-xs)/1 var(--font-family-mono); font-variant-numeric: tabular-nums; transition: color var(--duration-fast) var(--ease-out); }
+.textarea[data-full] .textarea__count { color: var(--color-status-critical); }
+
+/* Dropzone: files dropped or picked. A <label> around a visually hidden file input, so a click, Enter or Space opens the
+   picker and Tab reaches it. data-over while files hover it; data-invalid when a file is refused (type or size). */
+.dropzone { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-xl) var(--spacing-lg); border: var(--stroke-width-subtle) dashed var(--color-border-strong); border-radius: var(--radius-lg); background: var(--color-surface); color: var(--color-text-secondary); font-size: var(--font-size-sm); text-align: center; cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
+.dropzone input[type="file"] { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.dropzone:hover, .dropzone[data-force="hover"] { border-color: var(--color-border-strong); }
+.dropzone:has(input:focus-visible) { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+.dropzone[data-over] { border-style: solid; border-color: var(--color-accent); background: var(--color-accent-subtle); }
+.dropzone[data-invalid] { border-color: var(--color-status-critical); background: var(--color-status-critical-subtle); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.dropzone:has(input:disabled) { opacity: 0.4; pointer-events: none; }
+.dropzone__icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: var(--spacing-sm); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); color: var(--color-text-secondary); transition: transform var(--duration-spring) var(--ease-spring); }
+.dropzone[data-over] .dropzone__icon { transform: translateY(-4px); color: var(--color-accent); }
+.dropzone__title { color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
+.dropzone__browse { color: var(--color-text-primary); text-decoration: underline; text-underline-offset: 3px; }
+.dropzone__hint { color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+.dropzone[data-invalid] .dropzone__hint { color: var(--color-status-critical); }
+
+/* Banner: a message in the page flow. Tone by data-variant: info (default), success, warning, critical.
+   data-dismiss on its close button folds it away (ds.js); it slides in when it appears. */
+.banner { display: flex; align-items: flex-start; gap: var(--spacing-md); padding: var(--spacing-md); border: var(--stroke-width-subtle) solid var(--color-accent-border); border-radius: var(--radius-lg); background: var(--color-accent-subtle); color: var(--color-text-primary); font-size: var(--font-size-sm); line-height: var(--line-height-normal);
+  animation: enter-down var(--duration-spring) var(--ease-spring); }
+.banner > .icon { --icon-size: 18px; margin-top: 1px; color: var(--color-accent); }
+.banner__body { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.banner__title { font-weight: var(--font-weight-semibold); }
+.banner__text { color: var(--color-text-secondary); }
+.banner__actions { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm); }
+.banner > .btn[data-variant="icon"] { margin: calc(var(--spacing-xs) * -1) calc(var(--spacing-xs) * -1) 0 0; }
+.banner[data-variant="success"] { border-color: color-mix(in srgb, var(--color-status-success) 30%, transparent); background: var(--color-status-success-subtle); }
+.banner[data-variant="success"] > .icon { color: var(--color-status-success); }
+.banner[data-variant="warning"] { border-color: color-mix(in srgb, var(--color-status-warning) 30%, transparent); background: var(--color-status-warning-subtle); }
+.banner[data-variant="warning"] > .icon { color: var(--color-status-warning); }
+.banner[data-variant="critical"] { border-color: color-mix(in srgb, var(--color-status-critical) 30%, transparent); background: var(--color-status-critical-subtle); }
+.banner[data-variant="critical"] > .icon { color: var(--color-status-critical); }
+.banner[data-variant="critical"]:not([data-leaving]) { animation: enter-down var(--duration-spring) var(--ease-spring), shake calc(var(--duration-slow) * 1.4) var(--ease-out) var(--duration-spring); }
+/* Dismissed: fades, then the room it took closes, so the content under it rises instead of jumping. */
+.banner[data-leaving] { interpolate-size: allow-keywords; overflow: hidden; animation: banner-out var(--duration-slow) var(--ease-in) forwards; }
+@keyframes banner-out { 40% { opacity: 0; transform: scale(0.98); filter: blur(2px); } to { opacity: 0; height: 0; padding-block: 0; margin-block: 0; border-width: 0; } }
+
+/* Empty state: what a list or a page shows before it has content, and the way to give it some. */
+.empty { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); max-width: 360px; margin: 0 auto; padding: var(--spacing-2xl) var(--spacing-lg); text-align: center; }
+.empty__art { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: var(--spacing-sm); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface-raised); box-shadow: var(--shadow-md); color: var(--color-text-secondary);
+  animation: empty-float calc(var(--duration-slow) * 12) ease-in-out infinite; }
+.empty__art .icon { --icon-size: 26px; }
+/* A slow float: the space waits, it is not broken. Stops under reduced motion with the other durations. */
+@keyframes empty-float { 50% { transform: translateY(-4px) rotate(-2deg); } }
+@media (prefers-reduced-motion: reduce) { .empty__art { animation: none; } }
+.empty__title { margin: 0; color: var(--color-text-primary); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+.empty__text { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+.empty__actions { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-sm); }
+.empty[data-variant="compact"] { padding: var(--spacing-lg); }
+.empty[data-variant="compact"] .empty__art { width: 40px; height: 40px; border-radius: var(--radius-lg); box-shadow: none; animation: none; }
+.empty[data-variant="compact"] .empty__art .icon { --icon-size: 20px; }
+
+/* List: rows of things. An item has a lead (avatar or icon), a body (title and meta) and a trail (badge, value, chevron).
+   An <a> or <button> item is clickable: it highlights and its chevron nudges. data-variant="inset" puts the list in a card.
+   Rows enter one after the other the first time the list paints. */
+.list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.list[data-variant="inset"] { overflow: hidden; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
+.list__item { display: flex; align-items: center; gap: var(--spacing-md); min-height: 52px; padding: var(--spacing-sm) var(--spacing-md); border: 0; border-bottom: var(--stroke-width-subtle) solid var(--color-border); background: none; color: var(--color-text-primary); font: inherit; text-align: left; text-decoration: none;
+  animation: enter var(--duration-slow) var(--ease-out) both; transition: background var(--duration-fast) var(--ease-out); }
+.list > :last-child { border-bottom: 0; }
+.list:not([data-variant="inset"]) .list__item { padding-inline: 0; }
+.list__item:nth-child(2) { animation-delay: var(--duration-stagger); }
+.list__item:nth-child(3) { animation-delay: calc(var(--duration-stagger) * 2); }
+.list__item:nth-child(4) { animation-delay: calc(var(--duration-stagger) * 3); }
+.list__item:nth-child(5) { animation-delay: calc(var(--duration-stagger) * 4); }
+.list__item:nth-child(n + 6) { animation-delay: calc(var(--duration-stagger) * 5); }
+:is(a, button).list__item { cursor: pointer; }
+.list[data-variant="inset"] :is(:is(a, button).list__item:hover, .list__item[data-force="hover"]) { background: var(--color-surface-hover); }
+.list:not([data-variant="inset"]) :is(:is(a, button).list__item:hover, .list__item[data-force="hover"]) .list__title { color: var(--color-accent); }
+:is(a, button).list__item:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: -2px; }
+.list__item[aria-current] { background: var(--color-accent-subtle); }
+.list__lead { display: grid; place-items: center; flex: none; width: var(--size-lead); height: var(--size-lead); border-radius: var(--radius-md); background: var(--color-surface-sunken); color: var(--color-text-secondary); }
+.list__lead.avatar { border-radius: var(--radius-full); }
+.list__body { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.list__title { overflow: hidden; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); white-space: nowrap; text-overflow: ellipsis; transition: color var(--duration-fast) var(--ease-out); }
+.list__meta { overflow: hidden; color: var(--color-text-secondary); font-size: var(--font-size-xs); white-space: nowrap; text-overflow: ellipsis; }
+.list__trail { display: flex; align-items: center; gap: var(--spacing-sm); flex: none; color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+.list__chevron { color: var(--color-text-tertiary); transition: transform var(--duration-spring) var(--ease-spring), color var(--duration-fast) var(--ease-out); }
+:is(:is(a, button).list__item:hover, .list__item[data-force="hover"]) .list__chevron { transform: translateX(3px); color: var(--color-text-primary); }
+
+/* App shell: navigation rail, top bar and content. data-collapsed on .shell folds the rail to icons (ds.js toggles it
+   from [data-shell-toggle]); labels fade and the rail springs to its new width. The current page carries aria-current. */
+.shell { --shell-nav: 232px; display: grid; grid-template-columns: var(--shell-nav) minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "nav top" "nav main"; height: 100vh; height: 100dvh; background: var(--color-surface); color: var(--color-text-primary);
+  transition: grid-template-columns var(--duration-spring) var(--ease-spring); }
+/* Folded, the rail is exactly one square item wide: the items become 32 px squares, their icons centred and unmoved. */
+.shell[data-collapsed] { --shell-nav: calc(var(--control-height) + 2 * var(--spacing-sm) + var(--stroke-width-subtle)); }
+.shell__nav { grid-area: nav; display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; overflow: hidden; padding: var(--spacing-md) var(--spacing-sm); border-right: var(--stroke-width-subtle) solid var(--color-border); background: var(--color-surface-raised); }
+.shell__brand { display: flex; align-items: center; gap: var(--spacing-sm); height: var(--control-height); margin-bottom: var(--spacing-md); padding: 0 var(--spacing-xs); font-weight: var(--font-weight-semibold); white-space: nowrap; }
+.shell__brand .avatar { border-radius: var(--radius-sm); }
+.shell__top { grid-area: top; display: flex; align-items: center; gap: var(--spacing-md); height: var(--size-bar); padding: 0 var(--spacing-lg); border-bottom: var(--stroke-width-subtle) solid var(--color-border); background: var(--color-surface-raised); }
+.shell__title { flex: 1; min-width: 0; margin: 0; overflow: hidden; font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); white-space: nowrap; text-overflow: ellipsis; }
+.shell__main { grid-area: main; overflow: auto; padding: var(--spacing-xl); }
+.nav__section { margin: var(--spacing-md) 0 var(--spacing-xs); padding: 0 var(--spacing-sm); color: var(--color-text-tertiary); font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-mono); text-transform: uppercase; white-space: nowrap; }
+.nav__item { position: relative; display: flex; align-items: center; gap: var(--spacing-sm); height: var(--control-height); padding: 0 var(--spacing-sm); border-radius: var(--radius-sm); color: var(--color-text-secondary); font: var(--font-weight-medium) var(--font-size-sm)/1 var(--font-family); text-decoration: none; white-space: nowrap;
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.nav__item .icon { flex: none; transition: transform var(--duration-spring) var(--ease-bounce); }
+.nav__item:hover, .nav__item[data-force="hover"] { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.nav__item:hover .icon { transform: scale(1.1); }
+.nav__item:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: -2px; }
+.nav__item[aria-current="page"] { background: var(--color-accent-subtle); color: var(--color-accent); }
+.nav__count { margin-left: auto; color: var(--color-text-tertiary); font: var(--font-size-xs)/1 var(--font-family-mono); }
+.nav__label, .nav__count, .nav__section, .shell__brand-name { transition: opacity var(--duration-base) var(--ease-out); }
+.shell[data-collapsed] :is(.nav__label, .nav__count, .nav__section, .shell__brand-name) { opacity: 0; pointer-events: none; }
+.shell__foot { margin-top: auto; }
+/* Aside: a .pane on the right, under the top bar (a preview, a diff, details). hidden closes its column. */
+.shell:has(> .shell__aside:not([hidden])) { grid-template-columns: var(--shell-nav) minmax(0, 1fr) var(--shell-aside, 480px); grid-template-areas: "nav top top" "nav main aside"; }
+.shell__aside { grid-area: aside; }
+
+/* Pane: a side panel with a head (title, actions) and a body that scrolls on its own. */
+.pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; border-left: var(--stroke-width-subtle) solid var(--color-border); background: var(--color-surface-raised); }
+.pane__head { display: flex; flex: none; align-items: center; gap: var(--spacing-sm); height: var(--size-bar); padding: 0 var(--spacing-md) 0 var(--spacing-lg); border-bottom: var(--stroke-width-subtle) solid var(--color-border); }
+.pane__title { flex: 1; min-width: 0; margin: 0; overflow: hidden; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); white-space: nowrap; text-overflow: ellipsis; }
+.pane__body { flex: 1; min-height: 0; overflow: auto; }
+
+/* Rich editor: a writing field with a formatting toolbar, built by ds.js from data-placeholder, data-hint and data-max.
+   The placeholder is a real element stacked on the area (grid), not a ::before, so Copy to Figma keeps it. */
+.rich-editor { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
+.rich-editor__box { position: relative; display: grid; grid-template-rows: auto 1fr; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised);
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
+.rich-editor__box:hover, .rich-editor[data-force="hover"] .rich-editor__box { border-color: var(--color-border-strong); }
+.rich-editor__box:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+.rich-editor__toolbar { display: flex; align-items: center; gap: 2px; padding: var(--spacing-xs); border-bottom: var(--stroke-width-subtle) solid var(--color-border); }
+.rich-editor__toolbar [data-format="undo"] { margin-left: auto; }
+.rich-editor__separator { flex: none; width: var(--stroke-width-subtle); height: var(--spacing-lg); margin: 0 var(--spacing-xs); background: var(--color-border); }
+.rich-editor__area, .rich-editor__placeholder { grid-area: 2 / 1; padding: var(--spacing-sm) var(--spacing-md); font: var(--font-size-sm)/var(--line-height-normal) var(--font-family); }
+.rich-editor__area { min-height: calc(var(--control-height) * 2.5); max-height: 280px; overflow: auto; outline: 0; color: var(--color-text-primary); overflow-wrap: anywhere; cursor: text; }
+.rich-editor__area :is(p, ul, ol) { margin: 0; }
+.rich-editor__area :is(ul, ol) { padding-left: var(--spacing-xl); }
+.rich-editor__area a { color: var(--color-accent); }
+.rich-editor__placeholder { display: none; color: var(--color-text-tertiary); pointer-events: none; }
+.rich-editor[data-empty] .rich-editor__placeholder { display: block; }
+/* Link popover: opens under the link button, over the text. */
+.rich-editor__link { position: absolute; z-index: 10; top: calc(var(--control-height) + var(--spacing-sm) + var(--spacing-xs)); width: 280px; }
+.rich-editor__link .btn[hidden] { display: none; }
+.rich-editor__foot { display: flex; align-items: baseline; gap: var(--spacing-md); color: var(--color-text-secondary); font-size: var(--font-size-xs); line-height: var(--line-height-normal); }
+.rich-editor__count { margin-left: auto; color: var(--color-text-tertiary); font: var(--font-size-xs)/1 var(--font-family-mono); font-variant-numeric: tabular-nums; transition: color var(--duration-fast) var(--ease-out); }
+.rich-editor[data-full] .rich-editor__count { color: var(--color-status-critical); }
+.field[data-invalid] > .rich-editor .rich-editor__box { border-color: var(--color-status-critical); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.field[data-invalid] > .rich-editor .rich-editor__box:focus-within { box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-status-critical); }
+.rich-editor[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+
+/* Date picker: a date field that opens a month calendar, built by ds.js from data-value, data-min, data-max and
+   data-placeholder. The calendar is a .popover, so it opens and closes like one; its days are an ARIA grid of six weeks,
+   so changing month never resizes it. Today carries a ring, the chosen day is ink, days out of range fade. */
+.date-picker { position: relative; display: inline-flex; flex-direction: column; }
+.date-picker__field { width: 100%; color: var(--color-text-tertiary); font: var(--font-size-sm)/var(--line-height-tight) var(--font-family); text-align: left; cursor: pointer; }
+.date-picker__field:focus-visible { outline: 0; }
+.date-picker__field[aria-expanded="true"] { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+.date-picker__field .icon { color: var(--color-text-secondary); }
+.date-picker__value { flex: 1; min-width: 0; overflow: hidden; color: var(--color-text-primary); white-space: nowrap; text-overflow: ellipsis; }
+.date-picker[data-empty] .date-picker__value { color: var(--color-text-tertiary); }
+.date-picker[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+.field[data-invalid] > .date-picker .date-picker__field { border-color: var(--color-status-critical); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.field[data-invalid] > .date-picker .date-picker__field:is(:focus-within, [aria-expanded="true"]) { box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-status-critical); }
+.date-picker__calendar { position: absolute; top: calc(100% + var(--spacing-xs)); left: 0; z-index: 1000; width: max-content; gap: var(--spacing-xs); }
+.date-picker__calendar[data-side="top"] { top: auto; bottom: calc(100% + var(--spacing-xs)); }
+/* No room on the right: it aligns with the field's right edge instead. */
+.date-picker__calendar[data-align="end"] { right: 0; left: auto; transform-origin: top right; }
+.date-picker__calendar[data-align="end"][data-side="top"] { transform-origin: bottom right; }
+.date-picker__head { display: flex; align-items: center; gap: var(--spacing-xs); }
+.date-picker__title { flex: 1; color: var(--color-text-primary); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); text-align: center; }
+.date-picker__grid { border-collapse: collapse; }
+.date-picker__grid th { height: var(--spacing-xl); padding: 0; color: var(--color-text-tertiary); font: var(--font-weight-medium) var(--font-size-xs)/1 var(--font-family); }
+.date-picker__grid td { padding: calc(var(--spacing-xs) / 4) calc(var(--spacing-xs) / 2); }
+.date-picker__day { display: grid; place-items: center; width: var(--control-height); height: var(--control-height); padding: 0; border: 0; border-radius: var(--radius-md); background: none; color: var(--color-text-primary);
+  font: var(--font-size-sm)/1 var(--font-family); font-variant-numeric: tabular-nums; cursor: pointer; transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.date-picker__day:hover, .date-picker__day[data-force="hover"] { background: var(--color-surface-hover); }
+.date-picker__day:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 1px; }
+.date-picker__day[data-outside] { color: var(--color-text-tertiary); }
+.date-picker__day[aria-current="date"] { color: var(--color-accent); font-weight: var(--font-weight-semibold); box-shadow: inset 0 0 0 var(--stroke-width-subtle) var(--color-accent-border); }
+.date-picker__grid [aria-selected="true"] > .date-picker__day { background: var(--color-ink); box-shadow: none; color: var(--color-on-ink); }
+/* Out of range: faded and struck through, so it never reads as a day of the next month. */
+.date-picker__day[aria-disabled="true"] { opacity: 0.4; background: none; text-decoration: line-through; cursor: not-allowed; }
+/* A new month swaps in through the blur, the title with it. */
+.date-picker__calendar[data-swap] :is(.date-picker__title, tbody) { animation: swap-in var(--duration-slow) var(--ease-out); }
+
+/* Command palette: ⌘K or Ctrl+K opens it from anywhere on the page. A .modal with a search field on top and grouped
+   results under it: typing filters, ↑ ↓ move, Enter runs. It hangs from the upper part of the screen instead of the
+   centre, so the field stays put while the results shrink and grow. The same palette also picks several things into a
+   cart before saying what to do with them (data-select="multiple"), as a bottom sheet on touch (data-variant="sheet"). */
+.command-palette { width: min(560px, calc(100vw - 32px)); margin-top: 12vh; }
+.command-palette__search { width: 100%; height: var(--size-bar); flex: none; padding: 0 var(--spacing-lg); border-width: 0 0 var(--stroke-width-subtle); border-radius: 0; background: none; }
+.command-palette__search:hover, .command-palette__search:focus-within { border-color: var(--color-border); box-shadow: none; }
+.command-palette__search input { font-size: var(--font-size-lg); }
+.command-palette__list { flex: 1; overflow: auto; overscroll-behavior: contain; padding: var(--spacing-xs); }
+.command-palette__group { display: flex; flex-direction: column; }
+.command-palette__group + .command-palette__group { margin-top: var(--spacing-xs); }
+.command-palette__label { margin: 0; padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-xs); color: var(--color-text-tertiary); font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-mono); text-transform: uppercase; }
+.command-palette__item { display: flex; align-items: center; gap: var(--spacing-sm); min-height: var(--size-row); padding: 0 var(--spacing-sm); border-radius: var(--radius-md); color: var(--color-text-primary); font-size: var(--font-size-sm); cursor: pointer; transition: background var(--duration-fast) var(--ease-out); }
+.command-palette__item > .icon { color: var(--color-text-secondary); }
+.command-palette__title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.command-palette__keys { display: flex; flex: none; gap: calc(var(--spacing-xs) / 2); }
+.command-palette__item[data-active], .command-palette__item[data-force="hover"] { background: var(--color-surface-hover); }
+.command-palette__item[data-active] > .icon { color: var(--color-text-primary); }
+.command-palette :is(.command-palette__group, .command-palette__item, .command-palette__empty, .command-palette__count, .command-palette__foot)[hidden] { display: none; }
+/* Spaces: a .tabs above the list, one .tabs__panel per space inside it. A search looks through every space at once. */
+.command-palette > .tabs { flex: none; padding: 0 var(--spacing-lg); }
+.command-palette__list > .tabs__panel { padding-top: 0; }
+.command-palette[data-searching] > .tabs { display: none; }
+.command-palette[data-searching] .command-palette__list > .tabs__panel[hidden] { display: block; }
+/* Tiles (data-layout="grid" on a group): an illustration over its name, big enough for a thumb. */
+.command-palette__group[data-layout="grid"] { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--size-bar) + var(--spacing-xl)), 1fr)); gap: var(--spacing-xs); }
+.command-palette__group[data-layout="grid"] > .command-palette__label { grid-column: 1 / -1; }
+.command-palette__group[data-layout="grid"] .command-palette__item { position: relative; flex-direction: column; justify-content: center; gap: var(--spacing-xs); min-height: calc(var(--size-bar) + var(--spacing-xl)); padding: var(--spacing-sm) var(--spacing-xs); border-radius: var(--radius-lg); text-align: center; }
+.command-palette__group[data-layout="grid"] .command-palette__title { flex: none; width: 100%; }
+.command-palette__art { display: grid; flex: none; place-items: center; width: var(--size-row); height: var(--size-row); --icon-size: var(--spacing-2xl); color: var(--color-text-secondary); transition: transform var(--duration-spring) var(--ease-spring); }
+.command-palette__art > :is(img, svg) { width: 100%; height: 100%; object-fit: contain; }
+.command-palette__item:active .command-palette__art { transform: scale(0.9); }
+/* Multiple (data-select="multiple"): a press adds one to the cart instead of running; the count pops on the tile. */
+.command-palette[data-select="multiple"] .command-palette__item[aria-selected="true"] { background: var(--color-accent-subtle); box-shadow: inset 0 0 0 var(--stroke-width-subtle) var(--color-accent-border); }
+.command-palette__count { flex: none; min-width: var(--size-mark); height: var(--size-mark); padding: 0 var(--spacing-xs); border-radius: var(--radius-full); background: var(--color-accent); color: var(--color-on-accent); font: var(--font-weight-semibold) var(--font-size-xs)/var(--size-mark) var(--font-family-mono); text-align: center; }
+.command-palette__group[data-layout="grid"] .command-palette__count { position: absolute; top: var(--spacing-xs); right: var(--spacing-xs); }
+.command-palette__count[data-pop] { animation: pop-in var(--duration-spring) var(--ease-bounce); }
+/* Foot: the cart as one row of pills (− quantity name +), a summary and the intents. Shown once the cart has something. */
+.command-palette__foot { display: flex; flex: none; flex-direction: column; gap: var(--spacing-sm); padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg); border-top: var(--stroke-width-subtle) solid var(--color-border); animation: enter var(--duration-spring) var(--ease-spring); }
+.command-palette__cart { display: flex; gap: var(--spacing-xs); margin: 0 calc(var(--spacing-lg) * -1); padding: 0 var(--spacing-lg); overflow-x: auto; overscroll-behavior: contain; scrollbar-width: none; }
+.command-palette__line { display: flex; flex: none; align-items: center; height: var(--control-height); padding: 0 calc(var(--spacing-xs) / 2); border-radius: var(--radius-full); background: var(--color-surface-sunken); font-size: var(--font-size-sm); animation: pop-in var(--duration-spring) var(--ease-spring); }
+.command-palette__line > .btn { height: calc(var(--control-height) - var(--spacing-xs)); border-radius: var(--radius-full); }
+.command-palette__line > .btn[data-variant="icon"] { width: calc(var(--control-height) - var(--spacing-xs)); }
+.command-palette__qty { font-family: var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.command-palette__summary { margin: 0; color: var(--color-text-tertiary); font-size: var(--font-size-sm); }
+/* Intents: what to do with the selection, in the foot from the first pick. data-single (one intent known from the
+   context) makes it the one big ink action. */
+.command-palette__intents { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-xs); }
+.command-palette__intent { height: var(--size-row); justify-content: center; }
+.command-palette__intent[hidden] { display: none; }
+.command-palette__intents[data-single] .command-palette__intent { grid-column: 1 / -1; height: calc(var(--size-bar) - var(--spacing-sm)); border-color: var(--color-ink); background: var(--color-ink); color: var(--color-on-ink); font-size: var(--font-size-lg); }
+.command-palette__intents[data-single] .command-palette__intent .icon { color: var(--color-on-ink); }
+.command-palette__intents[data-single] .command-palette__intent:hover { opacity: 0.85; }
+/* Sheet (data-variant="sheet"): docked to the bottom at thumb reach, it rises from there and sinks back. A fixed height:
+   the foot appearing or a search shrinking the list never moves the tiles under the thumb. */
+.command-palette[data-variant="sheet"] { width: min(560px, 100vw); height: min(80vh, 680px); max-height: none; margin: auto auto 0; border-width: var(--stroke-width-subtle) var(--stroke-width-subtle) 0; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+.command-palette[data-variant="sheet"]:not([open]) { transform: translateY(100%); }
+@starting-style { .command-palette[data-variant="sheet"][open] { transform: translateY(100%); } }
+.command-palette[data-variant="sheet"] .command-palette__list { padding: var(--spacing-xs) var(--spacing-sm); }
+/* The bar that opens the sheet: a field look at the bottom of the screen, a button underneath. */
+.command-palette__trigger { display: flex; align-items: center; gap: var(--spacing-sm); width: 100%; height: calc(var(--size-bar) - var(--spacing-sm)); padding: 0 var(--spacing-lg); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-full); background: var(--color-surface-raised); color: var(--color-text-tertiary); font: inherit; font-size: var(--font-size-lg); text-align: left; cursor: pointer; box-shadow: var(--shadow-md); transition: border-color var(--duration-fast) var(--ease-out); }
+.command-palette__trigger:hover, .command-palette__trigger[data-force="hover"] { border-color: var(--color-border-strong); }
+
+/* Attachment: a file joined to a message or a form, built by ds.js from data-name and data-size (icon from the extension,
+   name truncated before its extension, size in mono). data-state="uploading" fills a thin bar along the bottom from
+   data-progress; data-state="error" tints it critical, shakes once and offers retry. .attachments lines them up. */
+.attachments { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin: 0; padding: 0; list-style: none; }
+.attachments:empty { display: none; }
+/* Files share a row and grow to fill it, so under a dropzone each one is as wide as the zone. */
+.attachment { position: relative; display: flex; flex: 1 1 200px; align-items: center; gap: var(--spacing-sm); min-width: 0; max-width: 320px; padding: var(--spacing-xs); overflow: hidden;
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); font-size: var(--font-size-sm);
+  transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-spring) var(--ease-spring), border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
+/* A new file settles into the row. */
+@starting-style { .attachment { opacity: 0; transform: scale(0.96); } }
+.attachment__icon { display: grid; flex: none; place-items: center; width: var(--size-lead); height: var(--size-lead); border-radius: var(--radius-sm); background: var(--color-surface-sunken); color: var(--color-text-secondary); }
+.attachment__icon > .icon { grid-area: 1 / 1; }
+.attachment__icon > [data-icon="warning-circle"] { display: none; }
+.attachment__body { display: flex; flex: 1; flex-direction: column; gap: calc(var(--spacing-xs) / 2); min-width: 0; }
+/* The name gives way before its extension: "quarterly-rep….pdf". */
+.attachment__name { display: flex; min-width: 0; color: var(--color-text-primary); font-weight: var(--font-weight-medium); white-space: nowrap; }
+.attachment__base { overflow: hidden; text-overflow: ellipsis; }
+.attachment__ext { flex: none; }
+.attachment__meta { display: flex; gap: var(--spacing-sm); color: var(--color-text-tertiary); font: var(--font-size-xs)/var(--line-height-tight) var(--font-family-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.attachment__percent, .attachment__error, .attachment > [data-attachment="retry"] { display: none; }
+.attachment > .btn { flex: none; }
+/* The pill clips the bar to its corners, so the focus ring of its buttons sits inside them. */
+.attachment > .btn:focus-visible { outline-offset: calc(var(--stroke-width-mid) * -1); }
+.attachment__bar { position: absolute; right: 0; bottom: 0; left: 0; display: none; height: calc(var(--spacing-xs) / 2); background: var(--color-surface-hover); }
+.attachment__fill { display: block; width: calc(var(--progress, 0) * 1%); height: 100%; background: var(--color-accent); transition: width var(--duration-slow) var(--ease-out); }
+.attachment[data-state="uploading"] .attachment__bar { display: block; }
+.attachment[data-state="uploading"] .attachment__percent { display: inline; color: var(--color-text-secondary); }
+.attachment[data-state="uploading"] .attachment__name { color: var(--color-text-secondary); }
+.attachment[data-state="error"] { border-color: color-mix(in srgb, var(--color-status-critical) 30%, transparent); background: var(--color-status-critical-subtle); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.attachment[data-state="error"] .attachment__icon { background: none; color: var(--color-status-critical); }
+.attachment[data-state="error"] .attachment__icon > .icon { display: none; }
+.attachment[data-state="error"] .attachment__icon > [data-icon="warning-circle"] { display: inline-flex; }
+.attachment[data-state="error"] .attachment__size { display: none; }
+.attachment[data-state="error"] .attachment__error { display: inline; overflow: hidden; color: var(--color-status-critical); font-family: var(--font-family); text-overflow: ellipsis; }
+.attachment[data-state="error"] > [data-attachment="retry"] { display: inline-flex; }
+/* Compact: one line, for a row of files above a composer's field. */
+.attachment[data-variant="compact"] { flex: 0 1 auto; max-width: min(100%, 240px); gap: var(--spacing-xs); padding: 0 0 0 var(--spacing-sm); border-radius: var(--radius-sm); }
+.attachment[data-variant="compact"] .attachment__icon { width: auto; height: auto; background: none; }
+.attachment[data-variant="compact"] .attachment__body { flex-direction: row; align-items: baseline; gap: var(--spacing-sm); }
+.attachment[data-variant="compact"] .attachment__name { font-size: var(--font-size-xs); }
+/* Removed: fades and shrinks, then ds.js takes it out. */
+.attachment[data-leaving] { animation: attachment-out var(--duration-base) var(--ease-in) forwards; pointer-events: none; }
+@keyframes attachment-out { to { opacity: 0; transform: scale(0.96); filter: blur(var(--blur-swap)); } }
+
+/* Slider: a native range input, invisible, stretched over a track, an ink fill and a thumb that are real elements built by
+   ds.js (Copy to Figma keeps them). The input keeps the pointer, the keys and the screen reader; --value (0 to 100) places
+   the fill and the thumb. Optional readout (.slider__value), min and max under it (data-scale), a dot per step (data-marks). */
+.slider { display: grid; grid-template-columns: 1fr auto; align-items: baseline; column-gap: var(--spacing-md); min-width: 0; font-size: var(--font-size-sm); }
+.slider__label { color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
+.slider__value { grid-column: 2; color: var(--color-text-primary); font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-tight) var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.slider__control { position: relative; grid-column: 1 / -1; display: flex; align-items: center; height: var(--control-height); }
+.slider__control > input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; appearance: none; }
+/* The invisible native thumb is as wide as the drawn one, so the pointer and the drawing agree at every value. */
+.slider__control > input::-webkit-slider-thumb { width: var(--size-mark); height: var(--control-height); appearance: none; }
+.slider__control > input::-moz-range-thumb { width: var(--size-mark); height: var(--control-height); border: 0; }
+.slider__track { position: relative; flex: 1; height: var(--spacing-xs); border-radius: var(--radius-full); background: var(--color-border); }
+.slider__fill { position: absolute; top: 0; bottom: 0; left: 0; width: calc(var(--size-mark) / 2 + var(--value, 0) * (100% - var(--size-mark)) / 100); border-radius: inherit; background: var(--color-ink); transition: width var(--duration-fast) var(--ease-out); }
+.slider__mark { position: absolute; top: 50%; left: calc(var(--size-mark) / 2 + var(--at) * (100% - var(--size-mark)) / 100); width: calc(var(--spacing-xs) / 2); height: calc(var(--spacing-xs) / 2); border-radius: var(--radius-full); background: var(--color-text-tertiary); transform: translate(-50%, -50%); }
+.slider__mark[data-on] { background: var(--color-on-ink); }
+/* The thumb of the switch: a raised circle with a soft shadow, ringed in ink so it reads on the fill and the bare track, in both themes. */
+.slider__thumb { position: absolute; top: calc(50% - var(--size-mark) / 2); left: calc(var(--value, 0) * (100% - var(--size-mark)) / 100); width: var(--size-mark); height: var(--size-mark); border-radius: var(--radius-full);
+  background: var(--color-surface-raised); box-shadow: var(--shadow-sm), inset 0 0 0 var(--stroke-width-mid) var(--color-ink); pointer-events: none;
+  transition: left var(--duration-fast) var(--ease-out), transform var(--duration-spring) var(--ease-spring); }
+.slider__control:hover .slider__thumb, .slider[data-force="hover"] .slider__thumb { transform: scale(1.1); }
+/* Held: the thumb swells under the finger and follows it without easing; keys and clicks glide. */
+.slider__control:active .slider__thumb { transform: scale(1.25); transition: transform var(--duration-spring) var(--ease-spring); }
+.slider__control:active .slider__fill { transition: none; }
+.slider__control > input:focus-visible ~ .slider__thumb { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+.slider__scale { grid-column: 1 / -1; display: flex; justify-content: space-between; color: var(--color-text-tertiary); font: var(--font-size-xs)/var(--line-height-tight) var(--font-family-mono); font-variant-numeric: tabular-nums; }
+.slider:has(input:disabled) { opacity: 0.4; }
+.slider:has(input:disabled) .slider__control > input { cursor: not-allowed; }
+
+/* Tag input: removable tags (chips) and a text field in one box. Enter or a comma adds what is typed, Backspace in the empty
+   field removes the last tag, × removes one; a tag already there is refused: it shakes. Inside a .combobox, its list
+   suggests tags. ds.js adds the remove buttons and fires "change" with the tags. */
+.tag-input { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xs); min-width: 0; min-height: var(--control-height); padding: var(--spacing-xs);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); cursor: text;
+  transition: border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
+.tag-input:hover, .tag-input[data-force="hover"] { border-color: var(--color-border-strong); }
+.tag-input:focus-within { border-color: var(--color-accent); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-accent); }
+.combobox > .tag-input { width: 100%; }
+/* Text starts where it starts in an .input: the box padding plus the field's own. */
+.tag-input > input { flex: 1 0 calc(var(--control-height) * 2); min-width: 0; padding: 0 0 0 calc(var(--spacing-md) - var(--spacing-xs)); border: 0; outline: 0; background: none; color: var(--color-text-primary); font: var(--font-size-sm)/var(--line-height-tight) var(--font-family); }
+.tag-input > input::placeholder { color: var(--color-text-tertiary); }
+.tag-input__tag { padding-right: 0; transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-spring) var(--ease-bounce), border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
+@starting-style { .tag-input__tag { opacity: 0; transform: scale(0.8); } }
+/* The × is a 32 px high target over a 22 px chip: it overflows the chip into the box padding, never out of the box. */
+.tag-input__remove { display: grid; flex: none; place-items: center; width: calc(var(--spacing-lg) + var(--spacing-xs)); height: var(--control-height); margin-block: calc((var(--spacing-xs) + var(--stroke-width-subtle)) * -1);
+  padding: 0; border: 0; background: none; color: var(--color-text-tertiary); cursor: pointer; transition: color var(--duration-fast) var(--ease-out); }
+.tag-input__remove .icon { --icon-size: var(--size-icon-sm); border-radius: var(--radius-xs); }
+.tag-input__remove:hover, .tag-input__remove[data-force="hover"] { color: var(--color-text-primary); }
+.tag-input__remove:focus-visible { outline: 0; color: var(--color-text-primary); }
+.tag-input__remove:focus-visible .icon { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 1px; }
+.tag-input__tag[data-invalid] { border-color: color-mix(in srgb, var(--color-status-critical) 30%, transparent); background: var(--color-status-critical-subtle); color: var(--color-status-critical); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.tag-input:has(> input:disabled) { opacity: 0.4; cursor: not-allowed; }
+.tag-input:has(> input:disabled) .tag-input__remove { visibility: hidden; }
+.field[data-invalid] > .tag-input, .field[data-invalid] > .combobox > .tag-input { border-color: var(--color-status-critical); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
+.field[data-invalid] > .tag-input:focus-within, .field[data-invalid] > .combobox > .tag-input:focus-within { box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-status-critical); }
+
+/* Carousel: a row of cards that scrolls sideways: one card at a time with the arrows, freely with a trackpad, a swipe or
+   the arrow keys once focused. The arrows are icon buttons with data-carousel="prev|next" and aria-controls on the
+   carousel's id, so they can sit anywhere (a section head). ds.js disables each one at its end. */
+.carousel { --carousel-item: 320px; display: grid; grid-auto-flow: column; grid-auto-columns: min(var(--carousel-item), 85%); gap: var(--spacing-lg); margin: 0; padding: var(--spacing-xs) 2px var(--spacing-md); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 2px; scroll-behavior: smooth; scrollbar-width: none; list-style: none; }
+.carousel::-webkit-scrollbar { display: none; }
+.carousel > * { min-width: 0; scroll-snap-align: start; }
+.carousel > * > .card { height: 100%; }
+.carousel:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; border-radius: var(--radius-lg); }
+.carousel__controls { display: flex; gap: var(--spacing-xs); }
+@media (prefers-reduced-motion: reduce) { .carousel { scroll-behavior: auto; } }
+
+/* Editorial layer, for websites: type, long-form reading, code, quotes, media, site navigation. Tool screens rarely need it. */
+
+/* Text: editorial type roles on any element. display (60 px hero), title (48 px page title), heading (30 px section),
+   lead (18 px intro under a title), eyebrow (mono label above a title). Large sizes step down on narrow screens. */
+.text { margin: 0; }
+.text:is([data-variant="display"], [data-variant="title"], [data-variant="heading"]) { font-weight: var(--font-weight-semibold); letter-spacing: var(--letter-spacing-display); text-wrap: balance; }
+.text[data-variant="display"] { font-size: var(--font-size-7xl); line-height: var(--line-height-display); }
+.text[data-variant="title"] { font-size: var(--font-size-6xl); line-height: var(--line-height-display); overflow-wrap: break-word; }
+.text[data-variant="heading"] { font-size: var(--font-size-5xl); line-height: var(--line-height-tight); }
+.text[data-variant="lead"] { max-width: var(--measure); color: var(--color-text-secondary); font-size: var(--font-size-2xl); line-height: var(--line-height-normal); text-wrap: pretty; }
+.text[data-variant="eyebrow"] { color: var(--color-text-secondary); font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-tight) var(--font-family-mono); letter-spacing: var(--letter-spacing-label); text-transform: uppercase; }
+@media (max-width: 640px) {
+  .text[data-variant="display"] { font-size: var(--font-size-5xl); }
+  .text[data-variant="title"] { font-size: var(--font-size-5xl); }
+  .text[data-variant="heading"] { font-size: var(--font-size-4xl); }
+}
+
+/* Prose: long-form reading. 18 px text on a 1.7 line, one measure wide; headings, lists, inline code and links inside. */
+.prose { display: flex; flex-direction: column; gap: var(--spacing-3xl); min-width: 0; max-width: var(--measure); color: var(--color-text-primary); font-size: var(--font-size-2xl); line-height: var(--line-height-reading); }
+.prose > section { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+.prose :is(h2, h3, p, ul, ol) { margin: 0; }
+.prose h2 { font-size: var(--font-size-4xl); line-height: var(--line-height-tight); letter-spacing: var(--letter-spacing-display); font-weight: var(--font-weight-semibold); }
+.prose h3 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); }
+.prose :is(ul, ol):not([class]) { display: flex; flex-direction: column; gap: var(--spacing-sm); padding-left: var(--spacing-xl); }
+.prose a:not([class]) { color: inherit; text-decoration: underline var(--stroke-width-subtle) var(--color-accent); text-underline-offset: 3px; }
+.prose a:not([class]):hover { color: var(--color-accent); }
+.prose :not(pre) > code { padding: 0 var(--spacing-xs); border-radius: var(--radius-xs); background: var(--color-surface-sunken); font-family: var(--font-family-mono); font-size: 0.85em; }
+@media (max-width: 640px) { .prose { font-size: var(--font-size-xl); } }
+
+/* Code: a block of code. Mono, scrolls sideways rather than wrapping. Two tones only: comments quiet, keywords strong. */
+.code { margin: 0; padding: var(--spacing-lg) var(--spacing-xl); overflow-x: auto; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); color: var(--color-text-primary); font: var(--font-size-md)/var(--line-height-normal) var(--font-family-mono); tab-size: 2; }
+.code code { padding: 0; background: none; font: inherit; }
+.code__comment { color: var(--color-text-secondary); }
+.code__keyword { font-weight: var(--font-weight-semibold); }
+
+/* Quote: a pull quote with its source, set off by an ink rule. */
+.quote { display: flex; flex-direction: column; gap: var(--spacing-md); margin: 0; padding-left: var(--spacing-xl); border-left: calc(var(--stroke-width-subtle) * 2) solid var(--color-ink); }
+.quote p { margin: 0; font-size: var(--font-size-4xl); line-height: var(--line-height-tight); letter-spacing: var(--letter-spacing-display); font-weight: var(--font-weight-medium); text-wrap: balance; }
+.quote footer { color: var(--color-text-secondary); font-size: var(--font-size-md); }
+
+/* Media: an image or a screenshot in a frame, at a fixed ratio (--ratio, 16 / 10 by default), with an optional caption.
+   The frame holds an <img> or a placeholder drawn with real elements, so Copy to Figma keeps it. */
+.media { display: flex; flex-direction: column; gap: var(--spacing-sm); margin: 0; }
+.media__frame { display: flex; align-items: center; justify-content: center; aspect-ratio: var(--ratio, 16 / 10); overflow: hidden; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-sunken); color: var(--color-text-secondary); }
+.media__frame > img { width: 100%; height: 100%; object-fit: cover; }
+.media__caption { color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+
+/* Site nav: a website's horizontal navigation. The current page carries aria-current="page" and an accent underline. */
+.site-nav { display: flex; align-items: center; gap: var(--spacing-xs); }
+.site-nav__link { display: inline-flex; align-items: center; height: var(--control-height); padding: 0 var(--spacing-md); border-radius: var(--radius-sm); color: var(--color-text-secondary); font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-family); text-decoration: none; transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
+.site-nav__link:hover, .site-nav__link[data-force="hover"] { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.site-nav__link:focus-visible { outline: 0; box-shadow: 0 0 0 var(--stroke-width-mid) var(--color-accent); }
+.site-nav__link[aria-current="page"] { color: var(--color-text-primary); text-decoration: underline var(--stroke-width-mid) var(--color-accent); text-underline-offset: var(--spacing-sm); }
+
+
+/* Touch: targets that cannot grow in place keep their look and get a slot or a hit area of --control-height. */
+@media (pointer: coarse) {
+  .pagination { --slot: max(var(--control-height), calc(var(--digits, 1) * 1ch + var(--spacing-lg) + 2 * var(--stroke-width-subtle))); }
+  .cite, .tag-input__remove { position: relative; }
+  .cite::after, .tag-input__remove::after {
+    content: ""; position: absolute; top: 50%; left: 50%;
+    width: var(--control-height); height: var(--control-height); transform: translate(-50%, -50%);
+  }
+}

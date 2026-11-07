@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "protopass",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["kit/serve.mjs", "8000"],
+      "port": 8000
+    }
+  ]
+}

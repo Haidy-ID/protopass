@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Tag matches kit/VERSION
+        run: test "$GITHUB_REF_NAME" = "v$(cat kit/VERSION)"
+      - name: Scripts, JSON and topics
+        run: node kit/skills/build-mockup/check-all.mjs
+      - name: Server, updater and validator
+        run: node --test kit/*.test.mjs kit/skills/build-mockup/*.test.mjs
+      # An allowlist: a file added at the root stays out of the workshop until it is named here.
+      - name: Workshop archive
+        run: git archive --prefix=protopass/ -o protopass.tar.gz HEAD .claude .gitignore AGENTS.md CLAUDE.md LICENSE index.html kit protopass.json prototypes
+      - name: Notes from the changelog
+        run: awk -v v="${GITHUB_REF_NAME#v}" '/^## /{on = index($0, "## " v " ") == 1; next} on' CHANGELOG.md > notes.md
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" protopass.tar.gz --title "$GITHUB_REF_NAME" --notes-file notes.md

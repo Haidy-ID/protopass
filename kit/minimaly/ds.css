@@ -1,0 +1,3 @@
+/* Minimaly entry point: the only file a page imports. */
+@import "tokens.css";
+@import "components.css";

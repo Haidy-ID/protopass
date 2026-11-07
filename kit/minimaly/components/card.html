@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">default</span><span class="col">accent</span>
+    <span class="row">Card</span>
+    <div class="card" style="width: 320px"><div class="card__head"><h3 class="card__title">Work order</h3><span class="card__tag">Draft</span><button class="btn" data-variant="icon" aria-label="More"><i class="icon" data-icon="dots-three"></i></button></div><div class="card__body">Replace IDG oil filter before next departure.</div></div><div class="card" data-variant="accent" style="width: 320px"><div class="card__head"><h3 class="card__title">Work order</h3><span class="card__tag">Draft</span><button class="btn" data-variant="icon" aria-label="More"><i class="icon" data-icon="dots-three"></i></button></div><div class="card__body">Replace IDG oil filter before next departure.</div></div>
+    <span class="row">With foot</span>
+    <div class="card" style="width: 320px"><div class="card__head"><h3 class="card__title">Plan</h3><span class="card__tag">3 files</span></div><div class="card__body">Use ink buttons and keep coral for the logo.</div><div class="card__foot"><span class="card__note">Waiting for you</span><button class="btn">Reject</button><button class="btn" data-variant="primary">Apply</button></div></div>
+    <span></span>
+    <span class="row">Link</span>
+    <a class="card" href="#" style="width: 320px"><div class="card__body"><b>Fieldnote</b><p style="margin: 4px 0 0; color: var(--color-text-secondary)">Offline notes for field researchers.</p></div></a>
+    <a class="card" href="#" data-force="hover" style="width: 320px"><div class="card__body"><b>Fieldnote</b><p style="margin: 4px 0 0; color: var(--color-text-secondary)">Hover: it lifts.</p></div></a>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- Free prototype: any structure, any design system. Replace this folder with your own. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick capture</title>
+  <link rel="stylesheet" href="../../../kit/minimaly/ds.css">
+  <style>
+    body { display: grid; place-items: center; height: 100vh; margin: 0; background: var(--color-surface); color: var(--color-text-primary); font-family: var(--font-family); }
+    main { display: flex; flex-direction: column; gap: var(--spacing-md); width: 320px; }
+    h1 { margin: 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); }
+    .input { width: 100%; }
+    ul { margin: 0; padding: 0; list-style: none; color: var(--color-text-secondary); }
+    li { padding: var(--spacing-sm) 0; border-bottom: 1px solid var(--color-border); }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Quick capture</h1>
+    <form id="form"><label class="input"><input id="idea" placeholder="An idea…" aria-label="Idea"></label></form>
+    <ul id="ideas"></ul>
+  </main>
+  <script>
+    document.getElementById("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("idea");
+      if (!input.value.trim()) return;
+      document.getElementById("ideas").prepend(Object.assign(document.createElement("li"), { textContent: input.value.trim() }));
+      input.value = "";
+    });
+  </script>
+  <script src="../../../kit/minimaly/ds.js"></script>
+</body>
+</html>

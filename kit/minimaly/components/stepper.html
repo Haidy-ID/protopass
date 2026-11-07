@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stepper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Stages</span>
+    <span class="row">Start</span>
+    <ol class="stepper" aria-label="Loan application" style="width: 420px">
+      <li data-state="current" aria-current="step"><span class="stepper__status">In progress</span><span class="stepper__label">Application</span></li>
+      <li><span class="stepper__status">Not started</span><span class="stepper__label">Set up</span></li>
+      <li><span class="stepper__status">Not started</span><span class="stepper__label">Approval</span></li>
+    </ol>
+    <span class="row">Middle</span>
+    <ol class="stepper" aria-label="Loan application" style="width: 420px">
+      <li data-state="done"><span class="stepper__status">Completed</span><span class="stepper__label">Application</span></li>
+      <li data-state="current" aria-current="step"><span class="stepper__status">In progress</span><span class="stepper__label">Set up</span></li>
+      <li><span class="stepper__status">Not started</span><span class="stepper__label">Approval</span></li>
+    </ol>
+    <span class="row">Done</span>
+    <ol class="stepper" aria-label="Loan application" style="width: 420px">
+      <li data-state="done"><span class="stepper__status">Completed</span><span class="stepper__label">Application</span></li>
+      <li data-state="done"><span class="stepper__status">Completed</span><span class="stepper__label">Set up</span></li>
+      <li data-state="done"><span class="stepper__status">Completed</span><span class="stepper__label">Approval</span></li>
+    </ol>
+    <span class="row">Live: plays on its own</span>
+    <ol class="stepper" id="live" aria-label="Loan application" style="width: 420px">
+      <li data-state="current" aria-current="step"><span class="stepper__status">In progress</span><span class="stepper__label">Application</span></li>
+      <li><span class="stepper__status">Not started</span><span class="stepper__label">Set up</span></li>
+      <li><span class="stepper__status">Not started</span><span class="stepper__label">Approval</span></li>
+    </ol>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: the page sets data-state, aria-current and the status words. The run plays, holds, then starts over.
+    const live = document.getElementById("live");
+    const show = (at) => [...live.children].forEach((li, i) => {
+      const state = i < at ? "done" : i === at ? "current" : null;
+      if ((li.dataset.state || null) === state) return;
+      state ? (li.dataset.state = state) : li.removeAttribute("data-state");
+      state === "current" ? li.setAttribute("aria-current", "step") : li.removeAttribute("aria-current");
+      li.querySelector(".stepper__status").textContent = state === "done" ? "Completed" : state === "current" ? "In progress" : "Not started";
+    });
+    let at = 0;
+    const tick = () => {
+      at = (at + 1) % 4;
+      show(at);
+      setTimeout(tick, at === 3 ? 3000 : 1600);
+    };
+    show(0);
+    setTimeout(tick, 1600);
+  </script>
+</body>
+</html>

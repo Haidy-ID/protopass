@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Rich editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">Empty</span><span class="col">Filled</span>
+    <span class="row">Counter</span>
+    <div class="rich-editor" style="width: 340px" data-max="2000" data-hint="Markdown shortcuts supported" data-placeholder="Write guideline notes…" aria-label="Guideline notes"></div>
+    <div class="rich-editor" style="width: 340px" data-max="2000" data-hint="Markdown shortcuts supported" data-placeholder="Write guideline notes…" aria-label="Guideline notes"><div>Loans need a <b>return date</b> unless marked <i>open</i>.</div><ul><li>Remind the borrower <u>two days</u> before</li><li>See the <a href="https://example.com/policy">lending policy</a></li></ul></div>
+    <span class="row">Full, hover</span>
+    <div class="rich-editor" style="width: 340px" data-max="40" data-hint="Markdown shortcuts supported" aria-label="Guideline notes"><div>Forty characters here, not a single more</div></div>
+    <div class="rich-editor" style="width: 340px" data-force="hover" data-placeholder="Write guideline notes…" aria-label="Guideline notes"></div>
+    <span class="row">Invalid, disabled</span>
+    <div class="field" style="width: 340px" data-invalid><label class="field__label">Guideline notes <span class="field__required" aria-hidden="true">*</span></label><div class="rich-editor" data-placeholder="Write guideline notes…"></div><p class="field__hint">Shown to every borrower.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>Notes are required.</p></div>
+    <div class="rich-editor" style="width: 340px" aria-disabled="true" data-max="2000" aria-label="Guideline notes"><div>Loans need a <b>return date</b> unless marked <i>open</i>.</div></div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

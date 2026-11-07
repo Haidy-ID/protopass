@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Field</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Default</span><span class="col">Invalid</span><span class="col">Disabled</span>
+    <span class="row">Text</span>
+    <div class="field" style="width: 220px"><label class="field__label">Project name <span class="field__required" aria-hidden="true">*</span></label><label class="input"><input placeholder="Atlas"></label><p class="field__hint">Shown on the home page.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>A name is required.</p></div>
+    <div class="field" style="width: 220px" data-invalid><label class="field__label">Project name <span class="field__required" aria-hidden="true">*</span></label><label class="input"><input placeholder="Atlas"></label><p class="field__hint">Shown on the home page.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>A name is required.</p></div>
+    <div class="field" style="width: 220px"><label class="field__label">Project name <span class="field__optional">Optional</span></label><label class="input"><input value="Atlas" disabled></label><p class="field__hint">Shown on the home page.</p></div>
+    <span class="row">Choices</span>
+    <div class="field" role="group" aria-labelledby="notify"><span class="field__label" id="notify">Notify me</span><div class="field__choices"><label class="checkbox"><input type="checkbox" checked><span class="checkbox__box"></span>New comments</label><label class="checkbox"><input type="checkbox"><span class="checkbox__box"></span>Status changes</label></div></div>
+    <div class="field" role="radiogroup" aria-labelledby="size" data-invalid><span class="field__label" id="size">Size</span><div class="field__choices" data-variant="row"><label class="radio"><input type="radio" name="s1"><span class="radio__dot"></span>Small</label><label class="radio"><input type="radio" name="s1"><span class="radio__dot"></span>Large</label></div><p class="field__error"><i class="icon" data-icon="warning-circle"></i>Pick a size.</p></div>
+    <span></span>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

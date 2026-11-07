@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Radio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 4">
+    <span></span><span class="col">Default</span><span class="col">Hover</span><span class="col">Checked</span><span class="col">Disabled</span>
+    <span class="row">Radio</span>
+    <label class="radio"><input type="radio" name="a"><span class="radio__dot"></span>Monthly</label>
+    <label class="radio" data-force="hover"><input type="radio" name="b"><span class="radio__dot"></span>Monthly</label>
+    <label class="radio"><input type="radio" name="c" checked><span class="radio__dot"></span>Yearly</label>
+    <label class="radio"><input type="radio" name="d" checked disabled><span class="radio__dot"></span>Yearly</label>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

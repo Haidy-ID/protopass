@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Carousel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Arrows in the head, cards scroll sideways (trackpad, swipe, arrow keys once focused)</span>
+    <span class="row">Carousel</span>
+    <div style="width: 640px; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; align-items: center; justify-content: space-between"><b>Latest writing</b><span class="carousel__controls"><button class="btn" data-variant="icon" data-carousel="prev" aria-controls="posts" aria-label="Previous articles" data-tip="Previous"><i class="icon" data-icon="arrow-left"></i></button><button class="btn" data-variant="icon" data-carousel="next" aria-controls="posts" aria-label="Next articles" data-tip="Next"><i class="icon" data-icon="arrow-right"></i></button></span></div>
+      <ul class="carousel" id="posts" aria-label="Latest writing" style="--carousel-item: 220px"><li><a class="card" href="#"><div class="card__body" style="display: flex; flex-direction: column; gap: 8px; min-height: 120px"><span class="badge">SEP 2026</span><b>Offline-first forms without a framework</b><span style="margin-top: auto; color: var(--color-text-secondary)">11 min read</span></div></a></li><li><a class="card" href="#"><div class="card__body" style="display: flex; flex-direction: column; gap: 8px; min-height: 120px"><span class="badge">JUL 2026</span><b>Design the error state first</b><span style="margin-top: auto; color: var(--color-text-secondary)">6 min read</span></div></a></li><li><a class="card" href="#"><div class="card__body" style="display: flex; flex-direction: column; gap: 8px; min-height: 120px"><span class="badge">MAY 2026</span><b>Tokens are an API: version them like one</b><span style="margin-top: auto; color: var(--color-text-secondary)">8 min read</span></div></a></li><li><a class="card" href="#"><div class="card__body" style="display: flex; flex-direction: column; gap: 8px; min-height: 120px"><span class="badge">MAR 2026</span><b>A spring is two numbers</b><span style="margin-top: auto; color: var(--color-text-secondary)">5 min read</span></div></a></li><li><a class="card" href="#"><div class="card__body" style="display: flex; flex-direction: column; gap: 8px; min-height: 120px"><span class="badge">JAN 2026</span><b>Why I prototype in the browser</b><span style="margin-top: auto; color: var(--color-text-secondary)">4 min read</span></div></a></li><li><a class="card" href="#"><div class="card__body" style="display: flex; flex-direction: column; gap: 8px; min-height: 120px"><span class="badge">NOV 2025</span><b>Contrast checks belong before launch</b><span style="margin-top: auto; color: var(--color-text-secondary)">5 min read</span></div></a></li></ul>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

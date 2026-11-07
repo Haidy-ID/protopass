@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Input</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Empty</span><span class="col">Filled</span><span class="col">Focus or other</span>
+    <span class="row">Default</span>
+    <label class="input" style="width: 220px"><input placeholder="Project name"></label>
+    <label class="input" style="width: 220px"><input value="Atlas"></label>
+    <label class="input" style="width: 220px"><input id="focus" value="Atl"></label>
+    <span class="row">Search</span>
+    <label class="input" style="width: 220px"><i class="icon" data-icon="magnifying-glass"></i><input type="search" placeholder="Search topics"></label>
+    <label class="input" style="width: 220px"><i class="icon" data-icon="magnifying-glass"></i><input type="search" value="loan"></label>
+    <span></span>
+    <span class="row">Add-ons</span>
+    <label class="input" style="width: 220px"><span class="input__addon">$</span><input inputmode="decimal" placeholder="0" aria-label="Amount"><span class="input__addon">USD</span></label>
+    <label class="input" style="width: 220px"><span class="input__addon">$</span><input inputmode="decimal" value="420,000" aria-label="Amount"><span class="input__addon">USD</span></label>
+    <label class="input" style="width: 220px"><span class="input__addon">https://</span><input value="atlas.app" aria-label="Address"></label>
+    <span class="row">Action</span>
+    <label class="input" style="width: 220px"><input placeholder="Code" aria-label="Promo code"><button class="btn" type="button">Apply</button></label>
+    <label class="input" style="width: 220px"><input value="SPRING25" aria-label="Promo code"><button class="btn" type="button" data-variant="primary">Apply</button></label>
+    <span></span>
+    <span class="row">Number: arrows, ↑ ↓</span>
+    <label class="input" style="width: 160px"><input type="number" value="0" min="0" max="10" aria-label="Guests"><span class="input__stepper"><button type="button" data-step="up" tabindex="-1" aria-hidden="true"><i class="icon" data-icon="caret-up"></i></button><button type="button" data-step="down" tabindex="-1" aria-hidden="true"><i class="icon" data-icon="caret-down"></i></button></span></label>
+    <label class="input" style="width: 160px"><input type="number" value="3" min="0" max="10" aria-label="Guests"><span class="input__stepper"><button type="button" data-step="up" tabindex="-1" aria-hidden="true" data-force="hover"><i class="icon" data-icon="caret-up"></i></button><button type="button" data-step="down" tabindex="-1" aria-hidden="true"><i class="icon" data-icon="caret-down"></i></button></span></label>
+    <span></span>
+  </div>
+  <script>document.getElementById("focus").focus();</script>
+  <script src="../ds.js"></script>
+</body>
+</html>

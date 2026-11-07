@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tabs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Live: click or use the arrows</span>
+    <span class="row">Tabs</span>
+    <div style="width: 420px">
+      <div class="tabs" role="tablist" aria-label="Project">
+        <button class="tabs__tab" role="tab" id="t-overview" aria-controls="p-overview" aria-selected="true">Overview<span class="tabs__count">32</span></button>
+        <button class="tabs__tab" role="tab" id="t-activity" aria-controls="p-activity"><i class="icon" data-icon="clock"></i>Activity</button>
+        <button class="tabs__tab" role="tab" id="t-settings" aria-controls="p-settings">Settings<span class="tabs__count">4</span></button>
+        <button class="tabs__tab" role="tab" id="t-archive" aria-controls="p-archive" disabled>Archive</button>
+      </div>
+      <div class="tabs__panel" role="tabpanel" id="p-overview" aria-labelledby="t-overview">Three open tasks, one due today.</div>
+      <div class="tabs__panel" role="tabpanel" id="p-activity" aria-labelledby="t-activity">Last change two hours ago.</div>
+      <div class="tabs__panel" role="tabpanel" id="p-settings" aria-labelledby="t-settings">Notifications are on.</div>
+      <div class="tabs__panel" role="tabpanel" id="p-archive" aria-labelledby="t-archive">Nothing archived.</div>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

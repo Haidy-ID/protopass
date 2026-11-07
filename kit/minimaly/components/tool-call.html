@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tool call</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Running</span><span class="col">Done</span><span class="col">Failed</span>
+    <span class="row">Tool call</span>
+    <details class="tool-call" data-state="running" style="width: 220px"><summary><i class="icon tool-call__icon" data-icon="globe"></i><span class="tool-call__name">Searching the web</span><span class="tool-call__target">loan return policy</span></summary><pre class="tool-call__result">…</pre></details>
+    <details class="tool-call" data-state="done" style="width: 220px"><summary><i class="icon tool-call__icon" data-icon="file-text"></i><span class="tool-call__name">Read 12 documents</span><span class="tool-call__target">loans/2026/*.pdf</span></summary><pre class="tool-call__result">12 files, 48 pages read.</pre></details>
+    <details class="tool-call" data-state="failed" style="width: 220px"><summary><i class="icon tool-call__icon" data-icon="database"></i><span class="tool-call__name">Query failed</span><span class="tool-call__target">SELECT * FROM loans</span></summary><pre class="tool-call__result">Timeout after 30 s: the loans table is locked.</pre></details>
+    <span class="row">Open, hover</span>
+    <details class="tool-call" data-state="done" open style="width: 220px"><summary><i class="icon tool-call__icon" data-icon="file-text"></i><span class="tool-call__name">Read 12 documents</span><span class="tool-call__target">loans/2026/*.pdf</span></summary><pre class="tool-call__result">12 files, 48 pages read.
+Oldest open loan: 3 March.</pre></details>
+    <details class="tool-call" data-state="failed" open style="width: 220px"><summary><i class="icon tool-call__icon" data-icon="database"></i><span class="tool-call__name">Query failed</span><span class="tool-call__target">SELECT * FROM loans</span></summary><pre class="tool-call__result">Timeout after 30 s: the loans table is locked.</pre></details>
+    <details class="tool-call" data-state="done" style="width: 220px"><summary data-force="hover"><i class="icon tool-call__icon" data-icon="globe"></i><span class="tool-call__name">Searched the web</span><span class="tool-call__target">loan return policy</span></summary><pre class="tool-call__result">5 results.</pre></details>
+    <span class="row">Live: runs, then ends</span>
+    <div style="display: flex; flex-direction: column; gap: 8px; width: 220px"><details class="tool-call" id="live" data-state="running" style="width: 220px"><summary><i class="icon tool-call__icon" data-icon="globe"></i><span class="tool-call__name">Searching the web</span><span class="tool-call__target">loan return policy</span></summary><pre class="tool-call__result">5 results.</pre></details><span><button class="btn" id="ok">Run, succeed</button> <button class="btn" id="ko">Run, fail</button></span></div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: the page only flips data-state.
+    const live = document.getElementById("live");
+    const run = (end) => { live.dataset.state = "running"; setTimeout(() => (live.dataset.state = end), 1500); };
+    document.getElementById("ok").onclick = () => run("done");
+    document.getElementById("ko").onclick = () => run("failed");
+    run("done");
+  </script>
+</body>
+</html>

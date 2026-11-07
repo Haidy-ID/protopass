@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Table</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Live: click a header three times</span>
+    <span class="row">Sortable</span>
+    <table class="table" data-sortable aria-label="Tasks" style="width: 520px">
+      <thead><tr><th>Task</th><th>Owner</th><th data-align="end">Hours</th><th data-sort="false">Status</th></tr></thead>
+      <tbody>
+        <tr><td>Write the summary</td><td>Ada</td><td data-align="end">12</td><td><span class="badge" data-variant="warning">OPEN</span></td></tr>
+        <tr><td>Check the numbers</td><td>Grace</td><td data-align="end">4</td><td><span class="badge" data-variant="success">DONE</span></td></tr>
+        <tr><td>Budget table</td><td>Alan</td><td data-align="end">1,240</td><td><span class="badge">LATER</span></td></tr>
+        <tr><td>Read the sources</td><td>Barbara</td><td data-align="end">7.5</td><td><span class="badge" data-variant="success">DONE</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

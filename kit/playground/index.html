@@ -1,0 +1,87 @@
+<!doctype html>
+<!-- Component playground: ?ds=<DesignSystem>#<component>. Reads <ds>/components.json, shows the specimen and its card.
+     Minimaly ships with the kit; other design systems come from protopass.json → designSystems. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="playground.css">
+</head>
+<body>
+  <header class="bar">
+    <span class="bar__start">
+      <span class="bar__trail"><a class="brand" id="brand" href="../../" data-tip="Back to home"></a><nav class="breadcrumb" aria-label="Breadcrumb"><span class="breadcrumb__sep">/</span><span aria-current="page">Components</span></nav></span>
+      <label class="select" data-tip="Design system whose components are shown"><span class="select__label">Design system</span><select id="ds"></select><i class="icon select__icon" data-icon="caret-down"></i></label><a class="btn" data-variant="ghost" id="check" href="check.html" data-tip="Load every specimen in light and dark and list what breaks"><i class="icon" data-icon="list-checks"></i>Check all</a><a class="btn" data-variant="ghost" id="tokens" href="tokens.html" data-tip="Every role in light and dark, with its use and contrast"><i class="icon" data-icon="swatches"></i>Tokens</a>
+    </span>
+    <span class="segmented" role="group" aria-label="Theme"><button class="btn" data-theme="light" aria-pressed="true" data-tip="Show the components in light mode">Light</button><button class="btn" data-theme="dark" aria-pressed="false" data-tip="Show the components in dark mode">Dark</button></span>
+  </header>
+  <div class="layout">
+    <nav id="nav"></nav>
+    <main>
+      <h1 id="name"></h1>
+      <p class="meta" id="meta"></p>
+      <p class="meta" id="used"></p>
+      <iframe id="specimen" title="Specimen"></iframe>
+      <pre id="card"></pre>
+    </main>
+  </div>
+  <script>
+    (async () => {
+      const get = (url) => fetch(url, { cache: "no-store" }).then((r) => r.json());
+      const ROOT = new URL("../../", location.href);
+      const site = await get(new URL("protopass.json", ROOT));
+      const BASES = { Minimaly: new URL("../minimaly/", location.href), ...Object.fromEntries(Object.entries(site.designSystems || {}).map(([name, path]) => [name, new URL(path.replace(/\/?$/, "/"), ROOT)])) };
+      const DESIGN_SYSTEMS = Object.keys(BASES);
+      const asked = new URLSearchParams(location.search).get("ds");
+      const ds = DESIGN_SYSTEMS.includes(asked) ? asked : DESIGN_SYSTEMS[0];
+      const base = BASES[ds];
+      const list = await get(new URL("components.json", base));
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      document.head.append(Object.assign(document.createElement("link"), { rel: "icon", href: new URL("kit/favicon.svg", ROOT) }));
+      $("brand").innerHTML = `<i class="brand__mark"></i><b>Protopass</b>`;
+      const frame = $("specimen");
+      let theme = "light";
+      $("ds").innerHTML = DESIGN_SYSTEMS.map((d) => `<option${d === ds ? " selected" : ""}>${d}</option>`).join("");
+      $("ds").addEventListener("change", (e) => { location.search = `?ds=${encodeURIComponent(e.target.value)}`; });
+      document.title = `${ds} · Components`;
+      $("check").href = `check.html?ds=${encodeURIComponent(ds)}`;
+      $("tokens").href = `tokens.html?ds=${encodeURIComponent(ds)}`;
+      $("nav").innerHTML = list.map((c) => `<a href="#${c.id}">${c.name}</a>`).join("");
+      // Every topic of every group, to show where a component is used (topic.json → ds and components).
+      const topics = (await Promise.all(site.groups.map(async (g) => {
+        const groupUrl = new URL(`${g.path}/`, ROOT);
+        return Promise.all((await get(new URL("topics.json", groupUrl))).map(async (p) => ({ ...(await get(new URL(`${p}/topic.json`, groupUrl))), url: new URL(`${p}/`, groupUrl) })));
+      }))).flat();
+
+      const applyTheme = () => { try { frame.contentDocument.documentElement.dataset.theme = theme; } catch {} };
+      // Follow the specimen's height, fonts and theme changes included.
+      const fit = new ResizeObserver(() => { frame.style.height = "0"; frame.style.height = `${frame.contentDocument.documentElement.scrollHeight}px`; });
+      frame.addEventListener("load", () => { applyTheme(); fit.disconnect(); fit.observe(frame.contentDocument.body); });
+
+      const show = async () => {
+        const c = list.find((x) => x.id === location.hash.slice(1)) || list[0];
+        document.querySelectorAll("#nav a").forEach((a) => a.setAttribute("aria-current", a.hash === `#${c.id}`));
+        $("nav").querySelector('[aria-current="true"]')?.scrollIntoView({ block: "nearest" });
+        $("name").textContent = c.name;
+        $("meta").textContent = `Variants: ${c.variants.join(", ")} · States: ${c.states.join(", ")}`;
+        const users = topics.filter((t) => (t.ds || "Minimaly") === ds && t.components?.includes(c.id));
+        $("used").innerHTML = users.length ? `Used in: ${users.map((t) => `<a href="${t.url}">${esc(t.title)}</a>`).join(", ")}` : "Not used by any topic yet.";
+        frame.src = `${base}components/${c.id}.html`;
+        $("card").textContent = await fetch(`${base}catalog/${c.id}.md`, { cache: "no-store" }).then((r) => (r.ok ? r.text() : ""));
+      };
+      document.querySelectorAll("[data-theme]").forEach((b) => b.addEventListener("click", () => {
+        theme = b.dataset.theme;
+        document.querySelectorAll("[data-theme]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+        applyTheme();
+      }));
+      addEventListener("hashchange", show);
+      show();
+    })();
+  </script>
+  <script src="../minimaly/ds.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Dropzone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Default</span><span class="col">Hover</span><span class="col">Files over it</span>
+    <span class="row">Dropzone</span>
+    <label class="dropzone" style="width: 220px"><input type="file" multiple accept=".pdf,.png,.jpg,image/jpeg"><span class="dropzone__icon"><i class="icon" data-icon="upload-simple"></i></span><span class="dropzone__title">Drop files here or <span class="dropzone__browse">browse</span></span><span class="dropzone__hint">PDF, PNG or JPG · up to 25 MB</span></label>
+    <label class="dropzone" data-force="hover" style="width: 220px"><input type="file" multiple accept=".pdf,.png,.jpg,image/jpeg"><span class="dropzone__icon"><i class="icon" data-icon="upload-simple"></i></span><span class="dropzone__title">Drop files here or <span class="dropzone__browse">browse</span></span><span class="dropzone__hint">PDF, PNG or JPG · up to 25 MB</span></label>
+    <label class="dropzone" data-over style="width: 220px"><input type="file" multiple accept=".pdf,.png,.jpg,image/jpeg"><span class="dropzone__icon"><i class="icon" data-icon="upload-simple"></i></span><span class="dropzone__title">Drop files here or <span class="dropzone__browse">browse</span></span><span class="dropzone__hint">PDF, PNG or JPG · up to 25 MB</span></label>
+    <span class="row">Refused, disabled</span>
+    <label class="dropzone" data-invalid style="width: 220px"><input type="file" multiple accept=".pdf,.png,.jpg,image/jpeg"><span class="dropzone__icon"><i class="icon" data-icon="upload-simple"></i></span><span class="dropzone__title">Drop files here or <span class="dropzone__browse">browse</span></span><span class="dropzone__hint">Only PDF, PNG or JPG up to 25 MB</span></label>
+    <label class="dropzone" style="width: 220px"><input type="file" multiple accept=".pdf,.png,.jpg,image/jpeg" disabled><span class="dropzone__icon"><i class="icon" data-icon="upload-simple"></i></span><span class="dropzone__title">Drop files here or <span class="dropzone__browse">browse</span></span><span class="dropzone__hint">Uploads are paused</span></label>
+    <span></span>
+    <span class="row">Live: drop or browse</span>
+    <div style="display: flex; flex-direction: column; gap: 8px; width: 220px"><label class="dropzone" id="live" data-max-mb="25" style="width: 220px"><input type="file" multiple accept=".pdf,.png,.jpg,image/jpeg"><span class="dropzone__icon"><i class="icon" data-icon="upload-simple"></i></span><span class="dropzone__title">Drop files here or <span class="dropzone__browse">browse</span></span><span class="dropzone__hint">PDF, PNG or JPG · up to 25 MB</span></label><ul class="list" id="picked" aria-label="Picked files"></ul></div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: list what was accepted.
+    document.getElementById("live").addEventListener("files", (e) => {
+      for (const f of e.detail.files) {
+        const li = Object.assign(document.createElement("li"), { textContent: `${f.name} · ${Math.max(1, Math.round(f.size / 1024))} KB` });
+        li.style.font = "var(--font-size-xs) var(--font-family-mono)";
+        document.getElementById("picked").append(li);
+      }
+    });
+  </script>
+</body>
+</html>

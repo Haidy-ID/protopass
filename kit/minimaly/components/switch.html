@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Switch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Off</span><span class="col">On</span><span class="col">Disabled</span>
+    <span class="row">Switch</span>
+    <label class="switch"><input type="checkbox" role="switch"><span class="switch__track"><span class="switch__thumb"></span></span>Dark mode</label>
+    <label class="switch"><input type="checkbox" role="switch" checked><span class="switch__track"><span class="switch__thumb"></span></span>Dark mode</label>
+    <label class="switch"><input type="checkbox" role="switch" checked disabled><span class="switch__track"><span class="switch__thumb"></span></span>Dark mode</label>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

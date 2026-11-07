@@ -1,0 +1,60 @@
+<!doctype html>
+<!-- Reader for a Markdown deliverable of a topic: doc.html?topic=<topic folder from the root>&file=<file in the topic>.
+     [label](screen:<id>) or [label](screen:<id>:<state>) opens that screen in the topic's prototype. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body class="landing">
+  <header class="topbar"><span class="topbar__start"><a class="brand" id="brand" href="../" data-tip="Back to home"></a><nav class="breadcrumb" aria-label="Breadcrumb"><span class="breadcrumb__sep">/</span><a id="crumb-topic"></a><span class="breadcrumb__sep">/</span><span aria-current="page" id="crumb-doc"></span></nav></span></header>
+  <main class="page"><article class="md md--doc" id="doc"></article></main>
+  <script src="markdown.js"></script>
+  <script>
+    (async () => {
+      const KIT = new URL(".", location.href);
+      const ROOT = new URL("..", KIT);
+      const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const get = (url) => fetch(url, { cache: "no-store" });
+      const params = new URLSearchParams(location.search);
+      const topicUrl = new URL(params.get("topic") || "", ROOT);
+      const fileUrl = new URL(params.get("file") || "", topicUrl);
+      // Only files of this site, inside the topic folder.
+      if (!topicUrl.href.startsWith(ROOT.href) || !fileUrl.href.startsWith(topicUrl.href)) throw new Error("This document is outside the topic.");
+      const [site, topic, text] = await Promise.all([
+        get(new URL("protopass.json", ROOT)).then((r) => r.json()),
+        get(new URL("topic.json", topicUrl)).then((r) => r.json()),
+        get(fileUrl).then((r) => (r.ok ? r.text() : Promise.reject(new Error(`${params.get("file")} not found.`)))),
+      ]);
+      document.head.append(Object.assign(document.createElement("link"), { rel: "icon", href: new URL("favicon.svg", KIT) }));
+      document.getElementById("brand").innerHTML = `<i class="brand__mark"></i><b>Protopass</b>`;
+      const crumb = document.getElementById("crumb-topic");
+      crumb.href = topicUrl;
+      crumb.textContent = topic.title;
+      const name = topic.deliverables?.find((d) => d.file === params.get("file"))?.name || params.get("file");
+      document.getElementById("crumb-doc").textContent = name;
+      document.title = `${name} · ${topic.title}`;
+      // screen:<id>[:<state>] → the topic's prototype on that screen; other relative links resolve from the document.
+      const link = (href) => {
+        const m = href.match(/^screen:([\w-]+)(?::([\w-]+))?$/);
+        if (m) return `${topicUrl}?view=prototype&flow=all&at=${encodeURIComponent(`${m[1]}:${m[2] || ""}`)}`;
+        return /^https?:/i.test(href) ? href : new URL(href, fileUrl).href;
+      };
+      document.getElementById("doc").innerHTML = renderMarkdown(text, { link });
+      // The theme chosen on the topic pages, for the reader and its figures (they read html[data-theme], like screens).
+      let theme = "light";
+      try { theme = localStorage.getItem("protopass-theme") || theme; } catch {}
+      document.documentElement.dataset.theme = theme;
+      const themeFigure = (frame) => { try { frame.contentDocument.documentElement.dataset.theme = theme; } catch {} };
+      document.querySelectorAll(".md-figure iframe").forEach((frame) => { themeFigure(frame); frame.addEventListener("load", () => themeFigure(frame)); });
+      window.renderIcons?.();
+    })().catch((e) => { document.getElementById("doc").textContent = e.message; });
+  </script>
+  <script src="minimaly/ds.js"></script>
+  <script src="live.js"></script>
+</body>
+</html>

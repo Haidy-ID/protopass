@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add Loan</title>
+  <link rel="stylesheet" href="screens.css">
+</head>
+<body>
+  <h1>Add Loan</h1>
+  <div class="field" id="item-field">
+    <label class="field__label">Item <span class="field__required" aria-hidden="true">*</span></label>
+    <label class="input"><input id="item" placeholder="What are you lending?" required></label>
+    <p class="field__error"><i class="icon" data-icon="warning-circle"></i>Item is required.</p>
+  </div>
+  <div class="field">
+    <label class="field__label">Person <span class="field__required" aria-hidden="true">*</span></label>
+    <label class="input"><input id="person" placeholder="Who has it?" required></label>
+  </div>
+  <div class="field">
+    <label class="field__label">Expected return <span class="field__optional">Optional</span></label>
+    <label class="input"><input id="return" placeholder="No date"></label>
+  </div>
+  <div class="grow"></div>
+  <a class="btn" data-variant="primary" id="confirm" href="confirm.html">
+    <span data-when="default">Confirm</span>
+    <span data-when="loading">Saving…</span>
+    <span data-when="error">Confirm</span>
+  </a>
+  <script src="screens.js"></script>
+  <script>
+    // Demo values per state: loading shows a filled form, error keeps what was typed.
+    const s = document.documentElement.dataset.state;
+    if (s !== "default") document.getElementById("person").value = "Sam";
+    if (s === "loading") {
+      document.getElementById("item").value = "Drill";
+      document.querySelectorAll("input").forEach((i) => (i.disabled = true));
+      document.getElementById("confirm").setAttribute("aria-disabled", "true");
+    }
+    if (s === "error") document.getElementById("item-field").setAttribute("data-invalid", "");
+  </script>
+  <script src="../../../kit/minimaly/ds.js"></script>
+</body>
+</html>

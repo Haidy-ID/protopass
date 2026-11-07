@@ -1,0 +1,880 @@
+[
+  {
+    "id": "button",
+    "class": "btn",
+    "name": "Button",
+    "variants": [
+      "default",
+      "primary",
+      "soft",
+      "ghost",
+      "icon",
+      "large"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "pressed",
+      "disabled"
+    ]
+  },
+  {
+    "id": "badge",
+    "class": "badge",
+    "name": "Badge",
+    "variants": [
+      "neutral",
+      "critical",
+      "warning",
+      "success",
+      "accent",
+      "with icon"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "chip",
+    "class": "chip",
+    "name": "Chip",
+    "variants": [
+      "default",
+      "round",
+      "accent"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "avatar",
+    "class": "avatar",
+    "name": "Avatar",
+    "variants": [
+      "default",
+      "lg"
+    ],
+    "states": [
+      "initials",
+      "photo",
+      "stack"
+    ]
+  },
+  {
+    "id": "kbd",
+    "class": "kbd",
+    "name": "Kbd",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "card",
+    "class": "card",
+    "name": "Card",
+    "variants": [
+      "default",
+      "accent",
+      "with foot",
+      "link"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "divider",
+    "class": "divider",
+    "name": "Divider",
+    "variants": [
+      "default",
+      "quiet"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "tooltip",
+    "class": "tooltip",
+    "name": "Tooltip",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "popover",
+    "class": "popover",
+    "name": "Popover",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "icon",
+    "class": "icon",
+    "name": "Icon",
+    "variants": [
+      "regular",
+      "bold",
+      "fill",
+      "light",
+      "thin",
+      "duotone"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "input",
+    "class": "input",
+    "name": "Input",
+    "variants": [
+      "default",
+      "search",
+      "add-ons",
+      "action",
+      "number"
+    ],
+    "states": [
+      "empty",
+      "filled",
+      "focus"
+    ]
+  },
+  {
+    "id": "select",
+    "class": "select",
+    "name": "Select",
+    "variants": [
+      "default",
+      "labelled"
+    ],
+    "states": [
+      "default",
+      "focus"
+    ]
+  },
+  {
+    "id": "segmented",
+    "class": "segmented",
+    "name": "Segmented",
+    "variants": [
+      "text",
+      "icon",
+      "count"
+    ],
+    "states": [
+      "default",
+      "hover"
+    ]
+  },
+  {
+    "id": "breadcrumb",
+    "class": "breadcrumb",
+    "name": "Breadcrumb",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "hover"
+    ]
+  },
+  {
+    "id": "accordion",
+    "class": "accordion",
+    "name": "Accordion",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "closed",
+      "open",
+      "hover"
+    ]
+  },
+  {
+    "id": "async-button",
+    "class": "btn",
+    "name": "Async button",
+    "variants": [
+      "default",
+      "primary",
+      "copy"
+    ],
+    "states": [
+      "idle",
+      "busy",
+      "done",
+      "error"
+    ]
+  },
+  {
+    "id": "value",
+    "class": "value",
+    "name": "Value",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "rising",
+      "falling"
+    ]
+  },
+  {
+    "id": "skeleton",
+    "class": "skeleton",
+    "name": "Skeleton",
+    "variants": [
+      "text",
+      "block"
+    ],
+    "states": [
+      "loading"
+    ]
+  },
+  {
+    "id": "tabs",
+    "class": "tabs",
+    "name": "Tabs",
+    "variants": [
+      "default",
+      "count"
+    ],
+    "states": [
+      "selected",
+      "idle",
+      "hover",
+      "disabled"
+    ]
+  },
+  {
+    "id": "menu",
+    "class": "menu",
+    "name": "Menu",
+    "variants": [
+      "button",
+      "context"
+    ],
+    "states": [
+      "item",
+      "hover",
+      "disabled",
+      "critical"
+    ]
+  },
+  {
+    "id": "dialog",
+    "class": "modal",
+    "name": "Modal and drawer",
+    "variants": [
+      "modal",
+      "drawer"
+    ],
+    "states": [
+      "open",
+      "static"
+    ]
+  },
+  {
+    "id": "toast",
+    "class": "toast",
+    "name": "Toast",
+    "variants": [
+      "neutral",
+      "success",
+      "critical"
+    ],
+    "states": [
+      "default",
+      "with action"
+    ]
+  },
+  {
+    "id": "stream",
+    "class": "stream",
+    "name": "Streaming text",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "streaming",
+      "done"
+    ]
+  },
+  {
+    "id": "typing",
+    "class": "typing",
+    "name": "Typing",
+    "variants": [
+      "dots",
+      "label"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "steps",
+    "class": "steps",
+    "name": "Steps",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "pending",
+      "active",
+      "done",
+      "failed"
+    ]
+  },
+  {
+    "id": "progress",
+    "class": "progress",
+    "name": "Progress",
+    "variants": [
+      "known",
+      "unknown"
+    ],
+    "states": [
+      "running",
+      "done"
+    ]
+  },
+  {
+    "id": "pagination",
+    "class": "pagination",
+    "name": "Pagination",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "current",
+      "hover",
+      "disabled"
+    ]
+  },
+  {
+    "id": "table",
+    "class": "table",
+    "name": "Table",
+    "variants": [
+      "default",
+      "sortable"
+    ],
+    "states": [
+      "unsorted",
+      "ascending",
+      "descending"
+    ]
+  },
+  {
+    "id": "toc",
+    "class": "toc",
+    "name": "Table of contents",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "current"
+    ]
+  },
+  {
+    "id": "sticky-header",
+    "class": "sticky-header",
+    "name": "Sticky header",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "rest",
+      "stuck"
+    ]
+  },
+  {
+    "id": "hold-button",
+    "class": "btn",
+    "name": "Hold to confirm",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "holding",
+      "confirmed"
+    ]
+  },
+  {
+    "id": "field",
+    "class": "field",
+    "name": "Field",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "invalid",
+      "disabled"
+    ]
+  },
+  {
+    "id": "checkbox",
+    "class": "checkbox",
+    "name": "Checkbox",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "checked",
+      "indeterminate",
+      "disabled"
+    ]
+  },
+  {
+    "id": "radio",
+    "class": "radio",
+    "name": "Radio",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "checked",
+      "disabled"
+    ]
+  },
+  {
+    "id": "switch",
+    "class": "switch",
+    "name": "Switch",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "off",
+      "on",
+      "pressed",
+      "disabled"
+    ]
+  },
+  {
+    "id": "textarea",
+    "class": "textarea",
+    "name": "Textarea",
+    "variants": [
+      "default",
+      "counter",
+      "filled"
+    ],
+    "states": [
+      "empty",
+      "filled",
+      "full",
+      "focus"
+    ]
+  },
+  {
+    "id": "banner",
+    "class": "banner",
+    "name": "Banner",
+    "variants": [
+      "info",
+      "success",
+      "warning",
+      "critical"
+    ],
+    "states": [
+      "default",
+      "dismissing"
+    ]
+  },
+  {
+    "id": "empty",
+    "class": "empty",
+    "name": "Empty state",
+    "variants": [
+      "default",
+      "compact"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "list",
+    "class": "list",
+    "name": "List",
+    "variants": [
+      "plain",
+      "inset"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "current"
+    ]
+  },
+  {
+    "id": "shell",
+    "class": "shell",
+    "name": "App shell",
+    "variants": [
+      "default",
+      "with aside"
+    ],
+    "states": [
+      "expanded",
+      "collapsed"
+    ]
+  },
+  {
+    "id": "composer",
+    "class": "composer",
+    "name": "Composer",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "empty",
+      "filled",
+      "focus",
+      "busy",
+      "disabled"
+    ]
+  },
+  {
+    "id": "reasoning",
+    "class": "reasoning",
+    "name": "Reasoning",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "thinking",
+      "done",
+      "open"
+    ]
+  },
+  {
+    "id": "tool-call",
+    "class": "tool-call",
+    "name": "Tool call",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "running",
+      "done",
+      "failed",
+      "open",
+      "hover"
+    ]
+  },
+  {
+    "id": "cite",
+    "class": "cite",
+    "name": "Citation",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "hover"
+    ]
+  },
+  {
+    "id": "dropzone",
+    "class": "dropzone",
+    "name": "Dropzone",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "focus",
+      "over",
+      "refused",
+      "disabled"
+    ]
+  },
+  {
+    "id": "stepper",
+    "class": "stepper",
+    "name": "Stepper",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "to do",
+      "current",
+      "done"
+    ]
+  },
+  {
+    "id": "combobox",
+    "class": "combobox",
+    "name": "Combobox",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "closed",
+      "open",
+      "active",
+      "empty",
+      "picked"
+    ]
+  },
+  {
+    "id": "rich-editor",
+    "class": "rich-editor",
+    "name": "Rich editor",
+    "variants": [
+      "default",
+      "counter"
+    ],
+    "states": [
+      "empty",
+      "hover",
+      "focus",
+      "filled",
+      "full",
+      "invalid",
+      "disabled"
+    ]
+  },
+  {
+    "id": "date-picker",
+    "class": "date-picker",
+    "name": "Date picker",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "empty",
+      "picked",
+      "open",
+      "today",
+      "out of range",
+      "disabled",
+      "invalid"
+    ]
+  },
+  {
+    "id": "command-palette",
+    "class": "command-palette",
+    "name": "Command palette",
+    "variants": [
+      "default",
+      "sheet",
+      "multiple"
+    ],
+    "states": [
+      "closed",
+      "open",
+      "active",
+      "filtered",
+      "empty",
+      "picked",
+      "intent"
+    ]
+  },
+  {
+    "id": "attachment",
+    "class": "attachment",
+    "name": "Attachment",
+    "variants": [
+      "default",
+      "compact"
+    ],
+    "states": [
+      "default",
+      "uploading",
+      "error",
+      "removed"
+    ]
+  },
+  {
+    "id": "slider",
+    "class": "slider",
+    "name": "Slider",
+    "variants": [
+      "default",
+      "value and scale",
+      "step marks"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "focus",
+      "pressed",
+      "disabled"
+    ]
+  },
+  {
+    "id": "tag-input",
+    "class": "tag-input",
+    "name": "Tag input",
+    "variants": [
+      "default",
+      "suggestions"
+    ],
+    "states": [
+      "empty",
+      "tags",
+      "hover",
+      "focus",
+      "duplicate",
+      "invalid",
+      "disabled"
+    ]
+  },
+  {
+    "id": "message",
+    "class": "message",
+    "name": "Message",
+    "variants": [
+      "user",
+      "agent"
+    ],
+    "states": [
+      "default",
+      "actions shown",
+      "streaming"
+    ]
+  },
+  {
+    "id": "diff",
+    "class": "diff",
+    "name": "Diff",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "unchanged",
+      "added",
+      "removed"
+    ]
+  },
+  {
+    "id": "pane",
+    "class": "pane",
+    "name": "Pane",
+    "variants": [
+      "default",
+      "shell aside"
+    ],
+    "states": [
+      "open",
+      "closed"
+    ]
+  },
+  {
+    "id": "text",
+    "class": "text",
+    "name": "Text",
+    "variants": [
+      "display",
+      "title",
+      "heading",
+      "lead",
+      "eyebrow"
+    ],
+    "states": [
+      "default",
+      "narrow"
+    ]
+  },
+  {
+    "id": "prose",
+    "class": "prose",
+    "name": "Prose",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "narrow"
+    ]
+  },
+  {
+    "id": "code",
+    "class": "code",
+    "name": "Code",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "overflow"
+    ]
+  },
+  {
+    "id": "quote",
+    "class": "quote",
+    "name": "Quote",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "media",
+    "class": "media",
+    "name": "Media",
+    "variants": [
+      "16/10",
+      "4/5",
+      "with caption"
+    ],
+    "states": [
+      "image",
+      "placeholder"
+    ]
+  },
+  {
+    "id": "site-nav",
+    "class": "site-nav",
+    "name": "Site nav",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "current"
+    ]
+  },
+  {
+    "id": "carousel",
+    "class": "carousel",
+    "name": "Carousel",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "start",
+      "middle",
+      "end",
+      "focus"
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+/* Screens of this topic. Components come from the design system, this file only lays them out. */
+@import "../../../kit/minimaly/ds.css";
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: flex; flex-direction: column; gap: var(--spacing-lg); padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-lg);
+  background: var(--color-surface); color: var(--color-text-primary);
+  font: var(--font-size-md)/var(--line-height-normal) var(--font-family);
+}
+h1 { margin: 0; font-size: var(--font-size-xl); line-height: var(--line-height-tight); font-weight: var(--font-weight-semibold); }
+.grow { flex: 1; }
+body > .btn { width: 100%; }
+
+.done { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--spacing-xs); text-align: center; }
+.done .check { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-full); background: var(--color-status-success-subtle); color: var(--color-status-success); }
+.done b { font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+.done small { color: var(--color-text-secondary); }

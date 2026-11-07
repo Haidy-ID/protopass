@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Message</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">A thread: the person, then the agent's turn (hover it for its actions)</span>
+    <span class="row">Thread</span>
+    <div class="thread" style="width: 600px">
+      <div class="message" data-from="user"><p class="message__text">Which loans are late this week?</p></div>
+      <div class="message" data-from="agent">
+        <span class="message__who"><i class="icon" data-icon="sparkle"></i>Atlas</span>
+        <details class="tool-call" data-state="done"><summary><i class="icon tool-call__icon" data-icon="database"></i><span class="tool-call__name">Read 48 loans</span><span class="tool-call__target">loans where due ≤ Friday</span></summary><pre class="tool-call__result">3 late, 2 due Friday.</pre></details>
+        <p class="stream message__text">Three loans are late: the drill, the ladder and the tent <a class="cite" href="#" data-tip="Loans · atlas.app" aria-label="Source 1: Loans">1</a>. Reminders went out on Monday <a class="cite" href="#" data-tip="Reminders · atlas.app" aria-label="Source 2: Reminders">2</a>.</p>
+        <div class="message__actions" data-force="hover"><button class="btn" data-variant="icon" aria-label="Copy" data-tip="Copy the answer"><i class="icon" data-icon="copy"></i></button><button class="btn" data-variant="icon" aria-label="Retry" data-tip="Ask again"><i class="icon" data-icon="arrow-clockwise"></i></button></div>
+      </div>
+    </div>
+    <span class="row">Live: the answer streams with its citations</span>
+    <div style="display: flex; flex-direction: column; gap: 12px; width: 600px">
+      <div class="thread" id="live">
+        <div class="message" data-from="user"><p class="message__text">And who has the tent?</p></div>
+        <div class="message" data-from="agent"><span class="message__who"><i class="icon" data-icon="sparkle"></i>Atlas</span><p class="stream message__text" id="answer"></p><div class="message__actions"><button class="btn" data-variant="icon" aria-label="Copy" data-tip="Copy the answer"><i class="icon" data-icon="copy"></i></button><button class="btn" data-variant="icon" aria-label="Retry" data-tip="Ask again"><i class="icon" data-icon="arrow-clockwise"></i></button></div></div>
+      </div>
+      <button class="btn" id="again" style="align-self: flex-start">Answer again</button>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: an HTML answer, so the citation streams in place.
+    const answer = document.getElementById("answer");
+    const say = () => streamText(answer, 'Sam Ortiz has the tent since 12 October <a class="cite" href="#" data-tip="Loans · atlas.app" aria-label="Source 1: Loans">1</a>. It was due back on Monday, so it is <b>four days late</b>.');
+    document.getElementById("again").onclick = say;
+    say();
+  </script>
+</body>
+</html>

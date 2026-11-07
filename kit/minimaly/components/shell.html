@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>App shell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Expanded · click the rail button to fold it</span>
+    <span class="row">Shell</span>
+    <div class="shell" style="width: 720px; height: 360px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden">
+      <nav class="shell__nav" aria-label="Main">
+        <div class="shell__brand"><span class="avatar">A</span><span class="shell__brand-name">Atlas</span></div>
+        <a class="nav__item" href="#" aria-current="page"><i class="icon" data-icon="house"></i><span class="nav__label">Home</span></a>
+        <a class="nav__item" href="#"><i class="icon" data-icon="tray"></i><span class="nav__label">Inbox</span><span class="nav__count">3</span></a>
+        <p class="nav__section">Projects</p>
+        <a class="nav__item" href="#" data-force="hover"><i class="icon" data-icon="folder"></i><span class="nav__label">Lending</span></a>
+        <a class="nav__item" href="#"><i class="icon" data-icon="folder"></i><span class="nav__label">Quick capture</span></a>
+        <a class="nav__item shell__foot" href="#"><i class="icon" data-icon="gear"></i><span class="nav__label">Settings</span></a>
+      </nav>
+      <header class="shell__top"><button class="btn" data-variant="icon" data-shell-toggle aria-expanded="true" aria-label="Toggle navigation"><i class="icon" data-icon="sidebar-simple"></i></button><h1 class="shell__title">Home</h1><span class="avatar" data-variant="lg">SA</span></header>
+      <main class="shell__main"><div class="empty" data-variant="compact"><div class="empty__art"><i class="icon" data-icon="house"></i></div><h3 class="empty__title">Content</h3><p class="empty__text">The page goes here.</p></div></main>
+    </div>
+    <span class="row">With an aside pane</span>
+    <div class="shell" style="width: 720px; height: 300px; border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; --shell-aside: 260px" id="aside-shell">
+      <nav class="shell__nav" aria-label="Main">
+        <div class="shell__brand"><span class="avatar">A</span><span class="shell__brand-name">Atlas</span></div>
+        <a class="nav__item" href="#" aria-current="page"><i class="icon" data-icon="chats"></i><span class="nav__label">Sessions</span></a>
+        <a class="nav__item shell__foot" href="#"><i class="icon" data-icon="gear"></i><span class="nav__label">Settings</span></a>
+      </nav>
+      <header class="shell__top"><button class="btn" data-variant="icon" data-shell-toggle aria-expanded="true" aria-label="Toggle navigation"><i class="icon" data-icon="sidebar-simple"></i></button><h1 class="shell__title">Booking app</h1><button class="btn" id="toggle-aside" aria-pressed="true"><i class="icon" data-icon="sidebar"></i>Preview</button></header>
+      <main class="shell__main"><div class="empty" data-variant="compact"><div class="empty__art"><i class="icon" data-icon="chats"></i></div><h3 class="empty__title">Conversation</h3><p class="empty__text">The main column.</p></div></main>
+      <section class="pane shell__aside" aria-label="Preview"><div class="pane__head"><h2 class="pane__title">Preview</h2></div><div class="pane__body"></div></section>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: hidden closes the aside column.
+    document.getElementById("toggle-aside").onclick = (e) => {
+      const aside = document.querySelector("#aside-shell .shell__aside");
+      aside.hidden = !aside.hidden;
+      e.currentTarget.setAttribute("aria-pressed", String(!aside.hidden));
+    };
+  </script>
+</body>
+</html>

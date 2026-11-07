@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Checkbox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 4">
+    <span></span><span class="col">Default</span><span class="col">Hover</span><span class="col">Checked</span><span class="col">Disabled</span>
+    <span class="row">Checkbox</span>
+    <label class="checkbox"><input type="checkbox"><span class="checkbox__box"></span>Remember me</label>
+    <label class="checkbox" data-force="hover"><input type="checkbox"><span class="checkbox__box"></span>Remember me</label>
+    <label class="checkbox"><input type="checkbox" checked><span class="checkbox__box"></span>Remember me</label>
+    <label class="checkbox"><input type="checkbox" checked disabled><span class="checkbox__box"></span>Remember me</label>
+    <span class="row">Indeterminate · with description</span>
+    <label class="checkbox"><input type="checkbox" id="mixed"><span class="checkbox__box"></span>All topics</label>
+    <label class="checkbox"><input type="checkbox"><span class="checkbox__box"></span><span class="checkbox__text">Weekly digest<small>Every Monday, 9 am</small></span></label>
+    <span></span><span></span>
+  </div>
+  <script>document.getElementById("mixed").indeterminate = true;</script>
+  <script src="../ds.js"></script>
+</body>
+</html>

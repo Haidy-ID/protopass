@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Modal and drawer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Modal</span><span class="col">Drawer</span><span class="col">Explicit choice</span>
+    <span class="row">Live</span>
+    <button class="btn" data-open="rename">Rename…</button><button class="btn" data-open="details"><i class="icon" data-icon="sidebar-simple"></i>Details</button><button class="btn" data-open="discard">Close editor</button>
+  </div>
+  <dialog class="modal" id="rename" aria-labelledby="rename-title">
+    <div class="dialog__head"><h2 class="dialog__title" id="rename-title">Rename project</h2><button class="btn" data-variant="icon" data-close aria-label="Close"><i class="icon" data-icon="x"></i></button></div>
+    <div class="dialog__body"><label class="input" style="width: 100%"><input value="Quarterly report" aria-label="Project name" autofocus></label></div>
+    <div class="dialog__foot"><button class="btn" data-close>Cancel</button><button class="btn" data-variant="primary" data-close>Rename</button></div>
+  </dialog>
+  <dialog class="drawer" id="details" aria-labelledby="details-title">
+    <div class="dialog__head"><h2 class="dialog__title" id="details-title">Details</h2><button class="btn" data-variant="icon" data-close aria-label="Close"><i class="icon" data-icon="x"></i></button></div>
+    <div class="dialog__body"><p>Owner: Ada Lovelace</p><p>Created 3 March, edited today.</p></div>
+    <div class="dialog__foot"><button class="btn" data-close>Done</button></div>
+  </dialog>
+  <dialog class="modal" id="discard" aria-labelledby="discard-title" data-static>
+    <div class="dialog__head"><h2 class="dialog__title" id="discard-title">Discard your changes?</h2></div>
+    <div class="dialog__body">Three edits will be lost.</div>
+    <div class="dialog__foot"><button class="btn" data-close autofocus>Keep editing</button><button class="btn" data-variant="primary" data-close>Discard</button></div>
+  </dialog>
+  <script src="../ds.js"></script>
+</body>
+</html>

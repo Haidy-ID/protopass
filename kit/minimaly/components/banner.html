@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Banner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Variants</span>
+    <span class="row">Info</span>
+    <div class="banner" role="status" style="width: 520px"><i class="icon" data-icon="info"></i><div class="banner__body"><span class="banner__title">New export format</span><span class="banner__text">Exports now include the journal of each topic.</span></div><button class="btn" data-variant="icon" data-dismiss aria-label="Dismiss"><i class="icon" data-icon="x"></i></button></div>
+    <span class="row">Success</span>
+    <div class="banner" data-variant="success" role="status" style="width: 520px"><i class="icon" data-icon="check-circle"></i><div class="banner__body"><span class="banner__title">Prototype shared</span><span class="banner__text">The team got the link.</span></div><button class="btn" data-variant="icon" data-dismiss aria-label="Dismiss"><i class="icon" data-icon="x"></i></button></div>
+    <span class="row">Warning · with actions</span>
+    <div class="banner" data-variant="warning" role="status" style="width: 520px"><i class="icon" data-icon="warning"></i><div class="banner__body"><span class="banner__title">Two screens have no state</span><span class="banner__text">Flows that use them cannot show errors.</span><div class="banner__actions"><button class="btn">Review screens</button><button class="btn" data-variant="ghost" data-dismiss>Later</button></div></div></div>
+    <span class="row">Critical</span>
+    <div class="banner" data-variant="critical" role="alert" style="width: 520px"><i class="icon" data-icon="warning-octagon"></i><div class="banner__body"><span class="banner__title">Sync failed</span><span class="banner__text">Changes since 10:42 are only on this device.</span></div></div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

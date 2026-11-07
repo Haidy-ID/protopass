@@ -1,0 +1,18 @@
+name: Check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - name: Scripts, JSON and topics
+        run: node kit/skills/build-mockup/check-all.mjs
+      - name: Server, updater and validator
+        run: node --test kit/*.test.mjs kit/skills/build-mockup/*.test.mjs

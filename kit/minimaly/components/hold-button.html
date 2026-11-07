@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Hold to confirm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">Live: press and hold</span><span class="col">Confirmed</span>
+    <span class="row">Hold to confirm <button class="btn" data-variant="ghost" id="reset">Reset</button></span>
+    <button class="btn" data-hold data-confirmed="Deleted" id="hold"><i class="icon" data-icon="trash"></i>Hold to delete</button>
+    <template id="fresh"><button class="btn" data-hold data-confirmed="Deleted" id="hold"><i class="icon" data-icon="trash"></i>Hold to delete</button></template>
+    <button class="btn" data-hold data-confirmed="Deleted" id="pinned"><i class="icon" data-icon="trash"></i>Hold to delete</button>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    const pinned = document.getElementById("pinned");
+    pinned.dataset.state = "done";
+    pinned.setAttribute("aria-disabled", "true");
+    pinned.hold.anim.currentTime = 1800;
+    document.addEventListener("confirm", (e) => e.target.id === "hold" && toast("Project deleted", { variant: "success" }));
+    // A confirmed button stays disabled: Reset swaps in a fresh one, which ds.js builds like any added button.
+    document.getElementById("reset").onclick = () => document.getElementById("hold").replaceWith(document.getElementById("fresh").content.cloneNode(true));
+  </script>
+</body>
+</html>

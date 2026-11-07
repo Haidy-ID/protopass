@@ -1,0 +1,73 @@
+<!doctype html>
+<!-- Tokens of a design system: every role in light and dark, its use and contrast, then the safe pairs, the primitives and
+     the other tokens. ?ds=<DesignSystem>. Same reading of the CSS as the contract an agent prints with contract.mjs. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tokens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="playground.css">
+  <style>
+    body { display: block; height: auto; }
+    .tokens { max-width: 1040px; margin: 0 auto; padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-3xl); }
+    .tokens h2 { margin: var(--spacing-2xl) 0 var(--spacing-sm); font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); }
+    .tokens__scroll { overflow-x: auto; }
+    .tokens table { width: 100%; border-collapse: collapse; font-size: var(--font-size-sm); }
+    .tokens th { padding: var(--spacing-xs) var(--spacing-sm); color: var(--color-text-secondary); font-weight: var(--font-weight-medium); text-align: left; }
+    .tokens td { padding: var(--spacing-xs) var(--spacing-sm); border-top: var(--stroke-width-subtle) solid var(--color-border); vertical-align: middle; }
+    .tokens code { font-family: var(--font-family-mono); }
+    .tokens td:first-child code { white-space: nowrap; }
+    .tokens__swatch { display: flex; align-items: center; gap: var(--spacing-sm); white-space: nowrap; }
+    .tokens__swatch i { width: var(--size-mark); height: var(--size-mark); flex: none; border: var(--stroke-width-subtle) solid var(--color-border-strong); border-radius: var(--radius-sm); }
+    .tokens__list { margin: 0; padding: 0; list-style: none; font-size: var(--font-size-sm); }
+    .tokens__list li { padding: var(--spacing-xs) 0; border-top: var(--stroke-width-subtle) solid var(--color-border); }
+    .tokens__chips { display: flex; flex-wrap: wrap; gap: var(--spacing-sm) var(--spacing-lg); font-size: var(--font-size-sm); }
+  </style>
+</head>
+<body>
+  <main class="tokens">
+    <a class="btn" data-variant="ghost" id="back" href="./"><i class="icon" data-icon="arrow-left"></i>Components</a>
+    <h1 id="title">Tokens</h1>
+    <p class="meta">Screens read roles. Contrast is measured on the page surface, in light then dark.</p>
+    <div class="tokens__scroll"><table><thead><tr><th>Role</th><th>Light</th><th>Dark</th><th>Contrast</th><th>Use</th></tr></thead><tbody id="roles"></tbody></table></div>
+    <h2>Safe pairs</h2>
+    <p class="meta">4.5:1 in light and in dark.</p>
+    <ul class="tokens__list" id="pairs"></ul>
+    <h2>Primitives</h2>
+    <p class="meta">Forbidden in screens: a primitive does not follow the theme.</p>
+    <div class="tokens__chips" id="primitives"></div>
+    <h2>Other tokens</h2>
+    <div class="tokens__scroll"><table><tbody id="others"></tbody></table></div>
+  </main>
+  <script type="module">
+    import { readTokens, parseColor, contrast } from "../skills/build-mockup/roles.mjs";
+    const get = (url) => fetch(url, { cache: "no-store" });
+    const ROOT = new URL("../../", location.href);
+    const site = await (await get(new URL("protopass.json", ROOT))).json();
+    const BASES = { Minimaly: new URL("../minimaly/", location.href), ...Object.fromEntries(Object.entries(site.designSystems || {}).map(([name, path]) => [name, new URL(path.replace(/\/?$/, "/"), ROOT)])) };
+    const asked = new URLSearchParams(location.search).get("ds");
+    const ds = BASES[asked] ? asked : "Minimaly";
+    const css = (await Promise.all(["tokens.css", "foundations.css"].map((f) => get(new URL(f, BASES[ds])).then((r) => (r.ok ? r.text() : ""))))).join("\n");
+    const { roles, pairs, primitives, others } = readTokens(css);
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const swatch = (value) => `<span class="tokens__swatch"><i style="background:${esc(value)}"></i><code>${esc(value ?? "?")}</code></span>`;
+    const short = (n) => n.replace(/^--color-/, "");
+    const page = roles.find((r) => r.name.endsWith("surface"));
+    const ratio = (r, theme) => {
+      const [fg, bg] = [parseColor(r[theme]), parseColor(page?.[theme])];
+      return fg && bg ? contrast(fg, bg).toFixed(1) : "?";
+    };
+    document.title = `${ds} · Tokens`;
+    $("title").textContent = `${ds} tokens`;
+    $("back").href = `./?ds=${encodeURIComponent(ds)}`;
+    $("roles").innerHTML = roles.map((r) => `<tr><td><code>${esc(r.name)}</code></td><td>${swatch(r.light)}</td><td>${swatch(r.dark)}</td><td>${ratio(r, "light")} · ${ratio(r, "dark")}</td><td>${esc(r.usage)}</td></tr>`).join("");
+    $("pairs").innerHTML = pairs.filter((p) => p.safe.length).map((p) => `<li><code>${esc(p.name)}</code> on ${p.safe.map((s) => esc(short(s))).join(", ")}</li>`).join("");
+    $("primitives").innerHTML = [...primitives].map((name) => `<span class="tokens__swatch"><i style="background:var(${esc(name)}, ${esc(others.get(name) ?? "transparent")})"></i><code>${esc(name)}</code></span>`).join("");
+    $("others").innerHTML = [...others].map(([name, value]) => `<tr><td><code>${esc(name)}</code></td><td><code>${esc(value)}</code></td></tr>`).join("");
+  </script>
+  <script src="../minimaly/ds.js"></script>
+</body>
+</html>

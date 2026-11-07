@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Button</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 4">
+    <span></span><span class="col">Default</span><span class="col">Hover</span><span class="col">Pressed</span><span class="col">Disabled</span>
+    <span class="row">Default</span>
+    <button class="btn"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-force="hover"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" aria-pressed="true"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" disabled><i class="icon" data-icon="funnel"></i>Filters</button>
+    <span class="row">Primary</span>
+    <button class="btn" data-variant="primary"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="primary" data-force="hover"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="primary" aria-pressed="true"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="primary" disabled><i class="icon" data-icon="funnel"></i>Filters</button>
+    <span class="row">Soft</span>
+    <button class="btn" data-variant="soft"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="soft" data-force="hover"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="soft" aria-pressed="true"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="soft" disabled><i class="icon" data-icon="funnel"></i>Filters</button>
+    <span class="row">Large (websites)</span>
+    <button class="btn" data-size="lg" data-variant="primary">See the work<i class="icon" data-icon="arrow-right"></i></button><button class="btn" data-size="lg" data-variant="primary" data-force="hover">See the work<i class="icon" data-icon="arrow-right"></i></button><button class="btn" data-size="lg">Write to me</button><button class="btn" data-size="lg" disabled>Write to me</button>
+    <span class="row">Ghost</span>
+    <button class="btn" data-variant="ghost"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="ghost" data-force="hover"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="ghost" aria-pressed="true"><i class="icon" data-icon="funnel"></i>Filters</button><button class="btn" data-variant="ghost" disabled><i class="icon" data-icon="funnel"></i>Filters</button>
+    <span class="row">Icon</span>
+    <button class="btn" data-variant="icon" aria-label="Close"><i class="icon" data-icon="x"></i></button><button class="btn" data-variant="icon" aria-label="Close" data-force="hover"><i class="icon" data-icon="x"></i></button><button class="btn" data-variant="icon" aria-label="Close" aria-pressed="true"><i class="icon" data-icon="x"></i></button><button class="btn" data-variant="icon" aria-label="Close" disabled><i class="icon" data-icon="x"></i></button>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

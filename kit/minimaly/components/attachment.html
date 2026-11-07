@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Attachment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Default</span><span class="col">Uploading</span><span class="col">Error</span>
+    <span class="row">Attachment</span>
+    <ul class="attachments" style="width: 200px"><li class="attachment" data-name="quarterly-report-final.pdf" data-size="2457600"></li></ul>
+    <ul class="attachments" style="width: 200px"><li class="attachment" data-name="site-photo.jpg" data-size="845000" data-state="uploading" data-progress="40"></li></ul>
+    <ul class="attachments" style="width: 200px"><li class="attachment" data-name="lease-agreement.docx" data-size="120000" data-state="error" data-error="Upload failed"></li></ul>
+    <span class="row">Compact</span>
+    <ul class="attachments" style="width: 200px"><li class="attachment" data-variant="compact" data-name="quarterly-report-final.pdf" data-size="2457600"></li></ul>
+    <ul class="attachments" style="width: 200px"><li class="attachment" data-variant="compact" data-name="site-photo.jpg" data-size="845000" data-state="uploading" data-progress="40"></li></ul>
+    <ul class="attachments" style="width: 200px"><li class="attachment" data-variant="compact" data-name="lease-agreement.docx" data-size="120000" data-state="error" data-error="Too large"></li></ul>
+    <span class="row">Live: in a composer, above its field</span>
+    <form class="composer" style="width: 520px; grid-column: 1 / -1" aria-label="Ask the agent"><ul class="attachments" aria-label="Attachments"><li class="attachment" data-variant="compact" data-name="loan-terms.pdf" data-size="312000"></li><li class="attachment" data-variant="compact" data-name="borrower-id-scan.png" data-size="1830000"></li></ul><textarea class="composer__input" placeholder="Ask about these files…" aria-label="Message"></textarea><div class="composer__bar"><button class="btn" data-variant="icon" type="button" aria-label="Attach" data-tip="Attach a file"><i class="icon" data-icon="plus"></i></button><button class="btn composer__send" data-variant="primary" type="submit">Send</button><button class="btn composer__stop" type="button"><i class="icon" data-icon="stop"></i>Stop</button></div></form>
+    <span class="row">Live: under a dropzone (every third file fails, retry it)</span>
+    <div style="display: flex; flex-direction: column; gap: 8px; width: 320px; grid-column: 1 / -1">
+      <label class="dropzone" id="drop" data-max-mb="25"><input type="file" multiple><span class="dropzone__icon"><i class="icon" data-icon="upload-simple"></i></span><span class="dropzone__title">Drop files here or <span class="dropzone__browse">browse</span></span><span class="dropzone__hint">Any file · up to 25 MB</span></label>
+      <ul class="attachments" id="files" aria-label="Uploads"><li class="attachment" data-name="brief.pdf" data-size="402000"></li></ul>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: a fake upload that fills in about two seconds; every third file fails at 60 %.
+    let count = 0;
+    const upload = (el, fails) => {
+      el.dataset.state = "uploading";
+      el.dataset.progress = 0;
+      const timer = setInterval(() => {
+        if (!el.isConnected) return clearInterval(timer);
+        const next = +el.dataset.progress + 12;
+        if (fails && next >= 60) { clearInterval(timer); el.dataset.error = "Connection lost"; el.dataset.state = "error"; return; }
+        if (next >= 100) { clearInterval(timer); el.removeAttribute("data-state"); return; }
+        el.dataset.progress = next;
+      }, 250);
+    };
+    const files = document.getElementById("files");
+    document.getElementById("drop").addEventListener("files", (e) => {
+      for (const f of e.detail.files) {
+        const li = Object.assign(document.createElement("li"), { className: "attachment" });
+        li.dataset.name = f.name;
+        li.dataset.size = f.size;
+        files.append(li);
+        upload(li, ++count % 3 === 0);
+      }
+    });
+    files.addEventListener("retry", (e) => upload(e.target, false));
+  </script>
+</body>
+</html>

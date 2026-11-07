@@ -1,0 +1,87 @@
+<!doctype html>
+<!-- Specimen check: loads every specimen of a design system in light and dark, at the width the Playground gives it,
+     and lists what breaks: script errors, icons that did not load, content wider than the frame, an empty page.
+     ?ds=<DesignSystem>&width=<px> (760 by default: the Playground on a 1024 px window). -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Specimen check</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="playground.css">
+  <style>
+    .check { max-width: 880px; margin: 0 auto; padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-3xl); }
+    .check__head { display: flex; align-items: center; gap: var(--spacing-md); margin-bottom: var(--spacing-lg); }
+    .check__head h1 { flex: 1; }
+    .check__rows { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; font-size: var(--font-size-sm); }
+    .check__rows li { display: flex; align-items: baseline; gap: var(--spacing-md); padding: var(--spacing-sm) 0; border-bottom: var(--stroke-width-subtle) solid var(--color-border); }
+    .check__rows a { width: 160px; flex: none; color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
+    .check__issues { flex: 1; color: var(--color-text-secondary); }
+    .check__frame { position: fixed; left: -10000px; top: 0; height: 700px; border: 0; }
+  </style>
+</head>
+<body>
+  <main class="check">
+    <div class="check__head"><h1 id="title">Specimen check</h1><span class="badge" id="summary">RUNNING</span></div>
+    <p class="meta" id="meta"></p>
+    <ul class="check__rows" id="rows"></ul>
+  </main>
+  <iframe class="check__frame" id="frame" title="Specimen under check"></iframe>
+  <script>
+    (async () => {
+      const get = (url) => fetch(url, { cache: "no-store" }).then((r) => r.json());
+      const ROOT = new URL("../../", location.href);
+      const site = await get(new URL("protopass.json", ROOT));
+      const BASES = { Minimaly: new URL("../minimaly/", location.href), ...Object.fromEntries(Object.entries(site.designSystems || {}).map(([name, path]) => [name, new URL(path.replace(/\/?$/, "/"), ROOT)])) };
+      const params = new URLSearchParams(location.search);
+      const ds = BASES[params.get("ds")] ? params.get("ds") : "Minimaly";
+      const width = Number(params.get("width")) || 760;
+      const list = await get(new URL("components.json", BASES[ds]));
+      const frame = document.getElementById("frame");
+      frame.style.width = `${width}px`; // playground.css stretches every iframe: the width must win over it
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      $("title").textContent = `${ds} · specimen check`;
+      $("meta").textContent = `${list.length} specimens, light and dark, in a ${width} px frame.`;
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const load = (url) => new Promise((resolve) => {
+        const errors = [];
+        frame.onload = () => resolve(errors);
+        frame.onerror = () => resolve(["page did not load"]);
+        frame.addEventListener("load", () => frame.contentWindow.addEventListener("error", (e) => errors.push(e.message)), { once: true });
+        frame.src = url;
+      });
+      // A specimen is settled once its icons have their SVG, or after two seconds.
+      const settle = async (doc) => {
+        for (let t = 0; t < 20 && doc.querySelector("[data-icon]:not(:has(svg))"); t++) await wait(100);
+      };
+      let failed = 0;
+      for (const c of list) {
+        const issues = [];
+        for (const theme of ["light", "dark"]) {
+          const errors = await load(new URL(`components/${c.id}.html`, BASES[ds]));
+          const doc = frame.contentDocument;
+          doc.documentElement.dataset.theme = theme;
+          await settle(doc);
+          await wait(150);
+          const missing = [...new Set([...doc.querySelectorAll("[data-icon]:not(:has(svg))")].map((i) => i.dataset.icon))];
+          const wide = doc.documentElement.scrollWidth - frame.contentWindow.innerWidth;
+          const found = [
+            ...errors.map((e) => `script error: ${e}`),
+            missing.length && `icons not loaded: ${missing.join(", ")}`,
+            wide > 1 && `${wide} px wider than the frame`,
+            !doc.body?.innerText.trim() && "empty page",
+          ].filter(Boolean).map((f) => `${theme}: ${f}`);
+          issues.push(...found);
+        }
+        if (issues.length) failed++;
+        $("rows").insertAdjacentHTML("beforeend", `<li><a href="./?ds=${encodeURIComponent(ds)}#${c.id}">${esc(c.name)}</a><span class="badge"${issues.length ? ' data-variant="critical"' : ' data-variant="success"'}>${issues.length ? "FIX" : "OK"}</span><span class="check__issues">${esc(issues.join(" · "))}</span></li>`);
+      }
+      $("summary").textContent = failed ? `${failed} TO FIX` : "ALL OK";
+      $("summary").dataset.variant = failed ? "critical" : "success";
+      document.body.dataset.done = "";
+    })();
+  </script>
+</body>
+</html>

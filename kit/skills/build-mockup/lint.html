@@ -1,0 +1,356 @@
+<!doctype html>
+<!-- Render linter: /kit/skills/build-mockup/lint.html?topic=<group>/<topic>
+     Renders every screen × state × theme × brand at each device the topic offers (topic.json → devices, its viewport for
+     its own device) and checks the real geometry.
+     Result for agents: window.lintResult, and the JSON in #result. &report=<run> also posts it to the local server
+     and closes the tab: render-check.mjs runs the page that way. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Render check</title>
+  <link rel="icon" href="../../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../viewer.css">
+  <style>
+    .verdict { display: grid; grid-template-columns: auto 1fr; gap: var(--spacing-xl); align-items: center; margin-top: var(--spacing-xl); padding: var(--spacing-lg); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
+    .verdict__title { display: block; margin: 0; font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); }
+    .verdict__text { margin: var(--spacing-xs) 0 0; color: var(--color-text-secondary); }
+    .verdict .progress { margin-top: var(--spacing-md); }
+    .verdict .progress[hidden] { display: none; }
+
+    .donut { position: relative; width: 128px; height: 128px; }
+    .donut svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
+    .donut circle { fill: none; stroke-width: 12; }
+    .donut__track { stroke: var(--color-border); }
+    .donut [data-part="clean"] { stroke: var(--color-status-success); }
+    .donut [data-part="warning"] { stroke: var(--color-status-warning); }
+    .donut [data-part="error"] { stroke: var(--color-status-critical); }
+    .donut [data-part="accepted"] { stroke: var(--color-status-neutral); }
+    .donut__center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+    .donut__center b { font-size: var(--font-size-2xl); font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+    .donut__center small { color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+
+    .legend { display: flex; flex-wrap: wrap; gap: var(--spacing-xs) var(--spacing-lg); margin: var(--spacing-md) 0 0; padding: 0; list-style: none; font-size: var(--font-size-sm); }
+    .legend li { display: inline-flex; align-items: center; gap: var(--spacing-xs); }
+    .legend b { font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+    .legend [data-part="clean"] .icon { color: var(--color-status-success); }
+    .legend [data-part="warning"] .icon { color: var(--color-status-warning); }
+    .legend [data-part="error"] .icon { color: var(--color-status-critical); }
+    .legend [data-part="accepted"] .icon { color: var(--color-status-neutral); }
+
+    .check-section { margin-top: var(--spacing-2xl); }
+    .check-section[hidden] { display: none; }
+    .check-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
+    .check-head h2 { margin: 0; }
+    .check-head h2 small { margin-left: var(--spacing-xs); color: var(--color-text-secondary); font-weight: var(--font-weight-regular); }
+    .check-filters { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+    .check-filters[hidden] { display: none; }
+
+    .rule { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-sm); min-width: 0; }
+    .rule code { color: var(--color-text-tertiary); font: var(--font-size-xs) var(--font-family-mono); }
+    .rule small { color: var(--color-text-secondary); font-weight: var(--font-weight-regular); }
+    .rule__fix { margin: 0 0 var(--spacing-sm); color: var(--color-text-secondary); }
+    .hits { display: flex; flex-direction: column; max-height: 280px; margin: 0; padding: 0; overflow: auto; list-style: none; }
+    .hit { display: grid; grid-template-columns: 1fr auto; gap: var(--spacing-md); align-items: center; width: 100%; padding: var(--spacing-xs) 0; border: 0; border-top: var(--stroke-width-subtle) solid var(--color-border); background: none; color: inherit; font: inherit; font-size: var(--font-size-sm); text-align: left; cursor: pointer; }
+    .hit:hover b { color: var(--color-accent); }
+    .hit b { font-weight: var(--font-weight-medium); }
+    .hit small { display: block; color: var(--color-text-secondary); }
+    .hit > span:last-child { color: var(--color-text-tertiary); font-size: var(--font-size-xs); white-space: nowrap; }
+
+    .screen-group { margin-top: var(--spacing-lg); }
+    .screen-group:not(:has(.shot-card:not([hidden]))) { display: none; }
+    .screen-group h3 { margin: 0 0 var(--spacing-sm); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
+    .shots { display: grid; grid-template-columns: repeat(auto-fill, 232px); gap: var(--spacing-lg) var(--spacing-md); }
+    .shot-card { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; scroll-margin: var(--spacing-2xl); }
+    .shot-card[hidden] { display: none; }
+    .shot-card[data-focus] .frame { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+    .shot-card__name { color: var(--color-text-secondary); font-size: var(--font-size-sm); text-decoration: none; }
+    .shot-card__name:hover { color: var(--color-accent); }
+    .shot-card__name b { color: var(--color-text-primary); font-weight: var(--font-weight-medium); }
+    .frame { position: relative; overflow: hidden; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); }
+    .frame iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: 0 0; }
+    .box { position: absolute; border: 2px solid var(--color-status-critical); pointer-events: none; }
+    .box.warning { border-color: var(--color-status-warning); }
+    .box.accepted { border: 1px dashed var(--color-text-tertiary); }
+    .shot-card ul { margin: 0; padding: 0; list-style: none; color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+    .shot-card li { padding-top: var(--spacing-xs); }
+    .shot-card li code { font-family: var(--font-family-mono); font-weight: var(--font-weight-semibold); }
+    .shot-card li.error code { color: var(--color-status-critical); }
+    .shot-card li.warning code { color: var(--color-status-warning); }
+    #result { display: none; }
+
+    @media (max-width: 600px) {
+      .verdict { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+      .legend { justify-content: center; }
+    }
+  </style>
+</head>
+<body class="landing">
+  <header class="topbar">
+    <span class="topbar__start"><a class="brand" href="../../../" data-tip="Back to home"><i class="brand__mark"></i><b>Protopass</b></a><nav class="breadcrumb" aria-label="Breadcrumb"><span class="breadcrumb__sep">/</span><a id="crumb-topic"></a><span class="breadcrumb__sep">/</span><span aria-current="page">Render check</span></nav></span>
+    <span class="topbar__end"><button class="btn" data-variant="icon" id="theme" aria-label="Switch theme" data-tip="Switch this page between light and dark"></button></span>
+  </header>
+  <main class="page">
+    <h1>Render check</h1>
+    <p class="intent" id="intro">Measures contrast, overflow, overlaps and tap targets on every render. It does not judge the design.</p>
+    <section class="verdict" aria-live="polite">
+      <div class="donut">
+        <svg viewBox="0 0 128 128" role="img" aria-labelledby="verdict-title"><circle class="donut__track" cx="64" cy="64" r="54"></circle><g id="parts"></g></svg>
+        <span class="donut__center"><b id="total">0</b><small>renders</small></span>
+      </div>
+      <div>
+        <h2 class="verdict__title" id="verdict-title">Checking…</h2>
+        <p class="verdict__text" id="verdict-text" hidden></p>
+        <div class="progress" id="progress">
+          <span class="progress__label" id="progress-label">Starting</span><span class="progress__value"></span>
+          <div class="progress__track" role="progressbar" aria-labelledby="progress-label" aria-valuemin="0" aria-valuemax="100"><div class="progress__fill"></div></div>
+        </div>
+        <ul class="legend" id="legend"></ul>
+      </div>
+    </section>
+    <section class="check-section" id="problems" hidden>
+      <div class="check-head"><h2>Problems</h2></div>
+      <div class="accordion" id="rules"></div>
+    </section>
+    <section class="check-section" id="renders">
+      <div class="check-head">
+        <h2>Renders <small id="renders-count"></small></h2>
+        <div class="check-filters" id="filters" hidden></div>
+      </div>
+      <div id="groups"></div>
+    </section>
+  </main>
+  <pre id="result"></pre>
+  <script src="lint.js"></script>
+  <script src="../../minimaly/ds.js"></script>
+  <script>
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const topicPath = (params.get("topic") || "").replace(/\/$/, "");
+      const onlyId = params.get("screen");
+      const KIT = new URL("../../", location.href);
+      const ROOT = new URL("..", KIT);
+      const base = new URL(`${topicPath}/`, ROOT);
+      const $ = (id) => document.getElementById(id);
+      const icon = (name) => `<i class="icon" data-icon="${name}"></i>`;
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+      let theme = "light";
+      try { theme = localStorage.getItem("protopass-theme") || theme; } catch {}
+      const showTheme = () => {
+        document.documentElement.dataset.theme = theme;
+        $("theme").innerHTML = icon(theme === "dark" ? "sun" : "moon");
+        window.renderIcons($("theme"));
+      };
+      showTheme();
+      $("theme").addEventListener("click", () => {
+        theme = theme === "dark" ? "light" : "dark";
+        try { localStorage.setItem("protopass-theme", theme); } catch {}
+        showTheme();
+      });
+
+      const [topic, site] = await Promise.all([new URL("topic.json", base), new URL("protopass.json", ROOT)].map((url) => fetch(url, { cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error(`${url.pathname} not found.`);
+        return r.json();
+      })));
+      // <ds>/lint.json → acceptContrast: colors the design system keeps below the contrast threshold on purpose.
+      topic.ds ||= "Minimaly";
+      const dsUrl = topic.ds === "Minimaly" ? new URL("minimaly/", KIT) : new URL(`${(site.designSystems?.[topic.ds] || "").replace(/\/?$/, "/")}`, ROOT);
+      const rules = await fetch(new URL("lint.json", dsUrl), { cache: "no-store" }).then((r) => (r.ok ? r.json() : {}));
+      const vp = topic.viewport || { width: 390, height: 780 };
+      // Every device the topic page offers (same sizes as viewer.js): the designed size replaces its own device.
+      const DEVICES = { mobile: { width: 390, height: 844 }, tablet: { width: 1024, height: 768 }, desktop: { width: 1440, height: 900 } };
+      DEVICES[vp.width < 600 ? "mobile" : vp.width < 1100 ? "tablet" : "desktop"] = vp;
+      const devices = Object.keys(DEVICES).filter((d) => !topic.devices?.length || topic.devices.includes(d));
+      const WIDTH = 232;
+      const stateId = (label) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const screens = onlyId ? topic.screens.filter((s) => s.id === onlyId) : topic.screens;
+      if (onlyId && !screens.length) throw new Error(`No screen "${onlyId}" in this topic.`);
+      $("crumb-topic").textContent = topic.title;
+      $("crumb-topic").href = base;
+      document.title = `${topic.title} · Render check`;
+
+      // The first brand is in screens.css. Another one goes after it, as in the viewer.
+      const brands = topic.brands?.length ? topic.brands : [null];
+      const runs = devices.flatMap((device) => screens.flatMap((s) => (s.states?.length ? s.states.map((st) => st.name) : [null]).flatMap((state) => ["light", "dark"].flatMap((theme) => brands.map((brand) => ({ s, state, theme, device, brand }))))));
+      const all = [];
+      const hits = [];
+      const cards = [];
+
+      // Renders by outcome, the worst finding deciding. The donut fills as the run goes, the legend gives the same figures.
+      const PARTS = [
+        { id: "clean", label: "Clean", icon: "check-circle" },
+        { id: "warning", label: "Warnings only", icon: "warning" },
+        { id: "error", label: "With errors", icon: "x-circle" },
+        { id: "accepted", label: "Accepted", icon: "minus-circle" },
+      ];
+      const LENGTH = 2 * Math.PI * 54;
+      const GAP = 2;
+      const worst = (findings) => ["error", "warning", "accepted"].find((level) => findings.some((f) => f.level === level)) || "clean";
+      const showTotals = () => {
+        const count = (id) => cards.filter((c) => c.dataset.part === id).length;
+        let start = 0;
+        const shown = PARTS.filter((p) => count(p.id));
+        $("parts").innerHTML = shown.map((p) => {
+          const size = (count(p.id) / runs.length) * LENGTH;
+          const gap = shown.length > 1 || cards.length < runs.length ? GAP : 0;
+          const arc = `<circle data-part="${p.id}" cx="64" cy="64" r="54" stroke-dasharray="${Math.max(size - gap, 1)} ${LENGTH}" stroke-dashoffset="${-start}" data-tip="${count(p.id)} ${p.label.toLowerCase()}"></circle>`;
+          start += size;
+          return arc;
+        }).join("");
+        $("legend").innerHTML = PARTS.filter((p) => p.id !== "accepted" || count(p.id)).map((p) => `<li data-part="${p.id}">${icon(p.icon)}${p.label} <b>${count(p.id)}</b></li>`).join("");
+        window.renderIcons($("legend"));
+      };
+
+      $("total").textContent = runs.length;
+      $("renders-count").textContent = `${runs.length} to check`;
+      window.setProgress($("progress"), 0, runs.length);
+      $("progress-label").textContent = `0 of ${runs.length}`;
+      showTotals();
+
+      const groupOf = Object.fromEntries(screens.map((s) => {
+        const group = document.createElement("section");
+        group.className = "screen-group";
+        group.innerHTML = `<h3>${esc(s.label)}</h3><div class="shots"></div>`;
+        $("groups").append(group);
+        return [s.id, group.querySelector(".shots")];
+      }));
+
+      // One run at a time: same rendering conditions for every frame, and a stable order in the output.
+      for (const { s, state, theme, device, brand } of runs) {
+        const size = DEVICES[device];
+        const scale = WIDTH / size.width;
+        const src = `${base}${s.file}${state ? `?state=${stateId(state)}` : ""}`;
+        const card = document.createElement("article");
+        card.className = "shot-card";
+        Object.assign(card.dataset, { device, theme });
+        card.innerHTML = `<a class="shot-card__name" href="${src}" target="_blank"><b>${esc(state || "Default")}</b> · ${theme}${brand && brands.length > 1 ? ` · ${esc(brand)}` : ""}${devices.length > 1 ? ` · ${device}` : ""}</a>
+          <div class="frame" style="width:${WIDTH}px;height:${Math.round(size.height * scale)}px"><iframe width="${size.width}" height="${size.height}" style="transform:scale(${scale})"></iframe></div><ul></ul>`;
+        groupOf[s.id].append(card);
+        const frame = card.querySelector("iframe");
+        await new Promise((resolve) => {
+          frame.onload = resolve;
+          frame.src = src;
+        });
+        const doc = frame.contentDocument;
+        doc.documentElement.dataset.theme = theme;
+        if (brand && brand !== brands[0]) await new Promise((resolve) => doc.head.append(Object.assign(doc.createElement("link"), { rel: "stylesheet", href: new URL(`brands/${stateId(brand)}.css`, base), onload: resolve, onerror: resolve })));
+        await doc.fonts.ready;
+        await frame.contentWindow.iconsReady;
+        // A timer, not requestAnimationFrame: a hidden tab never fires animation frames and the run would stall.
+        await new Promise((r) => setTimeout(r, 50));
+        // A background tab does not advance transitions: finish them, or colors are read halfway through the theme switch.
+        doc.getAnimations().forEach((a) => { if (a.effect?.getTiming().iterations !== Infinity) a.finish(); });
+
+        const findings = window.lintDocument(doc, rules);
+        const box = card.querySelector(".frame");
+        card.dataset.part = worst(findings);
+        card.querySelector("ul").innerHTML = findings.map((f) => `<li class="${f.level}"><code>${f.code}</code> ${esc(f.target)}</li>`).join("");
+        for (const f of findings) {
+          const b = document.createElement("div");
+          b.className = `box ${f.level}`;
+          Object.assign(b.style, { left: `${f.rect.x * scale}px`, top: `${f.rect.y * scale}px`, width: `${Math.max(f.rect.w * scale, 4)}px`, height: `${Math.max(f.rect.h * scale, 4)}px` });
+          box.append(b);
+          const finding = { code: f.code, level: f.level, device, screen: s.id, state: state ? stateId(state) : "default", theme, brand: brand ? stateId(brand) : null, target: f.target, message: f.message, fix: f.fix };
+          all.push(finding);
+          hits.push({ ...finding, card, where: [s.label, state || "Default", theme, devices.length > 1 && device].filter(Boolean).join(" · ") });
+        }
+        cards.push(card);
+        window.setProgress($("progress"), cards.length, runs.length);
+        $("progress-label").textContent = `${cards.length} of ${runs.length} · ${s.label}`;
+        showTotals();
+      }
+
+      const count = (level) => all.filter((f) => f.level === level).length;
+      const [errors, warnings, accepted] = ["error", "warning", "accepted"].map(count);
+      const perDevice = Object.fromEntries(devices.map((d) => [d, all.filter((f) => f.device === d && f.level === "error").length]));
+      window.lintResult = { topic: topicPath, screen: onlyId, devices, brands, renders: runs.length, errors, warnings, accepted, perDevice, findings: all };
+      $("result").textContent = JSON.stringify(window.lintResult);
+
+      $("progress").hidden = true;
+      $("verdict-title").textContent = errors ? `${plural(errors, "error")} to fix` : warnings ? `No error, ${plural(warnings, "warning")}` : "All clear";
+      $("verdict-text").hidden = false;
+      $("verdict-text").textContent = errors && warnings ? `Also ${plural(warnings, "warning")}. Open a problem below to reach its render.` : errors || warnings ? "Open a problem below to reach its render." : "Every rule passed on every render. The design is still yours to judge.";
+
+      // A rule once, whatever the number of renders it hits: errors first, then the most frequent.
+      const RULES = {
+        L101: "Contrast too low",
+        L201: "Content squashed to nothing",
+        L202: "Wider than the screen",
+        L203: "Text cut without an ellipsis",
+        L301: "Elements overlap",
+        L401: "Clickable area too small",
+        L402: "Looks like a button, is not clickable",
+        L501: "Pseudo-element lost by Copy to Figma",
+        L502: "Background image lost by Copy to Figma",
+        L503: "Outline becomes a separate Figma layer",
+        L504: "Clip path pasted as a black shape",
+      };
+      const problems = hits.filter((f) => f.level !== "accepted");
+      const codes = [...new Set(problems.map((f) => f.code))].map((code) => problems.filter((f) => f.code === code));
+      codes.sort((a, b) => (a[0].level === b[0].level ? b.length - a.length : a[0].level === "error" ? -1 : 1));
+      $("rules").innerHTML = codes.map((group) => {
+        const [first] = group;
+        const error = first.level === "error";
+        return `<details class="accordion__item"${error ? " open" : ""}>
+          <summary><span class="rule"><span class="badge" data-variant="${error ? "critical" : "warning"}">${icon(error ? "x-circle" : "warning")}${error ? "ERROR" : "WARNING"}</span>${RULES[first.code] || first.code}<small>${plural(new Set(group.map((f) => f.card)).size, "render")}</small><code>${first.code}</code></span>${icon("caret-down")}</summary>
+          <div class="accordion__body"><p class="rule__fix">${esc(first.fix)}</p><ul class="hits">${group.map((f) => `<li><button type="button" class="hit" data-hit="${hits.indexOf(f)}"><span><b>${esc(f.target)}</b><small>${esc(f.message)}</small></span><span>${esc(f.where)}</span></button></li>`).join("")}</ul></div>
+        </details>`;
+      }).join("");
+      $("problems").hidden = !problems.length;
+
+      // Filters: the clean renders fold away once the run is over. Hiding a frame earlier would falsify its geometry.
+      const filter = { show: problems.length ? "problems" : "all", device: "all", theme: "all" };
+      const flagged = new Set(problems.map((f) => f.card)).size;
+      const segment = (key, label, options) => `<span class="segmented" role="group" aria-label="${label}">${options.map(([value, text]) => `<button class="btn" data-filter="${key}" data-value="${value}">${text}</button>`).join("")}</span>`;
+      $("filters").innerHTML = [
+        problems.length ? segment("show", "Show", [["problems", `Problems ${flagged}`], ["all", `All ${runs.length}`]]) : "",
+        devices.length > 1 ? segment("device", "Device", [["all", "All sizes"], ...devices.map((d) => [d, d[0].toUpperCase() + d.slice(1)])]) : "",
+        segment("theme", "Theme", [["all", "Both themes"], ["light", "Light"], ["dark", "Dark"]]),
+      ].join("");
+      $("filters").hidden = false;
+      const applyFilter = () => {
+        for (const card of cards) {
+          const problem = card.dataset.part === "error" || card.dataset.part === "warning";
+          card.hidden = !((filter.show === "all" || problem) && (filter.device === "all" || filter.device === card.dataset.device) && (filter.theme === "all" || filter.theme === card.dataset.theme));
+        }
+        $("renders-count").textContent = `${cards.filter((c) => !c.hidden).length} of ${runs.length}`;
+        document.querySelectorAll("[data-filter]").forEach((b) => b.setAttribute("aria-pressed", String(filter[b.dataset.filter] === b.dataset.value)));
+      };
+      applyFilter();
+      $("filters").addEventListener("click", (e) => {
+        const button = e.target.closest("[data-filter]");
+        if (!button) return;
+        filter[button.dataset.filter] = button.dataset.value;
+        applyFilter();
+      });
+      $("rules").addEventListener("click", (e) => {
+        const button = e.target.closest("[data-hit]");
+        if (!button) return;
+        const { card } = hits[button.dataset.hit];
+        Object.assign(filter, { device: "all", theme: "all" });
+        applyFilter();
+        card.dataset.focus = "";
+        card.scrollIntoView({ block: "center" });
+        setTimeout(() => delete card.dataset.focus, 1600);
+      });
+      window.renderIcons();
+    })().catch((e) => {
+      document.getElementById("progress").hidden = true;
+      document.getElementById("verdict-title").textContent = "Check failed";
+      const text = document.getElementById("verdict-text");
+      text.hidden = false;
+      text.textContent = e.message;
+      window.lintResult = { error: e.message };
+    }).finally(async () => {
+      const run = new URLSearchParams(location.search).get("report");
+      if (!run) return;
+      await fetch(`/__protopass/lint/${encodeURIComponent(run)}`, { method: "POST", headers: { "x-protopass": "lint" }, body: JSON.stringify(window.lintResult) });
+      window.close();
+    });
+  </script>
+</body>
+</html>

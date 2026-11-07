@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Known</span><span class="col">Not known yet</span><span class="col">Live</span>
+    <span class="row">Progress</span>
+    <div class="progress" style="width: 220px; --progress: 40"><span class="progress__label" id="pl1">Uploading 3 files</span><span class="progress__value">40%</span><div class="progress__track" role="progressbar" aria-labelledby="pl1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40"><div class="progress__fill"></div></div></div>
+    <div class="progress" id="unknown" style="width: 220px"><span class="progress__label" id="pl2">Preparing export</span><span class="progress__value"></span><div class="progress__track" role="progressbar" aria-labelledby="pl2" aria-valuemin="0" aria-valuemax="100"><div class="progress__fill"></div></div></div>
+    <div class="progress" id="live" style="width: 220px"><span class="progress__label" id="pl3">Importing rows</span><span class="progress__value"></span><div class="progress__track" role="progressbar" aria-labelledby="pl3" aria-valuemin="0" aria-valuemax="100"><div class="progress__fill"></div></div></div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    setProgress(document.getElementById("unknown"), null);
+    const live = document.getElementById("live");
+    let rows = null;
+    setProgress(live, rows, 840);
+    setInterval(() => setProgress(live, (rows = rows === null ? 0 : rows >= 840 ? null : rows + 120), 840), 900);
+  </script>
+</body>
+</html>

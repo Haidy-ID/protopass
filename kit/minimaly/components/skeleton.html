@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Skeleton</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Text, 3 lines</span><span class="col">Block, 80 px</span><span class="col">Answer in 60 ms</span>
+    <span class="row">Skeleton</span>
+    <div class="card" style="width: 220px"><div class="card__body" id="text"></div></div><div class="card" style="width: 220px"><div class="card__body" id="block"></div></div><div class="card" style="width: 220px"><div class="card__body" id="fast"></div></div>
+  </div>
+  <p><button class="btn" id="again"><i class="icon" data-icon="arrow-clockwise"></i>Reload</button></p>
+  <script src="../ds.js"></script>
+  <script>
+    const wait = (ms, html) => () => new Promise((r) => setTimeout(() => r(html), ms));
+    const para = "The draft is ready for review. Two sections still need an owner before Friday.";
+    const run = () => {
+      loadInto(document.getElementById("text"), wait(1500, `<p style="margin:0">${para}</p>`), { lines: 3, label: "Summary" });
+      loadInto(document.getElementById("block"), wait(1500, '<div style="height:80px;display:grid;place-items:center">Chart</div>'), { height: 80 });
+      loadInto(document.getElementById("fast"), wait(60, `<p style="margin:0">${para}</p>`), { lines: 3 });
+    };
+    run();
+    document.getElementById("again").onclick = run;
+  </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">From a button</span><span class="col">Right-click the card</span>
+    <span class="row">Menu</span>
+    <button class="btn" data-menu="row-actions"><i class="icon" data-icon="dots-three"></i>Actions</button>
+    <div class="card" data-context-menu="file-actions" style="width: 240px"><div class="card__body">quarterly-report.pdf</div></div>
+    <span class="row">Open (static)</span>
+    <div class="popover menu" style="position: static"><button class="menu__item"><i class="icon" data-icon="pencil-simple"></i>Rename<span class="kbd">R</span></button><button class="menu__item" data-force="hover"><i class="icon" data-icon="copy"></i>Duplicate<span class="kbd">⌘D</span></button><button class="menu__item" disabled><i class="icon" data-icon="share"></i>Share</button><hr class="menu__separator"><button class="menu__item" data-variant="critical"><i class="icon" data-icon="trash"></i>Delete</button></div>
+    <span></span>
+  </div>
+  <div class="popover menu" id="row-actions" aria-label="Row actions">
+    <button class="menu__item"><i class="icon" data-icon="pencil-simple"></i>Rename<span class="kbd">R</span></button>
+    <button class="menu__item"><i class="icon" data-icon="copy"></i>Duplicate<span class="kbd">⌘D</span></button>
+    <button class="menu__item" disabled><i class="icon" data-icon="share"></i>Share</button>
+    <hr class="menu__separator">
+    <button class="menu__item" data-variant="critical"><i class="icon" data-icon="trash"></i>Delete</button>
+  </div>
+  <div class="popover menu" id="file-actions" aria-label="quarterly-report.pdf actions">
+    <button class="menu__item"><i class="icon" data-icon="arrow-square-out"></i>Open</button>
+    <button class="menu__item"><i class="icon" data-icon="download-simple"></i>Download</button>
+    <hr class="menu__separator">
+    <button class="menu__item" data-variant="critical"><i class="icon" data-icon="trash"></i>Delete</button>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

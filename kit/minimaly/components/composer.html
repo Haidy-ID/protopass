@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Composer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">Empty</span><span class="col">Filled</span>
+    <span class="row">Composer</span>
+    <form class="composer" style="width: 300px" aria-label="Ask the agent"><textarea class="composer__input" placeholder="Ask about this loan…" aria-label="Message"></textarea><div class="composer__bar"><button class="btn" data-variant="icon" type="button" aria-label="Attach" data-tip="Attach a file"><i class="icon" data-icon="plus"></i></button><button class="btn" data-variant="icon" type="button" aria-label="Mention" data-tip="Mention a person or a file"><i class="icon" data-icon="at"></i></button><button class="btn composer__send" data-variant="primary" type="submit">Send</button><button class="btn composer__stop" type="button"><i class="icon" data-icon="stop"></i>Stop</button></div></form>
+    <form class="composer" style="width: 300px" aria-label="Ask the agent"><textarea class="composer__input" aria-label="Message">How can you help me?</textarea><div class="composer__bar"><button class="btn" data-variant="icon" type="button" aria-label="Attach" data-tip="Attach a file"><i class="icon" data-icon="plus"></i></button><button class="btn" data-variant="icon" type="button" aria-label="Mention" data-tip="Mention a person or a file"><i class="icon" data-icon="at"></i></button><button class="btn composer__send" data-variant="primary" type="submit">Send</button><button class="btn composer__stop" type="button"><i class="icon" data-icon="stop"></i>Stop</button></div></form>
+    <span class="row">Busy, disabled</span>
+    <form class="composer" style="width: 300px" aria-label="Ask the agent" aria-busy="true"><textarea class="composer__input" placeholder="Ask a follow-up…" aria-label="Message"></textarea><div class="composer__bar"><button class="btn" data-variant="icon" type="button" aria-label="Attach" data-tip="Attach a file"><i class="icon" data-icon="plus"></i></button><button class="btn" data-variant="icon" type="button" aria-label="Mention" data-tip="Mention a person or a file"><i class="icon" data-icon="at"></i></button><button class="btn composer__send" data-variant="primary" type="submit">Send</button><button class="btn composer__stop" type="button"><i class="icon" data-icon="stop"></i>Stop</button></div></form>
+    <form class="composer" style="width: 300px" aria-label="Ask the agent" aria-disabled="true"><textarea class="composer__input" placeholder="Pick a loan to ask about it" aria-label="Message" disabled></textarea><div class="composer__bar"><button class="btn" data-variant="icon" type="button" aria-label="Attach" disabled><i class="icon" data-icon="plus"></i></button><button class="btn" data-variant="icon" type="button" aria-label="Mention" disabled><i class="icon" data-icon="at"></i></button><button class="btn composer__send" data-variant="primary" type="submit">Send</button><button class="btn composer__stop" type="button"><i class="icon" data-icon="stop"></i>Stop</button></div></form>
+    <span class="row">Live: write, Enter sends</span>
+    <div style="display: flex; flex-direction: column; gap: 12px; width: 300px">
+      <div id="thread" style="display: flex; flex-direction: column; gap: 8px"></div>
+      <form class="composer" id="live" aria-label="Ask the agent"><textarea class="composer__input" placeholder="Ask about this loan…" aria-label="Message"></textarea><div class="composer__bar"><button class="btn" data-variant="icon" type="button" aria-label="Attach" data-tip="Attach a file"><i class="icon" data-icon="plus"></i></button><button class="btn" data-variant="icon" type="button" aria-label="Mention" data-tip="Mention a person or a file"><i class="icon" data-icon="at"></i></button><button class="btn composer__send" data-variant="primary" type="submit">Send</button><button class="btn composer__stop" type="button"><i class="icon" data-icon="stop"></i>Stop</button></div></form>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: a fake agent that types, then streams an answer. Stop cuts it short.
+    const live = document.getElementById("live"), thread = document.getElementById("thread");
+    let timer;
+    const done = () => { clearTimeout(timer); live.removeAttribute("aria-busy"); };
+    live.addEventListener("send", async (e) => {
+      thread.insertAdjacentHTML("beforeend", `<p style="align-self: flex-end; margin: 0; padding: 6px 10px; border-radius: 8px; background: var(--color-surface-sunken)"></p>`);
+      thread.lastElementChild.textContent = e.detail.text;
+      live.setAttribute("aria-busy", "true");
+      thread.insertAdjacentHTML("beforeend", `<span class="typing" role="status" aria-label="Agent is writing"><span class="typing__dots"><i></i><i></i><i></i></span></span>`);
+      timer = setTimeout(async () => {
+        thread.lastElementChild.outerHTML = `<p class="stream"></p>`;
+        await streamText(thread.lastElementChild, "The loan is open since 3 March. No return date was set, so it stays open until it is marked returned.");
+        done();
+      }, 1600);
+    });
+    live.addEventListener("stop", () => { thread.querySelector(".typing")?.remove(); done(); });
+  </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Steps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">Running</span><span class="col">Failed at step 3 <button class="btn" id="fail-again">Fail again</button></span>
+    <span class="row">Steps</span>
+    <ol class="steps" id="run" aria-label="Report generation" style="width: 280px">
+      <li>Read the sources<span class="steps__meta">1.2s</span></li>
+      <li>Extract the figures<span class="steps__meta">12 rows</span></li>
+      <li>Write the summary<span class="steps__meta">3.4s</span></li>
+      <li>Check the numbers<span class="steps__meta">0.8s</span></li>
+    </ol>
+    <ol class="steps" id="failed" aria-label="Report generation" style="width: 280px">
+      <li>Read the sources<span class="steps__meta">1.2s</span></li>
+      <li>Extract the figures<span class="steps__meta">12 rows</span></li>
+      <li>Write the summary<span class="steps__meta">3.4s</span></li>
+      <li>Check the numbers<span class="steps__meta">0.8s</span></li>
+    </ol>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    const failed = document.getElementById("failed");
+    setSteps(failed, 2, true);
+    // Replays the failure: back to running for a moment, then failed again, so the shake plays.
+    document.getElementById("fail-again").onclick = () => { setSteps(failed, 2); setTimeout(() => setSteps(failed, 2, true), 600); };
+    const run = document.getElementById("run");
+    let i = 0;
+    setSteps(run, i);
+    setInterval(() => setSteps(run, (i = (i + 1) % 5)), 1200);
+  </script>
+</body>
+</html>

@@ -6,10 +6,10 @@ Your agent builds the screens in plain HTML, CSS and JS with a design system it 
 
 ## Start
 
-Paste this sentence into your coding agent (Claude Code, Codex, Cursor), with your idea at the end:
+Paste this sentence into your coding agent, with your idea at the end. Tested with Claude Code and Codex on macOS.
 
 ```
-Follow https://raw.githubusercontent.com/Haidy-ID/protopass/main/install.md to prototype: <your idea>
+Follow https://protopass.dev/install.md to prototype: <your idea>
 ```
 
 [install.md](install.md) is short: read it before your agent does. It checks Node 20 or later, downloads the kit into a `protopass/` folder, starts a local server, builds a first prototype of three screens at most and opens it.
@@ -90,6 +90,6 @@ The update button (arrow in a circle) in the topbar compares the installed versi
 
 ## Develop the kit
 
-`node kit/skills/build-mockup/check-all.mjs` and `node --test kit/*.test.mjs kit/skills/build-mockup/*.test.mjs` run on each push. A `v*` tag that matches `kit/VERSION` publishes a release with `protopass.tar.gz`, the workshop that `install.md` downloads, and its notes from [CHANGELOG.md](CHANGELOG.md).
+`node kit/skills/build-mockup/check-all.mjs` and `node --test kit/*.test.mjs kit/skills/build-mockup/*.test.mjs` run on each push. A `v*` tag that matches `kit/VERSION` publishes a release with `protopass.tar.gz`, the workshop that `install.md` downloads, and its notes from [CHANGELOG.md](CHANGELOG.md). A push to `site/` or `install.md` on main deploys https://protopass.dev to GitHub Pages.
 
 MIT license.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1 · 2026-11-08
+
+- `render-check.mjs` runs the page in a headless Chrome, Edge or Chromium with a throwaway profile, instead of a tab in your browser. A tab behind your window was slowed down by the browser, sometimes past the 300 s limit. Without one of these browsers, the check exits with 2.
+
 ## 3.0.0 · 2026-11-07
 
 First public release.

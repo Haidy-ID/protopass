@@ -1,10 +1,11 @@
 // Render check from a terminal: node kit/skills/build-mockup/render-check.mjs <group>/<topic> [screen-id]
-// For an agent with no browser tool. Serves the site on a free port, opens lint.html in the default browser, waits for
-// the result the page posts back, prints the findings. Exit code: 0 no error, 1 errors, 2 the check did not run.
+// For an agent with no browser tool. Serves the site on a free port, opens lint.html in a headless Chrome, Edge or Chromium,
+// waits for the result the page posts back, prints the findings. Exit code: 0 no error, 1 errors, 2 the check did not run.
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { existsSync } from "node:fs";
-import { dirname, join, relative, resolve, sep } from "node:path";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { delimiter, dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const KIT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -23,6 +24,15 @@ const topicDir = resolve(topicArg);
 const topic = relative(ROOT, topicDir).split(sep).join("/");
 if (!existsSync(join(topicDir, "topic.json"))) giveUp(`no topic.json in ${topicDir}.`);
 
+// Headless, not the person's browser: a tab behind their window gets its timers held to one a second, then frozen,
+// and the run stalls for minutes. The throwaway profile keeps their tabs, sign-ins and extensions out of it.
+const { env } = process;
+const browser = ({
+  darwin: ["Google Chrome", "Microsoft Edge", "Chromium", "Brave Browser"].map((app) => `/Applications/${app}.app/Contents/MacOS/${app}`),
+  win32: [env.ProgramFiles, env["ProgramFiles(x86)"], env.LOCALAPPDATA].filter(Boolean).flatMap((dir) => [join(dir, "Google/Chrome/Application/chrome.exe"), join(dir, "Microsoft/Edge/Application/msedge.exe")]),
+}[process.platform] || (env.PATH || "").split(delimiter).flatMap((dir) => ["google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "microsoft-edge"].map((name) => join(dir, name)))).find(existsSync);
+if (!browser) giveUp("no Chrome, Edge or Chromium found. Open kit/skills/build-mockup/lint.html?topic=<group>/<topic> on the local server with a browser tool instead.");
+
 const server = spawn(process.execPath, [join(KIT, "serve.mjs")], { stdio: ["ignore", "pipe", "inherit"] });
 process.on("exit", () => server.kill());
 const base = await new Promise((done) => {
@@ -36,20 +46,35 @@ page.searchParams.set("topic", topic);
 if (screen) page.searchParams.set("screen", screen);
 page.searchParams.set("report", run);
 
-// -g keeps the browser behind the current window. rundll32 takes the address as one argument: & needs no escaping.
-const [command, ...args] = { darwin: ["open", "-g"], win32: ["rundll32", "url.dll,FileProtocolHandler"] }[process.platform] || ["xdg-open"];
-spawn(command, [...args, page.href], { stdio: "ignore" })
-  .once("error", () => giveUp(`could not run ${command}. Open ${page.href} in a browser, or use a browser tool.`))
-  .once("exit", (code) => code && giveUp(`${command} found no browser.`));
+const profile = mkdtempSync(join(tmpdir(), "protopass-render-"));
+const flags = ["--headless=new", `--user-data-dir=${profile}`, "--no-first-run", "--no-default-browser-check", "--disable-background-timer-throttling", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows"];
+const chrome = spawn(browser, [...flags, page.href], { stdio: "ignore" });
+const removeProfile = () => {
+  try { rmSync(profile, { recursive: true, force: true, maxRetries: 3 }); } catch {}
+};
+// After a failure, at best: the browser may still be writing to its profile.
+process.on("exit", () => {
+  chrome.kill();
+  removeProfile();
+});
+// The page closes itself once its result is posted: an exit is a failure only with an error code.
+chrome.once("error", () => giveUp(`could not run ${browser}.`)).once("exit", (code) => code && !result && giveUp(`${browser} stopped with code ${code}.`));
 
 let result;
 const deadline = Date.now() + TIMEOUT_MS;
 while (!result) {
-  if (Date.now() > deadline) giveUp(`no result after ${TIMEOUT_MS / 1000} s: no browser on this machine, or renders too slow.`);
+  if (Date.now() > deadline) giveUp(`no result after ${TIMEOUT_MS / 1000} s: the page stopped before posting it, or renders too slow.`);
   await new Promise((resolve) => setTimeout(resolve, POLL_MS));
   const res = await fetch(`${base}/__protopass/lint/${run}`, { headers: { "x-protopass": "lint" } });
   if (res.ok) result = await res.json();
 }
+// The browser writes to its profile until it exits: the folder goes once it has.
+if (chrome.exitCode === null && chrome.signalCode === null) {
+  const stopped = new Promise((done) => chrome.once("exit", done));
+  chrome.kill();
+  await stopped;
+}
+removeProfile();
 
 if (result.error) giveUp(result.error);
 for (const f of result.findings.filter((f) => f.level !== "accepted")) {

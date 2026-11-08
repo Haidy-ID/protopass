@@ -3,13 +3,38 @@
 // live reload of the pages, POST /__protopass/update, which installs the latest kit release (the update button), and
 // /__protopass/lint/<run>, where lint.html leaves its result for render-check.mjs.
 // Without a port it takes the first free one from 8000: several workshops can run at once.
+// --background detaches it, writes its output to .protopass-server.log at the site root, prints the address and returns.
+import { spawn } from "node:child_process";
 import { createServer } from "node:http";
-import { createReadStream, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { createReadStream, existsSync, openSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const KIT = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(KIT, "..");
+
+// Detached in its own process group: an agent's shell that ends, or kills what it started, leaves the server running.
+if (process.argv.includes("--background")) {
+  const log = join(ROOT, ".protopass-server.log");
+  writeFileSync(log, "");
+  const args = process.argv.slice(2).filter((a) => a !== "--background");
+  const child = spawn(process.execPath, [fileURLToPath(import.meta.url), ...args], { detached: true, windowsHide: true, stdio: ["ignore", openSync(log, "a"), openSync(log, "a")] });
+  child.unref();
+  for (let waited = 0; waited < 5000; waited += 100) {
+    await new Promise((done) => setTimeout(done, 100));
+    const out = readFileSync(log, "utf8");
+    if (out.includes("Serving on")) {
+      console.log(`${out.trim()}\nRunning in the background as process ${child.pid}.`);
+      process.exit(0);
+    }
+    if (child.exitCode !== null) {
+      console.error(out.trim());
+      process.exit(1);
+    }
+  }
+  console.error(`No address after 5 s: read ${log}.`);
+  process.exit(1);
+}
 // Thousands of vendored files that never change: not worth a stat on every live reload poll.
 const ICONS = join(KIT, "minimaly", "icons");
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
@@ -152,7 +177,7 @@ const server = createServer((req, res) => {
   sendFile(req, res, url);
 });
 
-const asked = Number(process.argv[2]);
+const asked = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a)));
 let port = asked || 8000;
 server.on("error", (e) => {
   if (e.code !== "EADDRINUSE" || asked) throw e;

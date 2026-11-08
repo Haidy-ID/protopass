@@ -75,7 +75,7 @@ In `tokens.css`, a role sits in a `[data-theme]` block and a primitive is a raw 
 
 ## Server and update
 
-`node kit/serve.mjs` takes the first free port from 8000, or the one you pass. Every page reloads when a file it shows changes, and keeps its place: mode, flow, screen, device, theme and brand live in the URL.
+`node kit/serve.mjs` takes the first free port from 8000, or the one you pass. `--background` detaches it, writes its output to `.protopass-server.log` and returns: an agent's shell can end without stopping it. Every page reloads when a file it shows changes, and keeps its place: mode, flow, screen, device, theme and brand live in the URL.
 
 The update button (arrow in a circle) in the topbar compares the installed version with the latest release, and puts a dot on it when a release is newer. **Update** replaces `kit/` and reloads the page. Your groups, prototypes and `protopass.json` stay untouched, and the release notes say when they need a change. The server's update and render check routes only answer this machine.
 

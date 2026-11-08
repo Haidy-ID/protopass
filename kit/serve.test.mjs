@@ -37,8 +37,10 @@ function serve(...args) {
     child.stderr.on("data", (data) => fail(new Error(String(data))));
   });
 }
+const detached = [];
 after(() => {
   servers.forEach((child) => child.kill());
+  detached.forEach((pid) => { try { process.kill(pid); } catch {} });
   rmSync(site, { recursive: true, force: true });
 });
 
@@ -144,4 +146,12 @@ test("a bad archive leaves the kit in place", () => {
 
 test("system tar is available", () => {
   assert.match(execFileSync("tar", ["--version"], { encoding: "utf8" }), /tar/);
+});
+
+test("--background returns, and the server outlives the command that started it", async () => {
+  const out = execFileSync(process.execPath, [join(site, "kit/serve.mjs"), "--background"], { encoding: "utf8" });
+  const address = out.match(/http:\S+/)[0];
+  detached.push(Number(out.match(/process (\d+)/)[1]));
+  assert.match(readFileSync(join(site, ".protopass-server.log"), "utf8"), /Serving on http:/);
+  assert.equal((await fetch(`${address}/index.html`)).status, 200);
 });

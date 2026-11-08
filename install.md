@@ -34,27 +34,14 @@ del protopass.tar.gz
 
 ## 3. Start the server
 
-It must keep running after this step. It takes the first free port from 8000 and writes the address to its log.
-
-macOS and Linux:
+The same commands on macOS, Linux and Windows. The server runs in the background and keeps running after this step. It takes the first free port from 8000.
 
 ```bash
 cd protopass
-nohup node kit/serve.mjs > .protopass-server.log 2>&1 &
-sleep 1
-cat .protopass-server.log
+node kit/serve.mjs --background
 ```
 
-Windows (PowerShell):
-
-```powershell
-cd protopass
-Start-Process node -ArgumentList "kit/serve.mjs" -WindowStyle Hidden -RedirectStandardOutput .protopass-server.log
-Start-Sleep 1
-Get-Content .protopass-server.log
-```
-
-The log says `Serving on http://localhost:<port>`. Keep that address.
+It prints `Serving on http://localhost:<port>`. Keep that address.
 
 ## 4. Build the first prototype
 
@@ -90,4 +77,4 @@ Tell the person, in a few lines:
 
 - The address of the prototype and of the home page.
 - Which states you looked at and which you did not.
-- For the next session: open your agent in `protopass/`, and start the server with `node kit/serve.mjs` if it stopped.
+- For the next session: open your agent in `protopass/`, and start the server with `node kit/serve.mjs --background` if it stopped.

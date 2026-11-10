@@ -8,7 +8,7 @@ import { networkInterfaces, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { gzipSync } from "node:zlib";
-import { replaceKit } from "./update.mjs";
+import { entries, replaceKit } from "./update.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const site = mkdtempSync(join(tmpdir(), "protopass-site-"));
@@ -142,6 +142,11 @@ test("a bad archive leaves the kit in place", () => {
   assert.equal(readFileSync(join(dir, "kit/VERSION"), "utf8"), "1.0.0");
   assert.equal(existsSync(join(dir, "kit.new")), false);
   rmSync(dir, { recursive: true, force: true });
+});
+
+test("an archive listing reads the same with Unix and Windows line ends", () => {
+  assert.deepEqual(entries("repo-sha/\r\nrepo-sha/kit/VERSION\r\n"), ["repo-sha/", "repo-sha/kit/VERSION"]);
+  assert.deepEqual(entries("repo-sha/\nrepo-sha/kit/VERSION\n"), ["repo-sha/", "repo-sha/kit/VERSION"]);
 });
 
 test("system tar is available", () => {

@@ -8,13 +8,17 @@ import { fileURLToPath } from "node:url";
 const REPO = "Haidy-ID/protopass";
 const KIT = dirname(fileURLToPath(import.meta.url));
 
+// The names tar lists, one per line. The tar that ships with Windows ends its lines with CRLF: a name that kept its
+// "\r" matches nothing, and every archive looked as if it had no kit/VERSION.
+export const entries = (listing) => listing.split(/\r?\n/).filter(Boolean);
+
 // The archive holds one root folder (<owner>-<repo>-<sha>/): only its kit/ part is taken.
 // tar ships with macOS, Linux and Windows 10 and later. Relative paths keep a Windows drive letter away from it.
 export function replaceKit(archive, kit = KIT) {
   const site = dirname(kit);
   const staging = `${basename(kit)}.new`;
   const old = join(site, `${basename(kit)}.old`);
-  const list = execFileSync("tar", ["-tzf", basename(archive)], { cwd: dirname(archive), encoding: "utf8", maxBuffer: 1 << 28 }).split("\n").filter(Boolean);
+  const list = entries(execFileSync("tar", ["-tzf", basename(archive)], { cwd: dirname(archive), encoding: "utf8", maxBuffer: 1 << 28 }));
   // A path that leaves the staging folder (../, absolute) is refused: nothing is written outside the kit.
   const unsafe = list.find((name) => name.startsWith("/") || /^[A-Za-z]:/.test(name) || name.split("/").includes(".."));
   if (unsafe) throw new Error(`Unsafe path in the release archive: ${unsafe}`);

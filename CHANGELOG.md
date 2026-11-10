@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.1 · 2026-11-10
+
+- The kit update works on Windows. The `tar` that ships with Windows ends the lines of its listing with CRLF, and every update was refused with "The release archive has no kit/VERSION". A kit already installed on Windows cannot get this fix through the update button, which is what was broken: replace its `kit/` folder once with the one from the release archive.
+
 ## 3.1.0 · 2026-11-10
 
 - Minimaly: `reading-progress`, a line that fills as a long text is read. In a `sticky-header` it runs along its bottom edge, and it fires `change` so a page can show the minutes left.

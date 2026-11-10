@@ -242,12 +242,13 @@
       throw e;
     }
   };
-  // data-copy="…" copies on click with no script. An empty value copies nothing and reports nothing.
-  // Each new copy restarts the 2 s hold instead of stacking timers.
+  // data-copy="…" copies on click with no script. An empty value copies the code of the .code-block the button sits in;
+  // anywhere else it copies nothing and reports nothing. Each new copy restarts the 2 s hold instead of stacking timers.
   document.addEventListener("click", (e) => {
     const btn = e.target.closest?.(".btn[data-copy]");
-    if (!btn?.dataset.copy) return;
-    copyText(btn.dataset.copy).then(() => setState(btn, "done", 2000), () => setState(btn, "error", 2000));
+    const text = btn && (btn.dataset.copy || btn.closest(".code-block")?.querySelector(".code code")?.textContent);
+    if (!text) return;
+    copyText(text).then(() => setState(btn, "done", 2000), () => setState(btn, "error", 2000));
   });
   // The async clipboard is refused in iframes without clipboard-write (Playground, viewer screens): copy through a selection then.
   const copyText = (text) =>
@@ -748,7 +749,21 @@
     for (const a of links) a === current ? a.setAttribute("aria-current", "location") : a.removeAttribute("aria-current");
   };
   const stick = (header) => header.toggleAttribute("data-stuck", scrollY > 0 && header.getBoundingClientRect().top <= 0);
-  addEventListener("scroll", () => { spies.forEach(spy); stickies.forEach(stick); }, { passive: true });
+  // Reading progress: .reading-progress[data-for="<id>"] fills as the text with that id passes the reading line, 40% down
+  // the window. It sets --read (0 to 1) and aria-valuenow, and fires "change" with detail.read so the page can say more,
+  // such as the minutes left.
+  const readings = new Set();
+  const follow = (bar) => {
+    const box = document.getElementById(bar.dataset.for)?.getBoundingClientRect();
+    if (!box?.height) return;
+    const read = Math.min(1, Math.max(0, (innerHeight * 0.4 - box.top) / box.height));
+    if (bar.style.getPropertyValue("--read") === String(read)) return;
+    bar.style.setProperty("--read", read);
+    bar.setAttribute("aria-valuenow", Math.round(read * 100));
+    bar.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { read } }));
+  };
+  addEventListener("scroll", () => { spies.forEach(spy); stickies.forEach(stick); readings.forEach(follow); }, { passive: true });
+  addEventListener("resize", () => readings.forEach(follow));
 
   // Hold to confirm (interior.dev): .btn[data-hold] for an action that cannot be undone. Holding the pointer, Space or Enter
   // fills it over 1.8 s; letting go drains it 2.5 times faster, and pressing again resumes from what is left. Only a full
@@ -1929,6 +1944,7 @@
     each(node, ".table[data-sortable]", initTable);
     each(node, ".toc[data-spy]", (nav) => { spies.add(nav); spy(nav); });
     each(node, ".sticky-header", (header) => { stickies.add(header); stick(header); });
+    each(node, ".reading-progress[data-for]", (bar) => { readings.add(bar); follow(bar); });
     each(node, ".btn[data-hold]:not([data-state])", buildHold);
     each(node, ".checkbox__box", buildCheckbox);
     each(node, ".field", buildField);

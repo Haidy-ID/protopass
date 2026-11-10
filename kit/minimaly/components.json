@@ -818,11 +818,14 @@
     "class": "code",
     "name": "Code",
     "variants": [
-      "default"
+      "default",
+      "block"
     ],
     "states": [
       "default",
-      "overflow"
+      "overflow",
+      "marked",
+      "copied"
     ]
   },
   {
@@ -875,6 +878,19 @@
       "middle",
       "end",
       "focus"
+    ]
+  },
+  {
+    "id": "reading-progress",
+    "class": "reading-progress",
+    "name": "Reading progress",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "start",
+      "halfway",
+      "read"
     ]
   }
 ]

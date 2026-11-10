@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.0 · 2026-11-10
+
+- Minimaly: `reading-progress`, a line that fills as a long text is read. In a `sticky-header` it runs along its bottom edge, and it fires `change` so a page can show the minutes left.
+- Minimaly: `code` can sit in a `code-block`, with the file name and a copy button above it, and mark the lines the text talks about with `code__mark`. An empty `data-copy` in a `code-block` copies its code.
+
 ## 3.0.2 · 2026-11-08
 
 - `node kit/serve.mjs --background` starts the server detached, writes its output to `.protopass-server.log`, prints the address and returns. `install.md` uses it on every system: Codex stopped the server started with `nohup … &` as soon as the command ended.

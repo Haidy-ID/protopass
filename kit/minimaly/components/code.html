@@ -15,6 +15,15 @@
     <pre class="code" style="width: 560px"><code><span class="code__comment">// Ink is the main action; the accent marks focus and what is current.</span>
 <span class="code__keyword">.btn</span>[data-variant="primary"] { background: var(--color-ink); color: var(--color-on-ink); }
 <span class="code__keyword">.tabs__indicator</span> { background: var(--color-accent); transition: transform var(--duration-spring) var(--ease-spring); }</code></pre>
+    <span class="row">Block</span>
+    <figure class="code-block" style="width: 560px">
+      <figcaption class="code-block__head"><span class="code-block__file"><i class="icon" data-icon="file-ts"></i>sync/answer.ts</span><button class="btn" data-variant="ghost" data-copy=""><i class="icon" data-icon="copy"></i>Copy</button></figcaption>
+<pre class="code"><code><span class="code__keyword">export async function</span> answer(id: string, value: unknown) {
+  <span class="code__keyword">await</span> db.put("answers", { id, value, at: Date.now() });
+<span class="code__mark">  queue.push(id);       <span class="code__comment">// sent when the network comes back</span>
+</span><span class="code__mark">  setStatus("saved");   <span class="code__comment">// shown at once</span>
+</span>}</code></pre>
+    </figure>
   </div>
   <script src="../ds.js"></script>
 </body>

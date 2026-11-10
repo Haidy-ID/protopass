@@ -3,8 +3,8 @@
    data-force="hover" pins the hover state for specimen pages. Tokens only, no raw values. */
 
 /* Borders and padding stay inside the declared size (32 px controls), whatever the page reset. */
-:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel),
-:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel) * { box-sizing: border-box; }
+:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel),
+:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel) * { box-sizing: border-box; }
 
 /* Motion: keyframes shared by the components and the pages built on them.
    enter = fade up (page sections, cards), pop-in = fade and grow (tooltips, popovers), fade-in, fade-out.
@@ -1089,6 +1089,19 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .code code { padding: 0; background: none; font: inherit; }
 .code__comment { color: var(--color-text-secondary); }
 .code__keyword { font-weight: var(--font-weight-semibold); }
+/* A line the text talks about: one block per line, with its line break inside. */
+.code__mark { display: block; margin-inline: calc(var(--spacing-xl) * -1); padding-inline: var(--spacing-xl); background: var(--color-accent-subtle); box-shadow: inset var(--stroke-width-mid) 0 0 var(--color-accent); }
+/* Code block: a code under a head, its file on the left and a copy button on the right. */
+.code-block { margin: 0; }
+.code-block__head { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-xl); border: var(--stroke-width-subtle) solid var(--color-border); border-bottom: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; background: var(--color-surface-sunken); }
+.code-block__file { display: inline-flex; align-items: center; gap: var(--spacing-sm); min-width: 0; overflow: hidden; color: var(--color-text-secondary); font: var(--font-size-sm)/var(--line-height-normal) var(--font-family-mono); white-space: nowrap; text-overflow: ellipsis; }
+.code-block > .code { border-top-left-radius: 0; border-top-right-radius: 0; }
+
+/* Reading progress: how far a reader is through a long text. A line that fills as the text passes the reading line
+   (ds.js). It follows the scroll itself, so it has no transition. Inside a sticky header it runs along its bottom edge. */
+.reading-progress { --read: 0; height: var(--stroke-width-mid); overflow: hidden; }
+.reading-progress__fill { display: block; height: 100%; background: var(--color-accent); transform: scaleX(var(--read)); transform-origin: left; }
+.sticky-header > .reading-progress { position: absolute; right: 0; bottom: 0; left: 0; }
 
 /* Quote: a pull quote with its source, set off by an ink rule. */
 .quote { display: flex; flex-direction: column; gap: var(--spacing-md); margin: 0; padding-left: var(--spacing-xl); border-left: calc(var(--stroke-width-subtle) * 2) solid var(--color-ink); }

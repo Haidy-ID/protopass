@@ -5,7 +5,7 @@ description: Creates or upgrades a design system component for Protopass (CSS, b
 
 # new-component
 
-A component "worth the name" has every state a user can meet, works with the keyboard and a screen reader, moves with intent, and survives Copy to Figma. It is written once in the design system, then every screen uses it from its card.
+A component "worth the name" has every state a user can meet, works with the keyboard and a screen reader, and moves with intent. It is written once in the design system, then every screen uses it from its card.
 
 ## Where
 
@@ -30,7 +30,6 @@ A component "worth the name" has every state a user can meet, works with the key
    - Content swapping in place (a label, a panel, a digit): through `--blur-swap` (keyframe `swap-in`). A refused value: `shake`, played by the error state appearing.
    - Height to and from auto: `interpolate-size: allow-keywords`. Lists entering: stagger with `--duration-stagger`.
    - Every duration is a token, so reduced motion makes it instant. A looping animation also stops under `prefers-reduced-motion`.
-   - Copy to Figma: no `::before` / `::after` that draws, no `background-image`, no `outline` outside `:focus-visible`. Draw with real elements, inset `box-shadow` or inline SVG.
    **Done when** every state change has a reason to move, and nothing moves without one.
 
 4. **Behavior** in `ds.js`, only what CSS and native elements cannot do:

@@ -99,18 +99,6 @@ Render linter codes (`lint.html`):
 | L301 | error | overlap between two sibling elements in the flow |
 | L401 | error | clickable element under 32 px high |
 | L402 | warning | non-clickable label that looks like a button |
-| L501 | warning | `::before` or `::after` that draws something and stays: lost by Copy to Figma. One that plays once is ignored |
-| L502 | warning | `background-image`: lost by Copy to Figma |
-| L503 | warning | `outline`, focus rings aside: becomes a separate "Outline" layer in Figma |
-| L504 | warning | `clipPath` shape without `fill="none"`: pasted as a black shape in Figma |
-
-## CSS that survives Copy to Figma
-
-- `::before`, `::after`: use a real element.
-- `background-image`: inline SVG or a solid element.
-- `outline`: `box-shadow: inset 0 0 0 1px <token>`.
-- `clipPath` shape: `fill="none"`.
-- `:hover` and `:focus-visible` states are not copied.
 
 ## What the checks do not cover
 

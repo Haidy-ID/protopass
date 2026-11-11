@@ -134,30 +134,6 @@
           add("L402", "warning", el, "Filled, rounded and short: reads as a button but is not clickable.", "Drop the fill (text color only) or make it a real 32 px control.");
         }
       }
-
-      // L501 to L503: what Copy to Figma does not convert. A pseudo-element counts only when it paints something.
-      for (const pseudo of ["::before", "::after"]) {
-        const p = win.getComputedStyle(el, pseudo);
-        if (["none", "normal"].includes(p.content) || p.display === "none") continue;
-        // One that plays once lives only during that animation (a value's trend arrow): the moment of the check decides whether it is seen.
-        if (p.animationName !== "none" && p.animationIterationCount !== "infinite") continue;
-        const fill = parse(p.backgroundColor);
-        const paints = p.content !== '""' || (fill && fill.a > 0) || p.backgroundImage !== "none" || parseFloat(p.borderTopWidth) > 0 || parseFloat(p.borderBottomWidth) > 0 || p.boxShadow !== "none";
-        if (paints) add("L501", "warning", el, `Its ${pseudo} is dropped by Copy to Figma.`, "Make it a real element, inserted by ds.js if the markup must stay plain (see .checkbox__mark, .tab-bar).");
-      }
-      if (s.backgroundImage !== "none") {
-        add("L502", "warning", el, "Its background-image is dropped by Copy to Figma.", "Use an inline SVG or a real element with a background color.");
-      }
-      // A focus ring depends on which frame the browser happens to focus, not on the design.
-      if (s.outlineStyle !== "none" && parseFloat(s.outlineWidth) > 0 && !el.matches(":focus-visible")) {
-        add("L503", "warning", el, "Its outline becomes a separate Outline layer in Figma.", "Use box-shadow: inset 0 0 0 1px <token> instead.");
-      }
-    }
-
-    // L504 a clip path shape without fill="none" is drawn as a black shape by Copy to Figma
-    for (const shape of doc.querySelectorAll("clipPath > *")) {
-      const svg = shape.closest("svg");
-      if (svg && visible(svg) && shape.getAttribute("fill") !== "none") add("L504", "warning", svg, "A clipPath shape without fill=\"none\" pastes as a black shape in Figma.", "Set fill=\"none\" on the clipPath shape.");
     }
 
     // L301 overlap between in-flow siblings

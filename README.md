@@ -85,7 +85,7 @@ The update button (arrow in a circle) in the topbar compares the installed versi
 - Prototype: clickable screens. P plays the next step, I highlights the links, F goes full screen.
 - Inspect (V): hover a part of a screen to read its type, colors and spacing with their tokens. Reference copies one line that tells your agent which part of which screen you mean.
 - Theme and brand: light and dark, and the looks of a prototype that has several. A link opens as it was seen.
-- Copy to Figma (local server only): copies a screen or a whole flow as Figma frames.
+- Copy to Figma (local server only): copies a screen or a whole flow as Figma frames. Best effort: pseudo-elements and background images are not kept.
 - `?` lists the shortcuts.
 
 ## Develop the kit

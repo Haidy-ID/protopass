@@ -284,10 +284,6 @@
         L301: "Elements overlap",
         L401: "Clickable area too small",
         L402: "Looks like a button, is not clickable",
-        L501: "Pseudo-element lost by Copy to Figma",
-        L502: "Background image lost by Copy to Figma",
-        L503: "Outline becomes a separate Figma layer",
-        L504: "Clip path pasted as a black shape",
       };
       const problems = hits.filter((f) => f.level !== "accepted");
       const codes = [...new Set(problems.map((f) => f.code))].map((code) => problems.filter((f) => f.code === code));

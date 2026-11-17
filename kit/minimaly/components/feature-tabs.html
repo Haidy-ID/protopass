@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Feature tabs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="grid-template-columns: minmax(0, 1fr)">
+    <span class="row">Live: pick a tab, or ← → on the tabs</span>
+    <div class="feature-tabs"><div class="tabs" role="tablist" aria-label="Features"><button class="tabs__tab" role="tab" id="ft-capture" aria-controls="fp-capture" aria-selected="true">Capture</button><button class="tabs__tab" role="tab" id="ft-track" aria-controls="fp-track">Track</button><button class="tabs__tab" role="tab" id="ft-remind" aria-controls="fp-remind">Remind</button></div><div class="tabs__panel" role="tabpanel" id="fp-capture" aria-labelledby="ft-capture"><p class="feature-tabs__text">Write a loan down in ten seconds, from the lock screen.</p><figure class="media" style="--ratio: 16 / 9"><div class="media__frame"><img src="media-sample.svg" alt="Hills under a pale sun"></div></figure></div><div class="tabs__panel" role="tabpanel" id="fp-track" aria-labelledby="ft-track"><p class="feature-tabs__text">See what is out, who has it and when it comes back.</p><figure class="media" style="--ratio: 16 / 9"><div class="media__frame"><i class="icon" data-icon="image" style="--icon-size: 32px"></i></div></figure></div><div class="tabs__panel" role="tabpanel" id="fp-remind" aria-labelledby="ft-remind"><p class="feature-tabs__text">A polite nudge goes out the day before, on its own.</p><figure class="media" style="--ratio: 16 / 9"><div class="media__frame"><i class="icon" data-icon="image" style="--icon-size: 32px"></i></div></figure></div></div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

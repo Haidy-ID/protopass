@@ -3,8 +3,8 @@
    data-force="hover" pins the hover state for specimen pages. Tokens only, no raw values. */
 
 /* Borders and padding stay inside the declared size (32 px controls), whatever the page reset. */
-:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel),
-:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel) * { box-sizing: border-box; }
+:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel, .toolbar, .bulk-bar, .load-more, .inline-edit, .save-status, .mention, .section, .hero, .logo-strip, .feature-tabs, .cta, .site-footer, .pricing, .node-map, .highlight, .graph, .facts),
+:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel, .toolbar, .bulk-bar, .load-more, .inline-edit, .save-status, .mention, .section, .hero, .logo-strip, .feature-tabs, .cta, .site-footer, .pricing, .node-map, .highlight, .graph, .facts) * { box-sizing: border-box; }
 
 /* Motion: keyframes shared by the components and the pages built on them.
    enter = fade up (page sections, cards), pop-in = fade and grow (tooltips, popovers), fade-in, fade-out.
@@ -102,6 +102,21 @@
 .chip[data-variant="round"] { border-radius: var(--radius-full); background: var(--color-surface-raised); }
 .chip[data-variant="accent"] { background: var(--color-accent-subtle); border-color: var(--color-accent-border); color: var(--color-accent); }
 .chip[data-variant="accent"] .icon { color: var(--color-accent); }
+/* Muted: a value left unset or at its default steps back, so the values that were changed draw the eye. */
+.chip[data-variant="muted"] { background: none; color: var(--color-text-tertiary); }
+.chip[data-variant="muted"] .icon { color: var(--color-text-tertiary); }
+
+/* Mention: a person or a thing named inside running text. A 16 px avatar, then the name on the text baseline with a
+   dotted underline. A span is static; a link or a button opens the entity. */
+.mention { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: none; white-space: nowrap; }
+.mention .avatar { width: var(--size-mark); height: var(--size-mark); margin-right: var(--spacing-xs); vertical-align: middle; }
+.mention__name { font-weight: var(--font-weight-medium); text-decoration: underline dotted var(--color-border-strong); text-underline-offset: 3px; transition: color var(--duration-fast) var(--ease-out), text-decoration-color var(--duration-fast) var(--ease-out); }
+/* A link or a button keeps the look of text and gets a target of --control-height: padding that the line does not
+   feel, cancelled by the same margin where the box is atomic (a button). The focus ring stays on the name. */
+:is(a, button).mention { --mention-pad: max(0px, calc((var(--control-height) - 1em) / 2)); margin-block: calc(var(--mention-pad) * -1); padding-block: var(--mention-pad); cursor: pointer; }
+:is(a, button).mention:hover .mention__name, .mention[data-force="hover"] .mention__name { color: var(--color-accent); text-decoration-color: var(--color-accent); }
+:is(a, button).mention:focus-visible { outline: 0; }
+:is(a, button).mention:focus-visible .mention__name { border-radius: var(--radius-xs); outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
 
 /* Avatar: initials or photo in a circle. .avatars stacks them with an overlap. */
 .avatar {
@@ -373,6 +388,14 @@ a.card:focus-visible { outline: 0; box-shadow: 0 0 0 var(--stroke-width-mid) var
 .menu__item:disabled, .menu__item[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; }
 .menu__separator { height: var(--stroke-width-subtle); margin: var(--spacing-xs) calc(var(--spacing-xs) * -1); border: 0; background: var(--color-border); }
 .popover.menu[hidden] { display: none; }
+/* Submenu: an item with data-submenu opens another menu beside it and stays lit while it is open. The items the pointer
+   crosses on its way to the submenu do not light up (data-aiming, set by ds.js). It comes out of the side of its item. */
+.menu__item .menu__caret { --icon-size: var(--size-icon-sm); margin-left: auto; color: var(--color-text-tertiary); }
+.menu__item[aria-expanded="true"] { background: var(--color-surface-hover); }
+.menu[data-aiming] .menu__item:not([aria-expanded="true"]):hover { background: none; }
+.menu[data-side="left"] { --from: 4px; transform-origin: top right; }
+.menu:is([data-side="right"], [data-side="left"])[hidden] { transform: translateX(var(--from)) scale(0.94); }
+@starting-style { .menu:is([data-side="right"], [data-side="left"]):not([hidden]) { transform: translateX(var(--from)) scale(0.94); } }
 
 /* Modal and drawer: native <dialog>, opened by data-open="<id>" or showModal(). Esc closes the top one; data-close closes;
    a press that starts and ends on the backdrop closes unless data-static. The page under it does not scroll. */
@@ -596,6 +619,12 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .table th button:hover, .table th[aria-sort]:not([aria-sort="none"]) button { color: var(--color-text-primary); }
 .table__sort { opacity: 0.4; transition: opacity var(--duration-fast) var(--ease-out); }
 .table th:is([aria-sort="ascending"], [aria-sort="descending"]) .table__sort { opacity: 1; }
+/* Selectable (data-selectable): a .checkbox per row in a .table__select cell, the select-all in the head. A selected row
+   carries aria-selected and a quiet accent tint that hover does not wash out. */
+.table .table__select { width: calc(var(--size-mark) + var(--spacing-md)); padding-right: 0; }
+.table__select .checkbox { display: flex; }
+.table[data-selectable] tbody tr { transition: background var(--duration-fast) var(--ease-out); }
+.table tbody tr[aria-selected="true"] { background: var(--color-accent-subtle); }
 
 /* Diff: what a change does to a file. A head (icon, path, + and − counts), hunks, then numbered lines: data-kind="add"
    or "del" tint them; unchanged lines stay plain. Static: the page writes the lines. */
@@ -655,6 +684,17 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .field[data-invalid] > :is(.input, .select, .textarea) { border-color: var(--color-status-critical); animation: shake calc(var(--duration-slow) * 1.4) var(--ease-out); }
 .field[data-invalid] > :is(.input, .select, .textarea):focus-within { box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-status-critical); }
 .field:has(:disabled) { opacity: 0.4; }
+/* Warning (data-warning): a remark that does not block. It takes the hint's place like the error, without the shake,
+   and gives way to the error. */
+.field__warning { display: flex; align-items: center; gap: var(--spacing-xs); margin: 0; color: var(--color-status-warning); font-size: var(--font-size-xs); line-height: var(--line-height-normal);
+  interpolate-size: allow-keywords; height: 0; overflow: hidden; opacity: 0; transform: translateY(-2px);
+  transition: height var(--duration-base) var(--ease-out), margin var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out), transform var(--duration-base) var(--ease-out); }
+/* Folded, it also gives back the gap of the field, so swapping it with the hint moves nothing. */
+.field__warning { margin-top: calc(var(--spacing-xs) * -1); }
+.field__warning .icon { --icon-size: 14px; }
+.field[data-warning]:not([data-invalid]) .field__warning { height: auto; margin-top: 0; opacity: 1; transform: none; }
+.field[data-warning] .field__hint { display: none; }
+.field[data-warning]:not([data-invalid]) > :is(.input, .select, .textarea):not(:focus-within) { border-color: var(--color-status-warning); }
 .field__choices { display: flex; flex-direction: column; gap: var(--spacing-sm); }
 .field__choices[data-variant="row"] { flex-direction: row; flex-wrap: wrap; gap: var(--spacing-lg); }
 
@@ -690,6 +730,33 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 :is(.checkbox, .radio, .switch):has(> input:disabled) { opacity: 0.4; cursor: not-allowed; }
 .checkbox__text, .radio__text, .switch__text { display: flex; flex-direction: column; }
 .checkbox__text small, .radio__text small, .switch__text small { color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+
+/* Inline edit: a text renamed in place. Its pencil shows on hover and focus; the pencil, or Enter or F2 on the text,
+   makes the text itself editable (ds.js), so its type and size stay and nothing moves. The field look is drawn around
+   the text with shadows, which take no room. */
+.inline-edit { display: inline-flex; align-items: center; gap: var(--spacing-xs); max-width: 100%; }
+.inline-edit__text { min-width: 0; border-radius: var(--radius-xs); transition: box-shadow var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
+.inline-edit__text:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+/* A square of --control-height like any icon button; its margins give half of it back, so the line keeps its height. */
+.inline-edit__btn { display: inline-grid; place-items: center; flex: none; width: var(--control-height); height: var(--control-height); margin-block: calc(var(--control-height) / -4); padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-text-tertiary); cursor: pointer; opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.inline-edit:hover .inline-edit__btn, .inline-edit:focus-within .inline-edit__btn, .inline-edit[data-force="hover"] .inline-edit__btn { opacity: 1; }
+.inline-edit__btn:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+@media (hover: none) { .inline-edit__btn { opacity: 1; } }
+.inline-edit[data-editing] .inline-edit__text { outline: 0; background: var(--color-surface-raised); box-shadow: 0 0 0 var(--spacing-xs) var(--color-surface-raised), 0 0 0 calc(var(--spacing-xs) + var(--stroke-width-mid)) var(--color-accent); cursor: text; }
+.inline-edit[data-editing] .inline-edit__btn { visibility: hidden; }
+
+/* Save status: one line that says where a save stands. data-state shows one of its texts: saving, saved, error. The
+   new text swaps in; a failed save shakes once. The line keeps the height of its Retry button, so nothing moves. */
+.save-status { display: inline-flex; align-items: center; min-height: var(--control-height); color: var(--color-text-secondary); font-size: var(--font-size-sm); white-space: nowrap; }
+.save-status__text { display: none; align-items: center; gap: var(--spacing-xs); }
+.save-status .icon { color: var(--color-text-tertiary); }
+:is(.save-status[data-state="saving"] > [data-for="saving"], .save-status[data-state="saved"] > [data-for="saved"], .save-status[data-state="error"] > [data-for="error"]) { display: inline-flex; animation: swap-in var(--duration-slow) var(--ease-out); }
+.save-status__text[data-for="saving"] .icon { animation: spin calc(var(--duration-slow) * 2.5) linear infinite; }
+.save-status__text[data-for="saved"] .icon { color: var(--color-status-success); }
+.save-status__text[data-for="error"], .save-status__text[data-for="error"] > .icon { color: var(--color-status-critical); }
+.save-status[data-state="error"] > [data-for="error"] { animation: swap-in var(--duration-slow) var(--ease-out), shake calc(var(--duration-slow) * 1.4) var(--ease-out) var(--duration-slow); }
+.save-status__text .btn { margin-left: var(--spacing-xs); }
 
 /* Textarea: multi-line text that grows with its content up to max-height (field-sizing). data-max shows a counter. */
 .textarea { position: relative; display: flex; flex-direction: column; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); cursor: text;
@@ -737,6 +804,7 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .banner[data-variant="warning"] > .icon { color: var(--color-status-warning); }
 .banner[data-variant="critical"] { border-color: color-mix(in srgb, var(--color-status-critical) 30%, transparent); background: var(--color-status-critical-subtle); }
 .banner[data-variant="critical"] > .icon { color: var(--color-status-critical); }
+.banner[hidden] { display: none; }
 .banner[data-variant="critical"]:not([data-leaving]) { animation: enter-down var(--duration-spring) var(--ease-spring), shake calc(var(--duration-slow) * 1.4) var(--ease-out) var(--duration-spring); }
 /* Dismissed: fades, then the room it took closes, so the content under it rises instead of jumping. */
 .banner[data-leaving] { interpolate-size: allow-keywords; overflow: hidden; animation: banner-out var(--duration-slow) var(--ease-in) forwards; }
@@ -784,10 +852,53 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .list__trail { display: flex; align-items: center; gap: var(--spacing-sm); flex: none; color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
 .list__chevron { color: var(--color-text-tertiary); transition: transform var(--duration-spring) var(--ease-spring), color var(--duration-fast) var(--ease-out); }
 :is(:is(a, button).list__item:hover, .list__item[data-force="hover"]) .list__chevron { transform: translateX(3px); color: var(--color-text-primary); }
+.list__item[hidden] { display: none; }
+.list[data-variant="inset"]:not(:has(> .list__item:not([hidden]))) { display: none; }
+/* Selectable (data-selectable): each row leads with a .checkbox.list__select. A selected row carries aria-selected. */
+.list__item[aria-selected="true"] { background: var(--color-accent-subtle); }
+/* Reorder (data-reorder): each row leads with a .list__handle. The row being moved rises off the list; a line marks the
+   slot it would land in. No entrance here: a row put back in the list would play it again. */
+.list[data-reorder] { position: relative; }
+.list[data-reorder] > .list__item { animation: none; transition: background var(--duration-fast) var(--ease-out), box-shadow var(--duration-base) var(--ease-out); }
+.list__handle { display: grid; place-items: center; flex: none; width: var(--spacing-xl); height: var(--control-height); margin-inline: calc(var(--spacing-xs) * -1); padding: 0; border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-text-tertiary); cursor: grab; touch-action: none; user-select: none;
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.list__handle:hover, .list__handle[data-force="hover"] { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.list__handle:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: -2px; }
+.list__item[data-dragging] { position: relative; z-index: 1; border-bottom-color: transparent; border-radius: var(--radius-md); background: var(--color-surface-raised); box-shadow: var(--shadow-md); }
+.list__item[data-dragging] .list__handle { color: var(--color-text-primary); cursor: grabbing; }
+/* Carried by the pointer, the row lets the line of its slot show through. */
+.list:has(> .list__drop) > .list__item[data-dragging] { opacity: 0.9; }
+.list__drop { position: absolute; top: 0; right: 0; left: 0; z-index: 2; height: calc(var(--stroke-width-subtle) * 2); margin-top: calc(var(--stroke-width-subtle) * -1); border-radius: var(--radius-full); background: var(--color-accent); pointer-events: none; transition: transform var(--duration-fast) var(--ease-out); }
+
+/* Toolbar: the bar above a table or a list. A search field, filters (.select, or .btn with aria-pressed), then the page
+   actions pushed to the end. data-filter on the search field hides the rows that do not match (ds.js). */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-sm); padding-bottom: var(--spacing-md); }
+.toolbar__search { flex: 1; min-width: 160px; max-width: 280px; }
+.toolbar__search input::-webkit-search-cancel-button { display: none; }
+.toolbar__actions { display: flex; gap: var(--spacing-sm); margin-left: auto; }
+.empty[hidden] { display: none; }
+
+/* Bulk bar: the actions on the rows selected in a table or a list (data-for). Hidden until a row is selected: it rises
+   under the rows and stays in view while they scroll. */
+.bulk-bar {
+  position: sticky; bottom: var(--spacing-lg); z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-md); width: fit-content; max-width: 100%; min-height: var(--size-row);
+  margin: var(--spacing-md) auto 0; padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-md);
+  border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: var(--shadow-lg); color: var(--color-text-primary); font-size: var(--font-size-sm);
+  transition: opacity var(--duration-base) var(--ease-out), transform var(--duration-spring) var(--ease-spring), filter var(--duration-base) var(--ease-out), display var(--duration-base) allow-discrete;
+}
+.bulk-bar[hidden] { display: none; opacity: 0; transform: translateY(8px) scale(0.96); filter: blur(2px); transition-duration: var(--duration-fast); transition-timing-function: var(--ease-in); }
+@starting-style { .bulk-bar:not([hidden]) { opacity: 0; transform: translateY(8px) scale(0.96); filter: blur(2px); } }
+.bulk-bar__count { font-weight: var(--font-weight-medium); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bulk-bar__actions { display: flex; gap: var(--spacing-xs); }
+
+/* Load more: the next rows of a feed on request, and how far the reader is. The button is an async button. */
+.load-more { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-lg) 0; }
+.load-more > [hidden] { display: none; }
+.load-more__count { color: var(--color-text-tertiary); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
 
 /* App shell: navigation rail, top bar and content. data-collapsed on .shell folds the rail to icons (ds.js toggles it
    from [data-shell-toggle]); labels fade and the rail springs to its new width. The current page carries aria-current. */
-.shell { --shell-nav: 232px; display: grid; grid-template-columns: var(--shell-nav) minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "nav top" "nav main"; height: 100vh; height: 100dvh; background: var(--color-surface); color: var(--color-text-primary);
+.shell { --shell-nav-open: 232px; --shell-nav: var(--shell-nav-open); display: grid; grid-template-columns: var(--shell-nav) minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "nav top" "nav main"; height: 100vh; height: 100dvh; background: var(--color-surface); color: var(--color-text-primary);
   transition: grid-template-columns var(--duration-spring) var(--ease-spring); }
 /* Folded, the rail is exactly one square item wide: the items become 32 px squares, their icons centred and unmoved. */
 .shell[data-collapsed] { --shell-nav: calc(var(--control-height) + 2 * var(--spacing-sm) + var(--stroke-width-subtle)); }
@@ -809,6 +920,48 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .nav__label, .nav__count, .nav__section, .shell__brand-name { transition: opacity var(--duration-base) var(--ease-out); }
 .shell[data-collapsed] :is(.nav__label, .nav__count, .nav__section, .shell__brand-name) { opacity: 0; pointer-events: none; }
 .shell__foot { margin-top: auto; }
+/* Group: links nested under a row of the rail, in a native <details>. The caret turns and the links unfold. A folded
+   rail keeps the row's icon; choosing it unfolds the rail (ds.js). A closed group lights up when it holds the current page.
+   Unfolded groups can outgrow the rail: it scrolls, and its rows keep their height. */
+.shell__nav { overflow-y: auto; }
+.shell__nav > * { flex: none; }
+.nav__group { interpolate-size: allow-keywords; }
+.nav__group > summary { list-style: none; cursor: pointer; user-select: none; }
+.nav__group > summary::-webkit-details-marker { display: none; }
+.nav__item .nav__caret { --icon-size: var(--size-icon-sm); margin-left: auto; color: var(--color-text-tertiary); transition: transform var(--duration-base) var(--ease-out), opacity var(--duration-base) var(--ease-out); }
+.nav__item:hover .nav__caret { transform: none; }
+.nav__group[open] > summary .nav__caret { transform: rotate(90deg); }
+.nav__group::details-content { height: 0; overflow: hidden; transition: height var(--duration-spring) var(--ease-spring), content-visibility var(--duration-spring) allow-discrete; }
+.nav__group[open]::details-content { height: auto; }
+.nav__sub { display: flex; flex-direction: column; gap: var(--spacing-xs); margin-left: var(--spacing-lg); padding: var(--spacing-xs) 0 0 calc(var(--spacing-sm) - var(--stroke-width-subtle)); border-left: var(--stroke-width-subtle) solid var(--color-border); transition: visibility var(--duration-spring); }
+:is(.nav__group:not([open]), .shell[data-collapsed] .nav__group):has(.nav__sub [aria-current="page"]) > summary { background: var(--color-accent-subtle); color: var(--color-accent); }
+.shell[data-collapsed] .nav__group::details-content { height: 0; }
+.shell[data-collapsed] .nav__sub { visibility: hidden; }
+.shell[data-collapsed] .nav__caret { opacity: 0; }
+/* Account: who is signed in, at the foot of the rail. A button that opens a menu (data-menu). Folded: the avatar alone. */
+.shell__account { display: flex; align-items: center; gap: var(--spacing-sm); width: 100%; min-height: var(--size-row); padding: var(--spacing-xs); border: 0; border-radius: var(--radius-sm); background: none; color: var(--color-text-primary); font-family: var(--font-family); text-align: left; cursor: pointer; transition: background var(--duration-fast) var(--ease-out); }
+.shell__account:hover, .shell__account[data-force="hover"], .shell__account[aria-expanded="true"] { background: var(--color-surface-hover); }
+.shell__account:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: -2px; }
+.shell__account-text { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-2xs); min-width: 0; }
+.shell__account-name, .shell__account-meta { overflow: hidden; line-height: var(--line-height-tight); white-space: nowrap; text-overflow: ellipsis; }
+.shell__account-name { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.shell__account-meta { color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+.shell__account > .icon { color: var(--color-text-tertiary); }
+.shell__account-text, .shell__account > .icon { transition: opacity var(--duration-base) var(--ease-out); }
+.shell[data-collapsed] :is(.shell__account-text, .shell__account > .icon) { opacity: 0; }
+/* Card of the rail: one piece of news above the foot (a badge, a title, a line, one action), dismissible. It keeps the
+   width of the open rail, so a folding rail clips it without reflowing its text; it fades with the labels and gives
+   its room back. */
+.nav__card { display: flex; flex: none; flex-direction: column; align-items: flex-start; gap: var(--spacing-xs); width: calc(var(--shell-nav-open) - 2 * var(--spacing-sm) - var(--stroke-width-subtle)); margin: auto 0 var(--spacing-xs); padding: var(--spacing-md); overflow: hidden; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); interpolate-size: allow-keywords;
+  transition: opacity var(--duration-base) var(--ease-out), visibility var(--duration-base), height var(--duration-spring) var(--ease-spring), margin var(--duration-spring) var(--ease-spring), padding var(--duration-spring) var(--ease-spring), border-width var(--duration-spring) var(--ease-spring); }
+.nav__card ~ .shell__foot { margin-top: 0; }
+.nav__card-head { display: flex; align-items: center; align-self: stretch; justify-content: space-between; height: var(--spacing-xl); }
+.nav__card-head .btn { margin-right: calc(var(--spacing-sm) * -1); }
+.nav__card-title { margin: 0; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+.nav__card-text { margin: 0 0 var(--spacing-xs); color: var(--color-text-secondary); font-size: var(--font-size-xs); line-height: var(--line-height-normal); }
+.shell[data-collapsed] .nav__card { height: 0; margin-bottom: 0; padding-block: 0; border-width: 0; opacity: 0; visibility: hidden; }
+.nav__card[data-leaving] { animation: nav-card-out var(--duration-slow) var(--ease-in) forwards; }
+@keyframes nav-card-out { 40% { opacity: 0; transform: scale(0.98); filter: blur(2px); } to { opacity: 0; height: 0; margin-bottom: 0; padding-block: 0; border-width: 0; } }
 /* Aside: a .pane on the right, under the top bar (a preview, a diff, details). hidden closes its column. */
 .shell:has(> .shell__aside:not([hidden])) { grid-template-columns: var(--shell-nav) minmax(0, 1fr) var(--shell-aside, 480px); grid-template-areas: "nav top top" "nav main aside"; }
 .shell__aside { grid-area: aside; }
@@ -818,6 +971,7 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .pane__head { display: flex; flex: none; align-items: center; gap: var(--spacing-sm); height: var(--size-bar); padding: 0 var(--spacing-md) 0 var(--spacing-lg); border-bottom: var(--stroke-width-subtle) solid var(--color-border); }
 .pane__title { flex: 1; min-width: 0; margin: 0; overflow: hidden; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); white-space: nowrap; text-overflow: ellipsis; }
 .pane__body { flex: 1; min-height: 0; overflow: auto; }
+.pane[hidden] { display: none; }
 
 /* Rich editor: a writing field with a formatting toolbar, built by ds.js from data-placeholder, data-hint and data-max.
    The placeholder is a real element stacked on the area (grid), not a ::before, so Copy to Figma keeps it. */
@@ -897,6 +1051,10 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .command-palette__item > .icon { color: var(--color-text-secondary); }
 .command-palette__title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .command-palette__keys { display: flex; flex: none; gap: calc(var(--spacing-xs) / 2); }
+/* A second line under the title (where the thing is, what it belongs to): title and meta go in a body. */
+.command-palette__body { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.command-palette__body > .command-palette__title { flex: none; }
+.command-palette__meta { min-width: 0; overflow: hidden; color: var(--color-text-tertiary); font-size: var(--font-size-xs); white-space: nowrap; text-overflow: ellipsis; }
 .command-palette__item[data-active], .command-palette__item[data-force="hover"] { background: var(--color-surface-hover); }
 .command-palette__item[data-active] > .icon { color: var(--color-text-primary); }
 .command-palette :is(.command-palette__group, .command-palette__item, .command-palette__empty, .command-palette__count, .command-palette__foot)[hidden] { display: none; }
@@ -1114,6 +1272,21 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .media__frame { display: flex; align-items: center; justify-content: center; aspect-ratio: var(--ratio, 16 / 10); overflow: hidden; border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-sunken); color: var(--color-text-secondary); }
 .media__frame > img { width: 100%; height: 100%; object-fit: cover; }
 .media__caption { color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+/* Overlay: text over the bottom of the picture. A veil rises from the raised surface to nothing and the text takes the
+   primary text role: roles only, so it reads on any picture, in both themes. data-blur also softens the picture under
+   the text, more towards the bottom. The action is an icon button on a disc of the same surface. */
+.media__frame { position: relative; }
+.media__overlay { position: absolute; right: 0; bottom: 0; left: 0; isolation: isolate; display: flex; flex-direction: column; gap: var(--spacing-2xs); padding: var(--spacing-3xl) var(--spacing-lg) var(--spacing-md); color: var(--color-text-primary); font-size: var(--font-size-sm); line-height: var(--line-height-normal);
+  background: linear-gradient(to top, color-mix(in srgb, var(--color-surface-raised) 94%, transparent), color-mix(in srgb, var(--color-surface-raised) 82%, transparent) calc(100% - var(--spacing-3xl)), transparent); }
+.media__overlay strong { font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
+.media__overlay[data-blur]::before { content: ""; position: absolute; inset: 0; z-index: -1; backdrop-filter: blur(var(--spacing-md)); mask-image: linear-gradient(to top, var(--color-scrim) calc(100% - var(--spacing-3xl)), transparent); }
+.media__action { position: absolute; top: var(--spacing-sm); right: var(--spacing-sm); display: grid; place-items: center; width: var(--control-height); height: var(--control-height); padding: 0; border: 0; border-radius: var(--radius-full); background: var(--color-surface-raised); box-shadow: var(--shadow-sm); color: var(--color-text-primary); cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out); }
+.media__action:hover, .media__action[data-force="hover"] { background: var(--color-surface-hover); }
+.media__action:active { transform: scale(0.94); }
+/* The ring keeps a rim of the surface between it and the picture. */
+.media__action:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; box-shadow: 0 0 0 2px var(--color-surface-raised); }
+.media__action[aria-pressed="true"] { color: var(--color-accent); }
 
 /* Site nav: a website's horizontal navigation. The current page carries aria-current="page" and an accent underline. */
 .site-nav { display: flex; align-items: center; gap: var(--spacing-xs); }
@@ -1121,6 +1294,202 @@ html:has(:is(.modal, .drawer):modal) { overflow: hidden; }
 .site-nav__link:hover, .site-nav__link[data-force="hover"] { background: var(--color-surface-hover); color: var(--color-text-primary); }
 .site-nav__link:focus-visible { outline: 0; box-shadow: 0 0 0 var(--stroke-width-mid) var(--color-accent); }
 .site-nav__link[aria-current="page"] { color: var(--color-text-primary); text-decoration: underline var(--stroke-width-mid) var(--color-accent); text-underline-offset: var(--spacing-sm); }
+
+/* Section: one band of a page. The band runs edge to edge, its content stays within --page-width, and its blocks
+   follow each other on one rhythm. Sunken sets the band below the page; inverted turns it to ink. */
+.section { display: flex; flex-direction: column; gap: var(--spacing-3xl); padding: var(--spacing-5xl) max(var(--spacing-xl), calc((100% - var(--page-width)) / 2)); }
+.section__head { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.section[data-variant="sunken"] { background: var(--color-surface-sunken); }
+/* Spelled out per class, one selector per variant. */
+.section[data-variant="inverted"], .cta[data-variant="inverted"] { background: var(--color-ink); color: var(--color-on-ink); }
+/* On ink: type follows the band and quiet text is the ink's own grey. The primary button flips to stay the loudest,
+   the default one becomes an outline, the ghost one plain text. */
+:is(.section, .cta)[data-variant="inverted"] .text { color: inherit; }
+:is(.section, .cta)[data-variant="inverted"] :is(.text:is([data-variant="lead"], [data-variant="eyebrow"]), .cta__text) { color: color-mix(in srgb, var(--color-on-ink) 72%, var(--color-ink)); }
+:is(.section, .cta)[data-variant="inverted"] .btn[data-variant="primary"] { border-color: var(--color-on-ink); background: var(--color-on-ink); color: var(--color-ink); }
+:is(.section, .cta)[data-variant="inverted"] .btn:is(:not([data-variant]), [data-variant="ghost"]) { background: none; color: var(--color-on-ink); }
+:is(.section, .cta)[data-variant="inverted"] .btn:not([data-variant]) { border-color: color-mix(in srgb, var(--color-on-ink) 32%, transparent); }
+:is(.section, .cta)[data-variant="inverted"] .btn:is(:not([data-variant]), [data-variant="ghost"]):hover { background: color-mix(in srgb, var(--color-on-ink) 14%, transparent); }
+:is(.section, .cta)[data-variant="inverted"] .btn .icon { color: inherit; }
+:is(.section, .cta)[data-variant="inverted"] .btn:focus-visible { outline-color: var(--color-on-ink); }
+@media (max-width: 640px) { .section { gap: var(--spacing-2xl); padding-block: var(--spacing-4xl); } }
+
+/* Hero: the opening of a page. An eyebrow, the display line, a lead and the actions; with a media, text and picture
+   sit side by side on a wide screen. Centered puts everything on the axis, the media under the text. */
+.hero { display: grid; align-items: center; gap: var(--spacing-3xl); }
+.hero__body { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-lg); min-width: 0; animation: enter var(--duration-slow) var(--ease-out) both; }
+.hero > .media { animation: enter var(--duration-slow) var(--ease-out) var(--duration-stagger) both; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin-top: var(--spacing-sm); }
+.hero[data-variant="centered"] .hero__body { align-items: center; text-align: center; }
+.hero[data-variant="centered"] .hero__actions { justify-content: center; }
+@media (min-width: 960px) { .hero:not([data-variant="centered"]):has(> .media) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+
+/* Logo strip: who uses or backs the product. A label, then the logos in one ink, quiet, wrapping. Nothing scrolls. */
+.logo-strip { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+.logo-strip__label { margin: 0; color: var(--color-text-tertiary); font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-tight) var(--font-family-mono); letter-spacing: var(--letter-spacing-label); text-transform: uppercase; }
+.logo-strip__logos { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-lg) var(--spacing-3xl); margin: 0; padding: 0; list-style: none; }
+.logo-strip__logos > li { display: inline-flex; align-items: center; gap: var(--spacing-sm); color: var(--color-text-secondary); font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); letter-spacing: var(--letter-spacing-display); white-space: nowrap; }
+.logo-strip__logos :is(img, svg) { width: auto; height: var(--spacing-xl); }
+/* Logo files are drawn dark: greyed here, and turned light on the dark theme. */
+.logo-strip__logos img { filter: grayscale(1); opacity: 0.6; }
+:root[data-theme="dark"] .logo-strip__logos img { filter: grayscale(1) invert(1); }
+.logo-strip[data-variant="centered"] { align-items: center; }
+.logo-strip[data-variant="centered"] .logo-strip__logos { justify-content: center; }
+
+/* Feature tabs: the tabs of a page section, each showing one large media and a line about it. */
+.feature-tabs { display: flex; flex-direction: column; min-width: 0; }
+.feature-tabs .tabs__tab { height: var(--size-row); font-size: var(--font-size-lg); }
+.feature-tabs .tabs__panel { display: flex; flex-direction: column; gap: var(--spacing-lg); padding-top: var(--spacing-xl); }
+.feature-tabs .tabs__panel[hidden] { display: none; }
+.feature-tabs__text { max-width: var(--measure); margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-xl); line-height: var(--line-height-normal); }
+
+/* Call to action: a band that closes a page or a section. A heading, a line, the actions, all on the left edge. */
+.cta { display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-xl); padding: var(--spacing-3xl); border-radius: var(--radius-xl); background: var(--color-surface-sunken); color: var(--color-text-primary); }
+.cta__body { display: flex; flex-direction: column; gap: var(--spacing-sm); min-width: 0; }
+.cta__text { max-width: var(--measure); margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-xl); line-height: var(--line-height-normal); }
+.cta__actions { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
+@media (max-width: 640px) { .cta { padding: var(--spacing-xl); } }
+
+/* Site footer: the brand, columns of links, a legal line. It closes the page within --page-width like a section. */
+.site-footer { display: flex; flex-wrap: wrap; gap: var(--spacing-2xl) var(--spacing-3xl); padding: var(--spacing-3xl) max(var(--spacing-xl), calc((100% - var(--page-width)) / 2)) var(--spacing-xl); border-top: var(--stroke-width-subtle) solid var(--color-border); color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+.site-footer__brand { display: flex; flex: 2 1 240px; flex-direction: column; align-items: flex-start; gap: var(--spacing-sm); min-width: 0; }
+.site-footer__name { display: inline-flex; align-items: center; gap: var(--spacing-sm); color: var(--color-text-primary); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+.site-footer__brand p { max-width: 280px; margin: 0; }
+.site-footer__col { display: flex; flex: 1 1 120px; flex-direction: column; align-items: flex-start; min-width: 0; }
+.site-footer__title { margin: 0 0 var(--spacing-xs); color: var(--color-text-tertiary); font: var(--font-weight-semibold) var(--font-size-xs)/var(--line-height-tight) var(--font-family-mono); text-transform: uppercase; }
+.site-footer__link { display: inline-flex; align-items: center; min-height: var(--control-height); border-radius: var(--radius-xs); color: var(--color-text-secondary); text-decoration: none; transition: color var(--duration-fast) var(--ease-out); }
+.site-footer__link:hover, .site-footer__link[data-force="hover"] { color: var(--color-text-primary); }
+.site-footer__link:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: 2px; }
+.site-footer__legal { flex: 0 0 100%; margin: 0; padding-top: var(--spacing-lg); border-top: var(--stroke-width-subtle) solid var(--color-border); color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+
+/* Pricing: the plans side by side, four at most. Each one: its name, the price with its period, what it includes, one
+   action at the foot so the buttons line up. Featured is ringed in ink; the current plan lies flat. */
+.pricing { display: grid; grid-auto-columns: minmax(0, 1fr); grid-auto-flow: column; gap: var(--spacing-lg); }
+.pricing__plan { display: flex; flex-direction: column; gap: var(--spacing-lg); min-width: 0; padding: var(--spacing-xl); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface-raised); color: var(--color-text-primary); }
+.pricing__head { display: flex; align-items: center; gap: var(--spacing-sm); min-height: var(--spacing-xl); }
+.pricing__name { flex: 1; margin: 0; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
+.pricing__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--spacing-sm); margin: 0; }
+.pricing__amount { font-size: var(--font-size-6xl); font-weight: var(--font-weight-semibold); line-height: var(--line-height-display); letter-spacing: var(--letter-spacing-display); font-variant-numeric: tabular-nums; }
+.pricing__price s { color: var(--color-text-tertiary); font-size: var(--font-size-xl); font-variant-numeric: tabular-nums; }
+.pricing__period { flex-basis: 100%; color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+.pricing__plus { margin: 0 0 calc(var(--spacing-sm) * -1); color: var(--color-text-secondary); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+.pricing__list { display: flex; flex-direction: column; gap: var(--spacing-sm); margin: 0; padding: 0; list-style: none; font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+.pricing__list li { display: flex; align-items: flex-start; gap: var(--spacing-sm); }
+.pricing__list .icon { margin-top: 1px; color: var(--color-status-success); }
+.pricing__plan > .btn { margin-top: auto; }
+.pricing__plan[data-variant="featured"] { border-color: var(--color-ink); box-shadow: 0 0 0 var(--stroke-width-subtle) var(--color-ink); }
+.pricing__plan[aria-current="true"] { background: var(--color-surface); }
+@media (max-width: 640px) { .pricing { grid-auto-flow: row; } }
+
+/* Node map: a tree that grows to the right. A column is a title and its nodes on a line; a node opens the column drawn
+   on its right, level with it when there is room (ds.js sets the heights and draws the links). The column one stands
+   in is aria-current; the nodes on the way to it are aria-expanded="true" and their columns keep their ink, the
+   others step back. A conditional node is not there right now: hollow, dashed, its condition in mono. */
+.node-map { --node-map-dot: calc(var(--size-mark) + var(--spacing-xs)); position: relative; width: max-content; color: var(--color-text-secondary); font-family: var(--font-family); font-size: var(--font-size-md); line-height: var(--line-height-tight); }
+.node-map__branch { display: flex; align-items: flex-start; }
+.node-map__twigs { display: flex; flex-direction: column; padding-left: var(--spacing-3xl); }
+.node-map__column { display: flex; flex-direction: column; gap: var(--spacing-xs); max-width: calc(var(--measure) / 2.5); }
+.node-map__title { margin: 0; padding: 0 var(--spacing-sm); color: var(--color-text-tertiary); font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); letter-spacing: var(--letter-spacing-label); text-transform: uppercase; }
+.node-map__nodes { display: flex; flex-direction: column; gap: var(--spacing-2xs); margin: 0; padding: 0; list-style: none; }
+.node-map__nodes > li { position: relative; }
+/* The line of the column, from each dot down to the next one. */
+.node-map__nodes > li:not(:last-child)::before { content: ""; position: absolute; top: calc(var(--control-height) / 2); left: calc(var(--spacing-sm) + var(--node-map-dot) / 2 - var(--stroke-width-subtle) / 2); width: var(--stroke-width-subtle); height: calc(100% + var(--spacing-2xs)); background: var(--color-border-strong); }
+.node-map__node { display: grid; grid-template-columns: var(--node-map-dot) minmax(0, 1fr); grid-template-rows: minmax(var(--control-height), auto); align-content: start; align-items: center; gap: 0 var(--spacing-sm); width: 100%; min-height: var(--control-height); padding: 0 var(--spacing-sm); border: 0; border-radius: var(--radius-sm); background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.node-map__node:hover, .node-map__node[data-force="hover"] { background: var(--color-surface-hover); color: var(--color-text-primary); }
+.node-map__node:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: calc(var(--stroke-width-mid) * -1); }
+.node-map__dot { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: var(--node-map-dot); height: var(--node-map-dot); border: var(--stroke-width-subtle) solid var(--color-border-strong); border-radius: var(--radius-full); background: var(--color-surface-raised); color: var(--color-text-tertiary);
+  transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), transform var(--duration-spring) var(--ease-bounce); }
+.node-map__dot > .icon { --icon-size: var(--size-icon-sm); }
+/* A line-drawn icon of the page's own: stroked, not filled. */
+.node-map__dot > svg { width: var(--size-icon-sm); height: var(--size-icon-sm); fill: none; stroke: currentColor; stroke-width: calc(var(--stroke-width-mid) * 1.4); stroke-linecap: round; stroke-linejoin: round; }
+.node-map__name { min-width: 0; padding-block: var(--spacing-xs); overflow-wrap: anywhere; }
+.node-map__text, .node-map__meta { grid-column: 2; min-width: 0; padding-bottom: var(--spacing-xs); }
+.node-map__text { color: var(--color-text-secondary); font-size: var(--font-size-sm); line-height: var(--line-height-normal); }
+.node-map__meta { color: var(--color-text-tertiary); font: var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); }
+/* The column one stands in, and the way to it. */
+.node-map__column[aria-current="true"] .node-map__title { color: var(--color-text-primary); }
+.node-map__column[aria-current="true"] .node-map__node { color: var(--color-text-primary); }
+.node-map__column[aria-current="true"] .node-map__dot { border-color: var(--color-ink); background: var(--color-ink); color: var(--color-on-ink); }
+.node-map__column:has(.node-map__node[aria-expanded="true"]) .node-map__title { color: var(--color-text-secondary); }
+.node-map__node[aria-expanded="true"] { color: var(--color-text-primary); }
+.node-map__node[aria-expanded="true"] .node-map__dot { border-color: var(--color-accent); background: var(--color-accent); color: var(--color-on-accent); }
+.node-map__node:hover .node-map__dot, .node-map__node[data-force="hover"] .node-map__dot { transform: scale(1.15); }
+.node-map__node[data-variant="conditional"] .node-map__dot { border-style: dashed; background: var(--color-surface-raised); color: var(--color-text-tertiary); }
+.node-map__node[data-variant="conditional"] .node-map__name { color: var(--color-text-tertiary); }
+/* A column without nodes: the end of the way, a ring where the first node would stand. */
+.node-map__end { display: block; width: var(--node-map-dot); height: var(--node-map-dot); margin: calc((var(--control-height) - var(--node-map-dot)) / 2) var(--spacing-sm); border: var(--stroke-width-mid) solid var(--color-border-strong); border-radius: var(--radius-full); }
+.node-map__links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.node-map__links path { fill: none; stroke: var(--color-border-strong); stroke-width: var(--stroke-width-subtle); }
+.node-map__links path[data-open] { stroke: var(--color-accent); stroke-width: var(--stroke-width-mid); }
+.node-map__column, .node-map__links path { animation: fade-in var(--duration-base) var(--ease-out); }
+
+/* Highlight: a frame over a part of a page, or of a page shown in a frame, with a tag that names it. The page sets its
+   place (top, left, width, height, as position: fixed). It never takes the pointer. Hover by default: a thin line over a
+   soft fill; data-variant="selected": a firm line, no fill. The tag stands above the top left corner, or under it with
+   data-side="bottom". */
+.highlight { position: fixed; z-index: 60; border-radius: var(--radius-sm); outline: var(--stroke-width-subtle) solid var(--color-accent); outline-offset: var(--spacing-xs); background: color-mix(in srgb, var(--color-accent) 10%, transparent); pointer-events: none;
+  transition: top var(--duration-fast) var(--ease-out), left var(--duration-fast) var(--ease-out), width var(--duration-fast) var(--ease-out), height var(--duration-fast) var(--ease-out); }
+.highlight[data-variant="selected"] { outline-width: var(--stroke-width-mid); background: none; }
+.highlight[hidden] { display: none; }
+.highlight__tag { position: absolute; bottom: calc(100% + var(--spacing-sm)); left: calc(var(--spacing-xs) * -1); padding: 0 var(--spacing-xs); border-radius: var(--radius-xs); background: var(--color-accent); color: var(--color-on-accent); font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); white-space: nowrap; animation: pop-in var(--duration-base) var(--ease-out); }
+.highlight[data-side="bottom"] .highlight__tag { top: calc(100% + var(--spacing-sm)); bottom: auto; }
+
+/* Graph: nodes and links the page lays out in an SVG, on a ground one drags and zooms (ds.js moves the camera). The
+   page draws the marks with these classes; the look is here. A node is hollow by default, data-variant="solid" fills it
+   in ink; data-tone="critical" dashes it in red (on a node, or on one halo, ring or arrow), data-tone="success" rings
+   it in green. data-picking on the graph dims every node and edge without data-lit. */
+/* clip, not hidden: a hidden box still scrolls to show a focused node, behind the camera's back. */
+.graph { position: relative; overflow: clip; min-height: 0; background: var(--color-surface); color: var(--color-text-primary); font-family: var(--font-family); touch-action: none; cursor: grab; user-select: none; }
+.graph:focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: calc(var(--stroke-width-mid) * -1); }
+.graph[data-panning] { cursor: grabbing; }
+.graph__world { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+.graph__world[data-glide] { transition: transform var(--duration-spring) var(--ease-spring); }
+.graph__world > svg { display: block; overflow: visible; }
+.graph__hint { position: absolute; bottom: var(--spacing-md); left: var(--spacing-md); display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xs) var(--spacing-md); max-width: calc(100% - 2 * var(--spacing-md)); margin: 0; padding: var(--spacing-xs) var(--spacing-sm); border: var(--stroke-width-subtle) solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-raised); color: var(--color-text-tertiary); font-size: var(--font-size-sm); line-height: var(--line-height-normal); pointer-events: none; }
+.graph__hint > span { display: inline-flex; align-items: center; gap: var(--spacing-xs); }
+
+.graph__ring, .graph__arrow { fill: none; stroke: var(--color-text-primary); stroke-width: calc(var(--stroke-width-subtle) * 2); stroke-linecap: round; stroke-linejoin: round; }
+.graph__ring[data-tone="critical"], .graph__arrow[data-tone="critical"] { stroke: var(--color-status-critical); }
+.graph__ring[data-tone="critical"] { stroke-dasharray: var(--spacing-xs) var(--spacing-sm); }
+.graph__edge { stroke: var(--color-border-strong); stroke-width: var(--stroke-width-mid); }
+.graph__edge[data-lit] { stroke: var(--color-accent); stroke-width: calc(var(--stroke-width-subtle) * 2); }
+.graph__title { fill: var(--color-text-primary); font-size: var(--font-size-4xl); font-weight: var(--font-weight-semibold); }
+.graph__subtitle { fill: var(--color-text-secondary); font-size: var(--font-size-xl); }
+
+.graph__node { cursor: pointer; outline: none; }
+.graph__node text { fill: var(--color-text-primary); font-size: var(--font-size-lg); paint-order: stroke; stroke: var(--color-surface); stroke-width: var(--spacing-xs); stroke-linejoin: round; }
+.graph__node .graph__inside { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); stroke: none; }
+.graph__code { font-weight: var(--font-weight-semibold); }
+.graph__slot { fill: var(--color-text-tertiary); font-family: var(--font-family-mono); font-size: var(--font-size-xs); font-weight: var(--font-weight-medium); letter-spacing: var(--letter-spacing-label); text-transform: uppercase; }
+.graph__body { fill: var(--color-surface); stroke: var(--color-text-primary); stroke-width: calc(var(--stroke-width-subtle) * 2); transition: stroke-width var(--duration-fast) var(--ease-out), stroke var(--duration-fast) var(--ease-out); }
+.graph__halo { fill: none; stroke: var(--color-text-primary); stroke-width: var(--stroke-width-mid); }
+.graph__node[data-variant="solid"] .graph__body { fill: var(--color-ink); stroke: var(--color-ink); }
+.graph__node[data-tone="critical"] :is(.graph__body, .graph__halo), .graph__halo[data-tone="critical"] { stroke: var(--color-status-critical); stroke-dasharray: var(--spacing-xs) var(--spacing-xs); }
+.graph__node[data-tone="critical"][data-variant="solid"] .graph__body { fill: var(--color-status-critical); stroke-dasharray: none; }
+.graph__node[data-tone="critical"] text:not(.graph__inside) { fill: var(--color-status-critical); }
+.graph__node[data-tone="success"] .graph__body { stroke: var(--color-status-success); }
+.graph__node[data-tone="success"][data-variant="solid"] .graph__body { fill: var(--color-status-success-subtle); }
+.graph__node:is(:hover, [data-force="hover"], [aria-pressed="true"]) .graph__body { stroke-width: calc(var(--stroke-width-subtle) * 4); }
+.graph__node:focus-visible .graph__body { stroke: var(--color-accent); stroke-width: calc(var(--stroke-width-subtle) * 4); stroke-dasharray: none; }
+
+.graph :is(.graph__node, .graph__edge, .graph__ring, .graph__arrow, .graph__title, .graph__subtitle) { transition: opacity var(--duration-base) var(--ease-out); }
+.graph[data-picking] :is(.graph__node, .graph__edge):not([data-lit]) { opacity: 0.16; }
+.graph[data-picking] :is(.graph__ring, .graph__arrow, .graph__title, .graph__subtitle) { opacity: 0.4; }
+
+/* A key that draws one mark of the graph: <svg class="graph__glyph" viewBox="…"><g class="graph__node">…</g></svg>. */
+.graph__glyph { flex: none; width: var(--control-height); height: var(--control-height); overflow: visible; }
+.graph__glyph .graph__node { cursor: default; }
+
+/* Facts: what a panel says about the thing it shows, one label and its value per row. A table compares many things; a
+   form edits them. A value holds text, buttons or badges, and wraps. */
+.facts { display: flex; flex-direction: column; gap: var(--spacing-md); margin: 0; }
+.facts__row { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
+.facts__label { color: var(--color-text-tertiary); font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-normal) var(--font-family-mono); letter-spacing: var(--letter-spacing-label); text-transform: uppercase; }
+.facts__value { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-xs); min-width: 0; margin: 0; color: var(--color-text-primary); font-size: var(--font-size-md); line-height: var(--line-height-normal); overflow-wrap: anywhere; }
+.facts__value:has(> ul) { display: block; }
+.facts__value > ul { margin: 0; padding-left: var(--spacing-lg); }
+.facts__value[data-variant="muted"] { color: var(--color-text-tertiary); }
 
 
 /* Touch: targets that cannot grow in place keep their look and get a slot or a hit area of --control-height. */

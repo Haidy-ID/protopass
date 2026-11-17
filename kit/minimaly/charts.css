@@ -1,0 +1,83 @@
+/* Minimaly charts.
+   D3 draws in the page; this file dresses what it draws, so two charts on two screens look alike. Same conventions as
+   components.css: variants through data-variant, states through attributes, data-force="hover" pins hover for specimens.
+   Tokens only, no raw values. */
+
+:where(.chart, .stat), :where(.chart, .stat) * { box-sizing: border-box; }
+
+/* Chart: a head, a plot and a legend around an SVG drawn by D3. Line and bars share this frame; data-variant="sparkline"
+   is a bare inline trend, data-variant="donut" puts the legend beside the ring.
+   A mark is drawn in the accent, or in a series color once data-series="1" to "6" sits on it, on its group or on its
+   legend key: the color is never written in the script. */
+.chart { --series: var(--color-accent); display: grid; gap: var(--spacing-md); min-width: 0; margin: 0; color: var(--color-text-primary); font-size: var(--font-size-sm); }
+:is(.chart, .chart *)[data-series="1"] { --series: var(--color-series-1); }
+:is(.chart, .chart *)[data-series="2"] { --series: var(--color-series-2); }
+:is(.chart, .chart *)[data-series="3"] { --series: var(--color-series-3); }
+:is(.chart, .chart *)[data-series="4"] { --series: var(--color-series-4); }
+:is(.chart, .chart *)[data-series="5"] { --series: var(--color-series-5); }
+:is(.chart, .chart *)[data-series="6"] { --series: var(--color-series-6); }
+
+/* Head: the title over the summary figure, the period selector (a .segmented) on the right. */
+.chart__head { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--spacing-xs) var(--spacing-lg); }
+.chart__head > * { grid-column: 1; }
+.chart__head > .segmented { grid-area: 1 / 2 / span 2; align-self: start; }
+.chart__title, .stat__label { min-width: 0; margin: 0; color: var(--color-text-tertiary); font: var(--font-weight-semibold) var(--font-size-xs)/var(--line-height-tight) var(--font-family-mono); text-transform: uppercase; }
+.chart__figure, .stat__figure { display: flex; align-items: center; gap: var(--spacing-sm); min-width: 0; margin: 0; font: var(--font-weight-semibold) var(--font-size-4xl)/var(--line-height-tight) var(--font-family); }
+
+/* Legend: one key per series. The swatch is a real element, so Copy to Figma keeps it. */
+.chart__legend { display: flex; flex-wrap: wrap; gap: var(--spacing-xs) var(--spacing-lg); margin: 0; padding: 0; list-style: none; }
+.chart__key { display: flex; align-items: center; gap: var(--spacing-xs); color: var(--color-text-secondary); }
+.chart__swatch { flex: none; width: var(--spacing-sm); height: var(--spacing-sm); border-radius: var(--radius-xs); background: var(--series); }
+.chart__key strong { margin-left: auto; padding-left: var(--spacing-md); color: var(--color-text-primary); font-weight: var(--font-weight-medium); font-variant-numeric: tabular-nums; }
+
+/* Plot: the SVG fills its width. The page draws it at that width, so one SVG unit is one pixel and text keeps its size. */
+.chart__plot { position: relative; min-width: 0; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* The hidden attribute does nothing on an SVG element by itself. */
+.chart svg [hidden] { display: none; }
+
+/* D3 axes: numbers in the quiet mono of data and no domain line. An axis whose ticks span the plot is the grid. */
+.chart__axis .domain { display: none; }
+.chart__axis line { stroke: var(--color-border); stroke-width: var(--stroke-width-subtle); shape-rendering: crispEdges; }
+.chart__axis text { fill: var(--color-text-tertiary); font: var(--font-weight-regular) var(--font-size-xs)/1 var(--font-family-mono); }
+
+/* Marks. The area is a wash under its line, never a block. The ring keeps a dot readable where it crosses a line. */
+.chart__line { fill: none; stroke: var(--series); stroke-width: calc(var(--stroke-width-subtle) * 2); stroke-linecap: round; stroke-linejoin: round; }
+.chart__area { fill: var(--series); fill-opacity: 0.1; pointer-events: none; }
+.chart__bar, .chart__slice { fill: var(--series); }
+.chart__bar { rx: var(--radius-xs); }
+.chart__dot { fill: var(--series); stroke: var(--color-surface-raised); stroke-width: calc(var(--stroke-width-subtle) * 2); }
+/* Cursor: the hairline under the pointer, at the position the bubble reads. */
+.chart__cursor { stroke: var(--color-border-strong); stroke-width: var(--stroke-width-subtle); shape-rendering: crispEdges; pointer-events: none; }
+
+/* Hover: once a bar, a slice or a series is hovered, focused or active (data-active, set by the page), the others step
+   back. Keys follow only when the page marks one of them active: CSS cannot tell which key names the hovered mark. */
+.chart :is(.chart__series, .chart__bar, .chart__slice, .chart__key) { transition: opacity var(--duration-fast) var(--ease-out); }
+.chart:has(:is(.chart__series, .chart__bar, .chart__slice):is(:hover, :focus-visible, [data-active], [data-force="hover"])) :is(.chart__series, .chart__bar, .chart__slice):not(:hover, :focus-visible, [data-active], [data-force="hover"]),
+.chart:has(.chart__key[data-active]) .chart__key:not([data-active]) { opacity: 0.3; }
+.chart :is(.chart__bar, .chart__slice):focus-visible { outline: var(--stroke-width-mid) solid var(--color-accent); outline-offset: var(--spacing-2xs); }
+
+/* Value bubble: a .tooltip the page moves over the hovered mark (left and top, in px of the plot) and hides with hidden.
+   The value leads, an optional delta .badge follows it, the lead line says what and when. */
+.chart__tip { position: absolute; z-index: 1; top: 0; left: 0; translate: -50% calc(-100% - var(--spacing-sm)); white-space: nowrap; pointer-events: none; }
+.chart__tip strong { gap: var(--spacing-sm); font-size: var(--font-size-md); font-variant-numeric: tabular-nums; }
+
+/* Sparkline: a trend at a glance, inline in a sentence, a table cell or a stat. No axis, no legend. */
+.chart[data-variant="sparkline"] { display: inline-block; width: var(--spacing-5xl); height: var(--size-lead); vertical-align: middle; }
+.chart[data-variant="sparkline"] svg { height: 100%; }
+.chart[data-variant="sparkline"] .chart__line { stroke-width: var(--stroke-width-mid); }
+
+/* Donut: the ring stays small, the legend sits beside it and carries the values. */
+.chart[data-variant="donut"] { grid-template-columns: auto 1fr; align-items: center; column-gap: var(--spacing-xl); }
+.chart[data-variant="donut"] .chart__head { grid-column: 1 / -1; }
+.chart[data-variant="donut"] .chart__plot { width: calc(var(--spacing-5xl) * 1.5); }
+.chart[data-variant="donut"] .chart__legend { flex-direction: column; }
+
+/* Stat: one figure that matters and what it is compared to. A label, the figure, a delta .badge with its comparison, and an
+   optional sparkline beside the figure. The label and the figure are those of a chart head. The page sets the tone of
+   the delta: whether up is good depends on the figure. */
+.stat { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--spacing-xs) var(--spacing-lg); min-width: 0; color: var(--color-text-primary); }
+.stat > * { grid-column: 1 / -1; }
+.stat > .stat__figure { grid-column: 1; }
+.stat__compare { display: flex; align-items: center; gap: var(--spacing-sm); min-width: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.stat > .chart { grid-area: 2 / 2; }

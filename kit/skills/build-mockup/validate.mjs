@@ -69,7 +69,8 @@ const dsProps = customProps(dsCss);
 const tokens = readTokens(["tokens.css", "foundations.css"].map((f) => join(dsDir, f)).filter(existsSync).map(read).join("\n"));
 const dsClasses = new Set();
 const dsVariants = new Map(); // class -> Set(variant)
-for (const r of rules(existsSync(join(dsDir, "components.css")) ? read(join(dsDir, "components.css")) : "")) {
+// Components live in components.css, and charts and stats in charts.css.
+for (const r of rules(["charts.css", "components.css"].map((f) => join(dsDir, f)).filter(existsSync).map(read).join("\n"))) {
   for (const sel of r.selector.split(",")) {
     classesIn(sel).forEach((c) => dsClasses.add(c));
     for (const m of sel.matchAll(/\.([\w-]+)\[data-variant="([\w-]+)"\]/g)) {

@@ -367,10 +367,47 @@
   // Menu (interior.dev Dropdown and Context Menu): a .popover.menu of .menu__item buttons, hidden in the markup.
   // data-menu="<id>" on a button opens it below; data-context-menu="<id>" on a surface opens it at the pointer on right-click,
   // or at the surface with the menu key or Shift+F10. Arrows move, Esc and Tab close, a chosen item closes it and focus returns.
+  // Submenu: data-submenu="<id>" on an item opens that menu beside it, on hover, on a click or with →; ← and Esc close it
+  // and focus returns to the item. One level deep.
   let openMenu = null;
+  let openSub = null;
+  let aimFrom = null;
+  let aimTimer = 0;
   const menuItems = (el) => [...el.querySelectorAll('.menu__item:not(:disabled):not([aria-disabled="true"])')];
+  const closeSub = (refocus) => {
+    if (!openSub) return;
+    const { el, item } = openSub;
+    openSub = null;
+    clearTimeout(aimTimer);
+    el.hidden = true;
+    item.setAttribute("aria-expanded", "false");
+    item.closest(".menu").removeAttribute("data-aiming");
+    if (refocus) item.focus();
+  };
+  // Beside its item, its first row level with it; on the left when the right has no room.
+  const showSub = (item, focus) => {
+    if (openSub?.item !== item) {
+      closeSub();
+      const el = document.getElementById(item.dataset.submenu);
+      if (el.parentElement !== document.body) document.body.append(el);
+      // The side is set before it shows: its entrance starts from the side written at that moment.
+      el.dataset.side = "right";
+      el.hidden = false;
+      const r = item.getBoundingClientRect();
+      const menu = item.closest(".menu").getBoundingClientRect();
+      const right = menu.right + 2 + el.offsetWidth < innerWidth - 8;
+      el.style.left = `${right ? menu.right + 2 : Math.max(8, menu.left - 2 - el.offsetWidth)}px`;
+      const top = r.top - el.clientTop - (menuItems(el)[0]?.offsetTop || 0);
+      el.style.top = `${Math.max(8, Math.min(top, innerHeight - el.offsetHeight - 8))}px`;
+      el.dataset.side = right ? "right" : "left";
+      openSub = { el, item };
+      item.setAttribute("aria-expanded", "true");
+    }
+    if (focus) menuItems(openSub.el)[0]?.focus();
+  };
   const closeMenu = (refocus) => {
     if (!openMenu) return;
+    closeSub();
     const { el, trigger } = openMenu;
     openMenu = null;
     el.hidden = true;
@@ -397,6 +434,16 @@
     el.setAttribute("role", "menu");
     el.hidden = true;
     el.querySelectorAll(".menu__item").forEach((item) => item.setAttribute("role", "menuitem"));
+    for (const item of el.querySelectorAll(".menu__item[data-submenu]")) {
+      const sub = document.getElementById(item.dataset.submenu);
+      if (!sub) continue;
+      sub.setAttribute("role", "menu");
+      sub.hidden = true;
+      sub.querySelectorAll(".menu__item").forEach((x) => x.setAttribute("role", "menuitem"));
+      item.setAttribute("aria-haspopup", "menu");
+      item.setAttribute("aria-expanded", "false");
+      item.setAttribute("aria-controls", sub.id);
+    }
     if (trigger.hasAttribute("data-menu")) {
       trigger.setAttribute("aria-haspopup", "menu");
       trigger.setAttribute("aria-expanded", "false");
@@ -408,7 +455,49 @@
       openMenu?.trigger === trigger ? closeMenu(true) : showMenu(document.getElementById(trigger.dataset.menu), trigger);
       return;
     }
-    if (openMenu && e.target.closest?.(".menu__item") && openMenu.el.contains(e.target)) closeMenu(true);
+    const item = openMenu && e.target.closest?.(".menu__item");
+    if (!item) return;
+    // An item that opens a submenu is not a choice: the menu stays. Clicked from the keyboard, focus goes into the submenu.
+    if (item.hasAttribute("data-submenu") && openMenu.el.contains(item)) showSub(item, e.detail === 0);
+    else if (openMenu.el.contains(item) || openSub?.el.contains(item)) closeMenu(true);
+  });
+  // Pointer intent: on its way from an item to the submenu it opened, the pointer crosses the items in between. While it
+  // moves fast enough inside the triangle drawn from where it was to the two near corners of the submenu, those items do
+  // not take the hover. Slower, stopped or outside the triangle, the item under the pointer wins.
+  const AIM_SPEED = 0.2;  // px per ms
+  const AIM_SAMPLE = 50;  // ms between two reference positions
+  const AIM_WAIT = 120;   // ms a still pointer keeps the submenu open
+  const insideTriangle = (p, a, b, c) => {
+    const side = (u, v, w) => (u.x - w.x) * (v.y - w.y) - (v.x - w.x) * (u.y - w.y);
+    const d = [side(p, a, b), side(p, b, c), side(p, c, a)];
+    return !(d.some((x) => x < 0) && d.some((x) => x > 0));
+  };
+  const hoverItem = (item) => {
+    clearTimeout(aimTimer);
+    openMenu.el.removeAttribute("data-aiming");
+    if (item.hasAttribute("data-submenu")) showSub(item);
+    else closeSub();
+  };
+  document.addEventListener("pointermove", (e) => {
+    if (!openMenu) return;
+    const at = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+    const from = aimFrom;
+    if (!from || at.t - from.t > AIM_SAMPLE) aimFrom = at;
+    if (openSub?.el.contains(e.target)) {
+      clearTimeout(aimTimer);
+      openMenu.el.removeAttribute("data-aiming");
+      return;
+    }
+    const item = e.target.closest?.(".menu__item:not(:disabled)");
+    if (!item || !openMenu.el.contains(item)) return;
+    if (!openSub || item === openSub.item || !from || at.t <= from.t) return hoverItem(item);
+    const sub = openSub.el.getBoundingClientRect();
+    const x = sub.left > at.x ? sub.left : sub.right;
+    const fast = Math.hypot(at.x - from.x, at.y - from.y) / (at.t - from.t) >= AIM_SPEED;
+    if (!fast || !insideTriangle(at, from, { x, y: sub.top }, { x, y: sub.bottom })) return hoverItem(item);
+    openMenu.el.setAttribute("data-aiming", "");
+    clearTimeout(aimTimer);
+    aimTimer = setTimeout(() => openMenu && hoverItem(item), AIM_WAIT);
   });
   document.addEventListener("contextmenu", (e) => {
     const surface = e.target.closest?.("[data-context-menu]");
@@ -420,17 +509,24 @@
     showMenu(document.getElementById(surface.dataset.contextMenu), surface, at);
   });
   document.addEventListener("mousedown", (e) => {
-    if (openMenu && !openMenu.el.contains(e.target) && !openMenu.trigger.contains(e.target)) closeMenu();
+    if (openMenu && !openMenu.el.contains(e.target) && !openSub?.el.contains(e.target) && !openMenu.trigger.contains(e.target)) closeMenu();
   });
   document.addEventListener("keydown", (e) => {
     if (!openMenu) return;
-    const items = menuItems(openMenu.el);
-    const i = items.indexOf(document.activeElement);
+    const focused = document.activeElement;
+    const inSub = openSub?.el.contains(focused);
+    const items = menuItems(inSub ? openSub.el : openMenu.el);
+    const i = items.indexOf(focused);
     const go = { ArrowDown: items[(i + 1) % items.length], ArrowUp: items[(i - 1 + items.length) % items.length], Home: items[0], End: items.at(-1) }[e.key];
-    if (go) { e.preventDefault(); go.focus(); }
+    if (go) {
+      e.preventDefault();
+      if (!inSub) closeSub();
+      go.focus();
+    } else if (e.key === "ArrowRight" && focused.matches(".menu__item[data-submenu]")) { e.preventDefault(); showSub(focused, true); }
+    else if (inSub && (e.key === "ArrowLeft" || e.key === "Escape")) { e.preventDefault(); closeSub(true); }
     else if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); closeMenu(true); }
   });
-  addEventListener("scroll", (e) => { if (openMenu && !openMenu.el.contains(e.target)) closeMenu(); }, true);
+  addEventListener("scroll", (e) => { if (openMenu && !openMenu.el.contains(e.target) && !openSub?.el.contains(e.target)) closeMenu(); }, true);
   addEventListener("resize", () => closeMenu());
 
   // Modal and drawer: native <dialog class="modal|drawer">. data-open="<id>" opens one, data-close closes the one it sits in.
@@ -692,7 +788,7 @@
   const initTable = (table) => {
     [...table.tBodies[0].rows].forEach((row, i) => { row.dataset.order ??= i; });
     for (const th of table.tHead.rows[0].cells) {
-      if (th.dataset.sort === "false" || th.querySelector("button")) continue;
+      if (th.dataset.sort === "false" || th.classList.contains("table__select") || th.querySelector("button")) continue;
       const b = document.createElement("button");
       b.append(...th.childNodes);
       th.append(b);
@@ -735,6 +831,218 @@
       if (dy) r.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration, easing: root.getPropertyValue("--ease-out").trim() });
     }
   });
+
+  // Selection: .table[data-selectable] or .list[data-selectable]. Every row holds a .checkbox, in its .table__select cell
+  // or as its .list__select; the table head holds the select-all. Shift+click extends from the last box clicked. Fires
+  // "change" on the table or list (event.detail: the selected rows) and drives every .bulk-bar[data-for="<its id>"].
+  // Rows hidden by a filter keep their state; the select-all only speaks for the rows in view.
+  const SELECT_BOX = ":is(.table__select, .list__select) input";
+  const selectRow = (box) => box.closest("tbody tr, .list__item");
+  const selectBoxes = (root) => [...root.querySelectorAll(SELECT_BOX)].filter((box) => selectRow(box) && !box.disabled);
+  const selectAnchors = new WeakMap();
+  const syncSelection = (root, fire) => {
+    const boxes = selectBoxes(root);
+    for (const box of boxes) {
+      const row = selectRow(box);
+      if (row.getAttribute("aria-selected") !== String(box.checked)) row.setAttribute("aria-selected", box.checked);
+    }
+    const rows = boxes.filter((box) => box.checked).map(selectRow);
+    const all = root.querySelector("thead .table__select input");
+    if (all) {
+      const shown = boxes.filter((box) => !selectRow(box).hidden);
+      const on = shown.filter((box) => box.checked).length;
+      all.checked = on > 0 && on === shown.length;
+      all.indeterminate = on > 0 && on < shown.length;
+    }
+    for (const bar of root.id ? document.querySelectorAll(`.bulk-bar[data-for="${root.id}"]`) : []) {
+      // The count keeps its last figure while the bar leaves.
+      if (rows.length) bar.querySelector(".bulk-bar__count").textContent = `${rows.length} selected`;
+      bar.hidden = !rows.length;
+    }
+    if (!fire) return;
+    announce(rows.length ? `${rows.length} selected` : "Selection cleared");
+    root.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: rows }));
+  };
+  document.addEventListener("click", (e) => {
+    const clear = e.target.closest?.(".bulk-bar [data-clear]");
+    const root = clear ? document.getElementById(clear.closest(".bulk-bar").dataset.for) : e.target.matches?.(SELECT_BOX) && e.target.closest("[data-selectable]");
+    if (!root) return;
+    const boxes = selectBoxes(root);
+    const shown = boxes.filter((box) => !selectRow(box).hidden);
+    if (clear) {
+      boxes.forEach((box) => { box.checked = false; });
+      // The bar leaves with the button that had the focus.
+      root.querySelector(SELECT_BOX)?.focus();
+    } else if (!selectRow(e.target)) {
+      shown.forEach((box) => { box.checked = e.target.checked; });
+    } else {
+      const from = shown.indexOf(selectAnchors.get(root));
+      const to = shown.indexOf(e.target);
+      if (e.shiftKey && from >= 0) shown.slice(Math.min(from, to), Math.max(from, to) + 1).forEach((box) => { box.checked = e.target.checked; });
+      selectAnchors.set(root, e.target);
+    }
+    syncSelection(root, true);
+  });
+  // The row boxes' own "change" stops here: the page hears one "change", from the table or list, with the rows.
+  document.addEventListener("change", (e) => {
+    if (e.target.matches?.(SELECT_BOX) && e.target.closest("[data-selectable]")) e.stopPropagation();
+  }, true);
+
+  // Toolbar: a search field with data-filter="<id>" hides the rows of that table or list that do not hold the typed text,
+  // and shows the .empty[data-for="<id>"] once none is left.
+  document.addEventListener("input", (e) => {
+    const target = e.target.matches?.("[data-filter]") && document.getElementById(e.target.dataset.filter);
+    if (!target) return;
+    const query = e.target.value.trim().toLowerCase();
+    let shown = 0;
+    for (const row of target.querySelectorAll(":scope > tbody > tr, :scope > .list__item")) {
+      row.hidden = !row.textContent.toLowerCase().includes(query);
+      if (!row.hidden) shown++;
+    }
+    document.querySelectorAll(`.empty[data-for="${target.id}"]`).forEach((empty) => { empty.hidden = shown > 0; });
+    if (target.hasAttribute("data-selectable")) syncSelection(target);
+  });
+
+  // Reorder: .list[data-reorder], each row leading with a .list__handle button. Dragging the handle carries the row and
+  // draws a line at the slot it would land in. Near the top or bottom edge of what scrolls, the view scrolls, faster the
+  // closer the pointer is. On the handle, Space lifts the row, ↑ ↓ move it, Space drops it, Esc puts it back; each step
+  // is announced. Fires "reorder" on the list (event.detail: item, from, to). Rows glide to their place.
+  const SCROLL_EDGE = 56;  // px from an edge where scrolling starts
+  const SCROLL_SPEED = 18; // px per frame at the edge itself
+  let drag = null;
+  let lifted = null;
+  let moving = false;
+  const reorderItems = (list) => [...list.querySelectorAll(":scope > .list__item:not([hidden])")];
+  const rowName = (item) => item.querySelector(".list__title")?.textContent.trim() || "Row";
+  const scrollerOf = (el) => {
+    for (let p = el; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
+      if (/auto|scroll/.test(getComputedStyle(p).overflowY) && p.scrollHeight > p.clientHeight) return p;
+    }
+    return document.scrollingElement;
+  };
+  // Puts the row at an index among the others; every row glides from where it was drawn to its new place.
+  const moveRow = (item, to) => {
+    const items = reorderItems(item.parentElement);
+    const others = items.filter((x) => x !== item);
+    const before = new Map(items.map((x) => [x, x.getBoundingClientRect().top]));
+    const focused = item.contains(document.activeElement) && document.activeElement;
+    item.style.transform = "";
+    moving = true;
+    if (to < others.length) others[to].before(item);
+    else others.at(-1)?.after(item);
+    // A node that moves drops its focus.
+    if (focused) focused.focus({ preventScroll: true });
+    moving = false;
+    const root = getComputedStyle(document.documentElement);
+    const duration = parseFloat(root.getPropertyValue("--duration-spring"));
+    if (!duration) return;
+    for (const x of items) {
+      const dy = before.get(x) - x.getBoundingClientRect().top;
+      if (dy) x.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration, easing: root.getPropertyValue("--ease-spring").trim() });
+    }
+  };
+  // The row keeps its lifted look until it has landed: it passes over its neighbours on the way.
+  const landRow = (item) => {
+    const land = () => { if (drag?.item !== item && lifted?.item !== item) item.removeAttribute("data-dragging"); };
+    Promise.allSettled(item.getAnimations().map((a) => a.finished)).then(land);
+  };
+  const reordered = (item, from) => {
+    const items = reorderItems(item.parentElement);
+    const to = items.indexOf(item);
+    announce(`${rowName(item)} dropped, position ${to + 1} of ${items.length}`);
+    if (to !== from) item.parentElement.dispatchEvent(new CustomEvent("reorder", { bubbles: true, detail: { item, from, to } }));
+  };
+  // The view scrolls on every frame, pointer still or not; the row and the line follow.
+  const stepDrag = () => {
+    if (!drag) return;
+    const { scroller } = drag;
+    const view = scroller === document.scrollingElement ? { top: 0, bottom: innerHeight } : scroller.getBoundingClientRect();
+    const up = SCROLL_EDGE - (drag.y - view.top);
+    const down = SCROLL_EDGE - (view.bottom - drag.y);
+    if (up > 0) scroller.scrollTop -= SCROLL_SPEED * Math.min(1, up / SCROLL_EDGE);
+    else if (down > 0) scroller.scrollTop += SCROLL_SPEED * Math.min(1, down / SCROLL_EDGE);
+    trackDrag();
+    drag.frame = requestAnimationFrame(stepDrag);
+  };
+  const trackDrag = () => {
+    const { item, list, line } = drag;
+    // The row follows the pointer from where it was grabbed, and stays inside its list.
+    const box = list.getBoundingClientRect();
+    const rest = item.getBoundingClientRect().top - drag.dy;
+    const top = Math.max(box.top, Math.min(drag.y - drag.grab, box.bottom - item.offsetHeight));
+    drag.dy = top - rest;
+    item.style.transform = `translateY(${drag.dy}px)`;
+    const others = reorderItems(list).filter((x) => x !== item);
+    drag.to = others.filter((x) => { const r = x.getBoundingClientRect(); return r.top + r.height / 2 < drag.y; }).length;
+    const next = others[drag.to];
+    const last = others.at(-1);
+    line.style.transform = `translateY(${next ? next.offsetTop : last ? last.offsetTop + last.offsetHeight : 0}px)`;
+  };
+  const endDrag = (commit) => {
+    const { item, line, from, to, frame } = drag;
+    drag = null;
+    cancelAnimationFrame(frame);
+    line.remove();
+    moveRow(item, commit ? to : from);
+    landRow(item);
+    if (commit) reordered(item, from);
+  };
+  const endLift = (commit) => {
+    const { item, from } = lifted;
+    lifted = null;
+    if (!commit) moveRow(item, from);
+    landRow(item);
+    if (commit) reordered(item, from);
+    else announce(`${rowName(item)} back at position ${from + 1}`);
+  };
+  document.addEventListener("pointerdown", (e) => {
+    const handle = e.button === 0 && e.target.closest?.(".list[data-reorder] .list__handle");
+    if (!handle) return;
+    // No text selection while the row travels.
+    e.preventDefault();
+    handle.setPointerCapture(e.pointerId);
+    const item = handle.closest(".list__item");
+    const list = item.parentElement;
+    const line = Object.assign(document.createElement("span"), { className: "list__drop", ariaHidden: "true" });
+    list.append(line);
+    item.setAttribute("data-dragging", "");
+    const from = reorderItems(list).indexOf(item);
+    drag = { item, list, line, from, to: from, y: e.clientY, grab: e.clientY - item.getBoundingClientRect().top, dy: 0, scroller: scrollerOf(list), pointer: e.pointerId };
+    stepDrag();
+  });
+  document.addEventListener("pointermove", (e) => { if (drag?.pointer === e.pointerId) { drag.y = e.clientY; trackDrag(); } });
+  document.addEventListener("pointerup", (e) => { if (drag?.pointer === e.pointerId) { drag.y = e.clientY; trackDrag(); endDrag(true); } });
+  document.addEventListener("pointercancel", (e) => { if (drag?.pointer === e.pointerId) endDrag(false); });
+  document.addEventListener("keydown", (e) => {
+    if (drag) {
+      if (e.key === "Escape") { e.preventDefault(); endDrag(false); }
+      return;
+    }
+    const handle = e.target.closest?.(".list[data-reorder] .list__handle");
+    if (!handle) return;
+    const item = handle.closest(".list__item");
+    const items = reorderItems(item.parentElement);
+    const i = items.indexOf(item);
+    if (e.key === " ") {
+      e.preventDefault();
+      if (lifted) return endLift(true);
+      lifted = { item, handle, from: i };
+      item.setAttribute("data-dragging", "");
+      announce(`${rowName(item)} lifted, position ${i + 1} of ${items.length}. Arrow keys move it, Space drops it, Escape puts it back.`);
+    } else if (lifted && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+      e.preventDefault();
+      const to = Math.max(0, Math.min(items.length - 1, i + (e.key === "ArrowUp" ? -1 : 1)));
+      if (to === i) return;
+      moveRow(item, to);
+      item.scrollIntoView({ block: "nearest" });
+      announce(`Position ${to + 1} of ${items.length}`);
+    } else if (lifted && e.key === "Escape") {
+      e.preventDefault();
+      endLift(false);
+    }
+  });
+  // Focus leaving a lifted row drops it where it is.
+  document.addEventListener("focusout", (e) => { if (lifted && !moving && e.target === lifted.handle) endLift(true); });
 
   // Scroll spy: .toc[data-spy] marks with aria-current the link of the section crossing the reading line, data-spy-offset px
   // from the top (96; set it to the height of a sticky header). At the very bottom the last section wins, however short.
@@ -848,21 +1156,85 @@
   // Field: the label names the control, the hint and the error describe it, data-invalid sets aria-invalid.
   let fieldIds = 0;
   const idOf = (el) => el.id || (el.id = `field-${++fieldIds}`);
+  // The control is described by the one note on screen: the error when invalid, else the warning, else the hint.
   const syncField = (field) => {
     const control = field.querySelector(":scope > :is(.input, .select, .textarea, .combobox, .tag-input) :is(input, select, textarea)");
     if (!control) return;
-    if (field.hasAttribute("data-invalid")) control.setAttribute("aria-invalid", "true");
+    const invalid = field.hasAttribute("data-invalid");
+    if (invalid) control.setAttribute("aria-invalid", "true");
     else control.removeAttribute("aria-invalid");
+    const note = field.querySelector(`:scope > .field__${invalid ? "error" : field.hasAttribute("data-warning") ? "warning" : "hint"}`);
+    if (note) control.setAttribute("aria-describedby", idOf(note));
+    else control.removeAttribute("aria-describedby");
   };
   const buildField = (field) => {
     const control = field.querySelector(":scope > :is(.input, .select, .textarea, .combobox, .tag-input) :is(input, select, textarea)");
     const label = field.querySelector(":scope > label.field__label");
     if (control && label) label.htmlFor = idOf(control);
-    const notes = [...field.querySelectorAll(":scope > :is(.field__hint, .field__error)")].map(idOf);
-    if (control && notes.length) control.setAttribute("aria-describedby", notes.join(" "));
     const error = field.querySelector(":scope > .field__error");
     if (error) error.setAttribute("aria-live", "polite");
     syncField(field);
+  };
+
+  // Inline edit: .inline-edit holds an .inline-edit__text and an .inline-edit__btn (the pencil). The pencil, or Enter or
+  // F2 on the text, makes the text itself editable. Enter saves, Esc restores, leaving saves; an emptied text is
+  // restored. Fires "change" on the root (event.detail: value, previous). No double-click: it belongs to the row.
+  const edits = new WeakMap();
+  const buildInlineEdit = (root) => {
+    const text = root.querySelector(".inline-edit__text");
+    const btn = root.querySelector(".inline-edit__btn");
+    if (!text || !btn) return;
+    // One tab stop: the text. The pencil is its description, and stays a pointer target.
+    text.tabIndex = 0;
+    btn.tabIndex = -1;
+    text.setAttribute("aria-describedby", idOf(btn));
+  };
+  const startEdit = (root) => {
+    if (edits.has(root)) return;
+    const text = root.querySelector(".inline-edit__text");
+    edits.set(root, text.textContent);
+    root.setAttribute("data-editing", "");
+    text.contentEditable = "plaintext-only";
+    text.setAttribute("role", "textbox");
+    text.focus();
+    getSelection().selectAllChildren(text);
+  };
+  const endEdit = (root, save) => {
+    if (!edits.has(root)) return;
+    const text = root.querySelector(".inline-edit__text");
+    const previous = edits.get(root);
+    edits.delete(root);
+    const value = text.textContent.replace(/\s+/g, " ").trim();
+    const changed = save && value && value !== previous;
+    text.textContent = save && value ? value : previous;
+    text.removeAttribute("contenteditable");
+    text.removeAttribute("role");
+    root.removeAttribute("data-editing");
+    if (!changed) return;
+    announce("Saved");
+    root.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value, previous } }));
+  };
+  document.addEventListener("click", (e) => {
+    const root = e.target.closest?.(".inline-edit__btn")?.closest(".inline-edit");
+    if (root) startEdit(root);
+  });
+  document.addEventListener("keydown", (e) => {
+    const root = e.target.closest?.(".inline-edit__text")?.closest(".inline-edit");
+    if (!root) return;
+    const editing = edits.has(root);
+    if (!editing && (e.key === "Enter" || e.key === "F2")) { e.preventDefault(); startEdit(root); }
+    else if (editing && (e.key === "Enter" || e.key === "Escape")) { e.preventDefault(); endEdit(root, e.key === "Enter"); }
+  });
+  document.addEventListener("focusout", (e) => {
+    const root = e.target.closest?.(".inline-edit__text")?.closest(".inline-edit");
+    if (root) endEdit(root, true);
+  });
+
+  // Save status: the page sets data-state (saving, saved, error); the text now on screen is announced, without its
+  // Retry button.
+  const announceSave = (status) => {
+    const part = status.querySelector(`:scope > [data-for="${status.dataset.state}"]`);
+    if (part) announce([...part.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim());
   };
 
   // Textarea: data-max="280" caps the length and shows "used / max"; the counter turns critical once full.
@@ -1089,14 +1461,15 @@
     track.scrollBy({ left: arrow.dataset.carousel === "prev" ? -step : step });
   });
 
-  // Banner: [data-dismiss] inside a .banner folds it away, then removes it and fires "dismiss" on the parent.
+  // Banner and the card of a shell's rail: [data-dismiss] inside one folds it away, then removes it and fires "dismiss"
+  // on the parent.
   document.addEventListener("click", (e) => {
-    const banner = e.target.closest?.(".banner [data-dismiss]")?.closest(".banner");
+    const banner = e.target.closest?.(":is(.banner, .nav__card) [data-dismiss]")?.closest(".banner, .nav__card");
     if (!banner || banner.hasAttribute("data-leaving")) return;
     const parent = banner.parentElement;
     banner.setAttribute("data-leaving", "");
     const done = () => { banner.remove(); parent?.dispatchEvent(new CustomEvent("dismiss", { bubbles: true, detail: banner })); };
-    banner.addEventListener("animationend", (a) => a.animationName === "banner-out" && done());
+    banner.addEventListener("animationend", (a) => a.target === banner && done());
     if (!parseFloat(getComputedStyle(banner).animationDuration)) done();
   });
 
@@ -1114,12 +1487,23 @@
   });
 
   // App shell: [data-shell-toggle] folds the navigation rail to icons and back. Its aria-expanded follows.
+  const shellOf = (toggle) => toggle.closest(".shell") || document.querySelector(".shell");
   document.addEventListener("click", (e) => {
     const toggle = e.target.closest?.("[data-shell-toggle]");
-    const shell = toggle && (toggle.closest(".shell") || document.querySelector(".shell"));
+    const shell = toggle && shellOf(toggle);
     if (!shell) return;
     const collapsed = shell.toggleAttribute("data-collapsed");
     toggle.setAttribute("aria-expanded", String(!collapsed));
+  });
+  // A group of the folded rail shows only its icon: choosing it unfolds the rail on that group's links.
+  document.addEventListener("click", (e) => {
+    const summary = e.target.closest?.(".shell[data-collapsed] .nav__group > summary");
+    if (!summary) return;
+    e.preventDefault();
+    const shell = summary.closest(".shell");
+    shell.removeAttribute("data-collapsed");
+    summary.parentElement.open = true;
+    for (const toggle of document.querySelectorAll("[data-shell-toggle]")) if (shellOf(toggle) === shell) toggle.setAttribute("aria-expanded", "true");
   });
 
   // Rich editor: a contenteditable area with a toolbar, built from data-placeholder, data-hint and data-max. Formatting
@@ -1500,7 +1884,7 @@
   document.addEventListener("focusout", (e) => { if (openPicker && e.target.closest?.(".date-picker") === openPicker && e.relatedTarget && !openPicker.contains(e.relatedTarget)) closeDatePicker(); });
 
   // Command palette: ⌘K or Ctrl+K opens the page's dialog.command-palette and closes it again; data-open works too.
-  // Typing filters the items on their title and hides the groups left empty; the first match is active. ↑ ↓ move, Enter
+  // Typing filters the items on their title, meta and data-keywords, every word, and hides the groups left empty; the first match is active. ↑ ↓ move, Enter
   // or a click runs the active item: the palette closes and fires "select" (event.detail: value, item). Closing clears it.
   // data-select="multiple": Enter or a press adds one to the item's data-count instead (the page may write it too) and
   // the foot shows the cart, kept across closes, with the intents from the first pick: all of them, or only the one named
@@ -1512,6 +1896,8 @@
   const commandTitle = (item) => (item.querySelector(".command-palette__title") || item).textContent.trim();
   const commandValue = (item) => item.dataset.value ?? commandTitle(item);
   const countOf = (item) => Math.max(0, parseInt(item.dataset.count, 10) || 0);
+  // Case and accents do not count: "echeance" finds "Échéance".
+  const plainText = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
   // Out of the search, only the visible space counts; a search looks through every space.
   const shownCommands = (dialog) => paletteParts(dialog).items.filter((i) => !i.hidden && !i.closest(".command-palette__group[hidden]") && (dialog.hasAttribute("data-searching") || !i.closest(".tabs__panel[hidden]")));
   const activateCommand = (dialog, item, scroll = false) => {
@@ -1525,9 +1911,12 @@
   };
   const filterCommands = (dialog) => {
     const { field, list, items } = paletteParts(dialog);
-    const q = field.value.trim().toLowerCase();
-    dialog.toggleAttribute("data-searching", !!q);
-    for (const i of items) i.hidden = !!q && !commandTitle(i).toLowerCase().includes(q);
+    const words = plainText(field.value).split(/\s+/).filter(Boolean);
+    dialog.toggleAttribute("data-searching", words.length > 0);
+    for (const i of items) {
+      const text = plainText(`${commandTitle(i)} ${i.querySelector(".command-palette__meta")?.textContent ?? ""} ${i.dataset.keywords ?? ""}`);
+      i.hidden = !words.every((w) => text.includes(w));
+    }
     for (const g of dialog.querySelectorAll(".command-palette__group")) g.hidden = !g.querySelector(".command-palette__item:not([hidden])");
     const shown = shownCommands(dialog);
     const empty = dialog.querySelector(".command-palette__empty");
@@ -1928,6 +2317,198 @@
     field.value = "";
   });
 
+  // Node map: each column stands level with the node that opens it, or under the column above it, and a link joins
+  // them: across from the name, down in the gap, across into the column. The deepest columns are set first, since a
+  // branch is as tall as what it carries. Laid out again when the map or its size changes. The arrows walk it: ↑ ↓
+  // along a column, → into the column a node opens, ← back to the node that opens this one. One node takes Tab: the
+  // last one reached, else the first of the current column.
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  const mapGap = (map) => parseFloat(getComputedStyle(map).getPropertyValue("--spacing-xl")) || 0;
+  const middleOf = (mark, box) => { const r = mark.getBoundingClientRect(); return r.top + r.height / 2 - box.getBoundingClientRect().top; };
+  const columnOf = (branch) => branch.querySelector(":scope > .node-map__column");
+  const twigsOf = (branch) => [...(branch.querySelector(":scope > .node-map__twigs")?.children ?? [])];
+  const openerOf = (branch, twig) => columnOf(branch).querySelectorAll(":scope .node-map__node")[Number(twig.dataset.via)];
+  const entryOf = (branch) => columnOf(branch).querySelector(".node-map__dot, .node-map__end");
+  const arrangeBranch = (branch, gap) => {
+    let under = 0;
+    twigsOf(branch).forEach((twig, rank) => {
+      twig.style.marginTop = "";
+      arrangeBranch(twig, gap);
+      const from = openerOf(branch, twig)?.querySelector(".node-map__dot");
+      const level = from ? middleOf(from, branch) - middleOf(entryOf(twig), twig) : 0;
+      const top = Math.max(under + (rank ? gap : 0), level);
+      twig.style.marginTop = `${top - under}px`;
+      under = top + twig.offsetHeight;
+    });
+  };
+  const linkBranch = (map, branch, origin, links) => {
+    const twigs = twigsOf(branch);
+    const edge = columnOf(branch).getBoundingClientRect().right - origin.left;
+    const step = parseFloat(getComputedStyle(map).getPropertyValue("--spacing-xs")) || 0;
+    twigs.forEach((twig, rank) => {
+      const from = openerOf(branch, twig);
+      if (!from) return;
+      const to = entryOf(twig).getBoundingClientRect();
+      const name = (from.querySelector(".node-map__name") || from).getBoundingClientRect();
+      const x1 = name.right + step - origin.left;
+      // A lower column turns nearer to the nodes, so no two links cross.
+      const turn = Math.max(x1, edge) + step * 2 + (twigs.length - 1 - rank) * step * 1.5;
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", `M${x1} ${middleOf(from.querySelector(".node-map__dot"), map)}H${turn}V${middleOf(entryOf(twig), map)}H${to.left - step - origin.left}`);
+      if (from.getAttribute("aria-expanded") === "true") path.setAttribute("data-open", "");
+      links.append(path);
+      linkBranch(map, twig, origin, links);
+    });
+  };
+  const layoutNodeMap = (map) => {
+    const root = map.querySelector(":scope > .node-map__branch");
+    if (!root) return;
+    let links = map.querySelector(":scope > .node-map__links");
+    if (!links) {
+      links = document.createElementNS(SVG_NS, "svg");
+      links.setAttribute("class", "node-map__links");
+      links.setAttribute("aria-hidden", "true");
+      map.append(links);
+    }
+    arrangeBranch(root, mapGap(map));
+    links.replaceChildren();
+    linkBranch(map, root, map.getBoundingClientRect(), links);
+  };
+  const mapNodes = (map) => [...map.querySelectorAll(".node-map__node")];
+  const rove = (map, node) => {
+    for (const n of mapNodes(map)) n.tabIndex = n === node ? 0 : -1;
+  };
+  const buildNodeMap = (map) => {
+    const held = document.activeElement?.closest?.(".node-map__node");
+    rove(map, (held && map.contains(held) ? held : null) ?? map.querySelector('.node-map__column[aria-current="true"] .node-map__node') ?? mapNodes(map)[0]);
+    if (!map.nodeMapWatched) {
+      map.nodeMapWatched = true;
+      new ResizeObserver(() => layoutNodeMap(map)).observe(map);
+      document.fonts?.ready.then(() => layoutNodeMap(map));
+    }
+    layoutNodeMap(map);
+  };
+  document.addEventListener("focusin", (e) => {
+    const node = e.target.closest?.(".node-map__node");
+    if (node) rove(node.closest(".node-map"), node);
+  });
+  document.addEventListener("keydown", (e) => {
+    const node = e.target.closest?.(".node-map__node");
+    const keys = { ArrowUp: -1, ArrowDown: 1, ArrowRight: "in", ArrowLeft: "out" };
+    if (!node || !(e.key in keys) || e.metaKey || e.ctrlKey || e.altKey) return;
+    e.preventDefault();
+    const column = node.closest(".node-map__column");
+    const branch = column.parentElement;
+    const along = [...column.querySelectorAll(".node-map__node")];
+    let next = null;
+    if (typeof keys[e.key] === "number") next = along[(along.indexOf(node) + keys[e.key] + along.length) % along.length];
+    else if (keys[e.key] === "in") next = twigsOf(branch).find((t) => Number(t.dataset.via) === along.indexOf(node))?.querySelector(".node-map__node");
+    else if (branch.dataset.via !== undefined) next = openerOf(branch.parentElement.closest(".node-map__branch"), branch);
+    next?.focus();
+    next?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  });
+
+  // Graph: a camera over the drawing in .graph__world. A drag or a scroll moves it, a pinch or Ctrl/⌘ + scroll zooms on
+  // the pointer; on the focused ground, the arrows move it, + and − zoom on the centre, 0 frames it all, as does a double
+  // click on the ground. A node reached with Tab comes into view. window.fitGraph(graph, box) frames a box of the
+  // drawing in its own units ({ x, y, width, height }); without a box, the whole drawing. The click ending a drag picks nothing.
+  const cameras = new WeakMap();
+  const cameraOf = (graph) => cameras.get(graph) ?? cameras.set(graph, { x: 0, y: 0, zoom: 1 }).get(graph);
+  const paintGraph = (graph, glide = false) => {
+    const world = graph.querySelector(".graph__world"), cam = cameraOf(graph);
+    world.toggleAttribute("data-glide", glide);
+    world.style.transform = `translate(${cam.x}px, ${cam.y}px) scale(${cam.zoom})`;
+  };
+  const zoomGraph = (graph, px, py, zoom) => {
+    const cam = cameraOf(graph), next = Math.min(2.5, Math.max(0.15, zoom));
+    cam.x = px - ((px - cam.x) * next) / cam.zoom;
+    cam.y = py - ((py - cam.y) * next) / cam.zoom;
+    cam.zoom = next;
+  };
+  window.fitGraph = (graph, box, glide = true) => {
+    const world = graph.querySelector(".graph__world"), cam = cameraOf(graph);
+    box ??= { x: 0, y: 0, width: world.offsetWidth, height: world.offsetHeight };
+    if (!box.width || !box.height) return;
+    const margin = parseFloat(getComputedStyle(graph).getPropertyValue("--spacing-2xl")) || 0;
+    const { clientWidth: width, clientHeight: height } = graph;
+    cam.zoom = Math.max(0.15, Math.min(1, (width - 2 * margin) / box.width, (height - 2 * margin) / box.height));
+    cam.x = (width - box.width * cam.zoom) / 2 - box.x * cam.zoom;
+    cam.y = (height - box.height * cam.zoom) / 2 - box.y * cam.zoom;
+    paintGraph(graph, glide);
+  };
+  let graphDrag = null;
+  document.addEventListener("pointerdown", (e) => {
+    const graph = e.target.closest?.(".graph");
+    if (!graph || e.button !== 0) return;
+    const cam = cameraOf(graph);
+    graphDrag = { graph, id: e.pointerId, fromX: e.clientX, fromY: e.clientY, x: cam.x, y: cam.y, moved: false };
+  });
+  document.addEventListener("pointermove", (e) => {
+    if (graphDrag?.id !== e.pointerId) return;
+    const { graph } = graphDrag, dx = e.clientX - graphDrag.fromX, dy = e.clientY - graphDrag.fromY;
+    if (!graphDrag.moved && Math.hypot(dx, dy) < 4) return;
+    if (!graphDrag.moved) {
+      graphDrag.moved = true;
+      graph.setPointerCapture(e.pointerId);
+      graph.setAttribute("data-panning", "");
+    }
+    const cam = cameraOf(graph);
+    cam.x = graphDrag.x + dx;
+    cam.y = graphDrag.y + dy;
+    paintGraph(graph);
+  });
+  const dropGraph = (e) => {
+    if (graphDrag?.id !== e.pointerId) return;
+    graphDrag.graph.removeAttribute("data-panning");
+    // The click that follows a drag is swallowed once, then the drag is forgotten.
+    if (graphDrag.moved) setTimeout(() => { graphDrag = null; });
+    else graphDrag = null;
+  };
+  document.addEventListener("pointerup", dropGraph);
+  document.addEventListener("pointercancel", dropGraph);
+  document.addEventListener("click", (e) => { if (graphDrag?.moved && e.target.closest?.(".graph")) e.stopPropagation(); }, true);
+  document.addEventListener("dblclick", (e) => {
+    const graph = e.target.closest?.(".graph");
+    if (graph && !e.target.closest(".graph__node")) window.fitGraph(graph);
+  });
+  document.addEventListener("wheel", (e) => {
+    const graph = e.target.closest?.(".graph");
+    if (!graph) return;
+    e.preventDefault();
+    const unit = e.deltaMode === 1 ? 16 : 1, cam = cameraOf(graph);
+    if (e.ctrlKey || e.metaKey) {
+      const box = graph.getBoundingClientRect();
+      zoomGraph(graph, e.clientX - box.left, e.clientY - box.top, cam.zoom * Math.exp(-Math.max(-60, Math.min(60, e.deltaY * unit)) * 0.008));
+    } else {
+      cam.x -= (e.shiftKey && !e.deltaX ? e.deltaY : e.deltaX) * unit;
+      cam.y -= (e.shiftKey && !e.deltaX ? 0 : e.deltaY) * unit;
+    }
+    paintGraph(graph);
+  }, { passive: false });
+  document.addEventListener("keydown", (e) => {
+    const graph = e.target.matches?.(".graph") ? e.target : null;
+    if (!graph || e.metaKey || e.ctrlKey || e.altKey) return;
+    const cam = cameraOf(graph), step = parseFloat(getComputedStyle(graph).getPropertyValue("--spacing-4xl")) || 0;
+    const moves = { ArrowLeft: [step, 0], ArrowRight: [-step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] };
+    const zoom = { "+": 1.25, "=": 1.25, "-": 0.8, "−": 0.8 }[e.key];
+    if (e.key in moves) { cam.x += moves[e.key][0]; cam.y += moves[e.key][1]; paintGraph(graph, true); }
+    else if (zoom) { zoomGraph(graph, graph.clientWidth / 2, graph.clientHeight / 2, cam.zoom * zoom); paintGraph(graph, true); }
+    else if (["Digit0", "Numpad0"].includes(e.code)) window.fitGraph(graph);
+    else return;
+    e.preventDefault();
+  });
+  document.addEventListener("focusin", (e) => {
+    const node = e.target.closest?.(".graph__node");
+    const graph = node?.closest(".graph");
+    if (!graph || graphDrag) return;
+    const view = graph.getBoundingClientRect(), box = node.getBoundingClientRect();
+    if (box.left >= view.left && box.right <= view.right && box.top >= view.top && box.bottom <= view.bottom) return;
+    const cam = cameraOf(graph);
+    cam.x += view.left + view.width / 2 - (box.left + box.width / 2);
+    cam.y += view.top + view.height / 2 - (box.top + box.height / 2);
+    paintGraph(graph, true);
+  });
+
   // Markup present at load and markup rendered later get the same behaviours.
   const each = (node, selector, fn) => {
     if (node.nodeType !== 1) return;
@@ -1942,12 +2523,14 @@
     each(node, "[data-menu], [data-context-menu]", initMenuTrigger);
     each(node, ".pagination[data-pages]", renderPagination);
     each(node, ".table[data-sortable]", initTable);
+    each(node, "[data-selectable]", (root) => syncSelection(root));
     each(node, ".toc[data-spy]", (nav) => { spies.add(nav); spy(nav); });
     each(node, ".sticky-header", (header) => { stickies.add(header); stick(header); });
     each(node, ".reading-progress[data-for]", (bar) => { readings.add(bar); follow(bar); });
     each(node, ".btn[data-hold]:not([data-state])", buildHold);
     each(node, ".checkbox__box", buildCheckbox);
     each(node, ".field", buildField);
+    each(node, ".inline-edit", buildInlineEdit);
     each(node, ".textarea[data-max]:not(:has(.textarea__count))", buildTextarea);
     each(node, ".typing__dots", startDance);
     each(node, ".composer", syncComposer);
@@ -1963,14 +2546,20 @@
     each(node, ".attachment:not(:has(.attachment__body))", buildAttachment);
     each(node, ".slider:not(:has(.slider__control))", buildSlider);
     each(node, ".tag-input", buildTagInput);
+    each(node, ".node-map", buildNodeMap);
+    // A map whose content is drawn again: its root was not added, so it is laid out from here. Its links are its own
+    // drawing: laying it out again for them would never end.
+    if (node.nodeType === 1 && !node.matches(".node-map") && !node.closest(".node-map__links")) { const map = node.closest(".node-map"); if (map) buildNodeMap(map); }
   };
   enhance(document.body);
   new MutationObserver((records) => {
+    const selections = new Set();
     for (const r of records) {
       if (r.type === "attributes") {
         if (r.target.parentElement?.matches(".segmented, .tabs")) placeIndicator(r.target.parentElement);
         if (r.target.matches(".pagination")) renderPagination(r.target);
         if (r.target.matches(".field")) syncField(r.target);
+        if (r.target.matches(".save-status")) announceSave(r.target);
         if (r.target.matches(".tool-call")) syncToolCall(r.target);
         if (r.target.matches(".attachment")) syncAttachment(r.target);
         if (r.attributeName === "data-count" && r.target.closest(".command-palette")) syncCart(r.target.closest(".command-palette"));
@@ -1979,6 +2568,10 @@
       const value = (r.target.nodeType === 1 ? r.target : r.target.parentElement)?.closest(".value");
       if (value) watchValue(value);
       if (r.type === "childList") r.addedNodes.forEach(enhance);
+      // Rows added or removed change what the select-all and the bulk bar say.
+      const selectable = r.type === "childList" && r.target.closest?.("[data-selectable]");
+      if (selectable) selections.add(selectable);
     }
-  }).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["aria-pressed", "aria-selected", "data-page", "data-invalid", "data-state", "data-progress", "data-error", "data-count"] });
+    selections.forEach((root) => syncSelection(root));
+  }).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["aria-pressed", "aria-selected", "data-page", "data-invalid", "data-warning", "data-state", "data-progress", "data-error", "data-count"] });
 })();

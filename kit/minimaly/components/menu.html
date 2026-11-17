@@ -11,15 +11,18 @@
 <body>
   <div class="specimen" style="--cols: 2">
     <span></span><span class="col">From a button</span><span class="col">Right-click the card</span>
-    <span class="row">Menu</span>
+    <span class="row">Menu · "Move to" opens a submenu</span>
     <button class="btn" data-menu="row-actions"><i class="icon" data-icon="dots-three"></i>Actions</button>
     <div class="card" data-context-menu="file-actions" style="width: 240px"><div class="card__body">quarterly-report.pdf</div></div>
     <span class="row">Open (static)</span>
     <div class="popover menu" style="position: static"><button class="menu__item"><i class="icon" data-icon="pencil-simple"></i>Rename<span class="kbd">R</span></button><button class="menu__item" data-force="hover"><i class="icon" data-icon="copy"></i>Duplicate<span class="kbd">⌘D</span></button><button class="menu__item" disabled><i class="icon" data-icon="share"></i>Share</button><hr class="menu__separator"><button class="menu__item" data-variant="critical"><i class="icon" data-icon="trash"></i>Delete</button></div>
     <span></span>
+    <span class="row">Submenu (static)</span>
+    <div style="display: flex; align-items: flex-start; gap: 2px; grid-column: 1 / -1"><div class="popover menu" style="position: static"><button class="menu__item"><i class="icon" data-icon="pencil-simple"></i>Rename<span class="kbd">R</span></button><button class="menu__item" aria-expanded="true"><i class="icon" data-icon="folder"></i>Move to<i class="icon menu__caret" data-icon="caret-right"></i></button><button class="menu__item"><i class="icon" data-icon="copy"></i>Duplicate<span class="kbd">⌘D</span></button></div><div class="popover menu" style="position: static; margin-top: var(--control-height)"><button class="menu__item"><i class="icon" data-icon="tray"></i>Inbox</button><button class="menu__item" data-force="hover"><i class="icon" data-icon="archive"></i>Archive</button><button class="menu__item"><i class="icon" data-icon="star"></i>Favourites</button></div></div>
   </div>
   <div class="popover menu" id="row-actions" aria-label="Row actions">
     <button class="menu__item"><i class="icon" data-icon="pencil-simple"></i>Rename<span class="kbd">R</span></button>
+    <button class="menu__item" data-submenu="move-to"><i class="icon" data-icon="folder"></i>Move to<i class="icon menu__caret" data-icon="caret-right"></i></button>
     <button class="menu__item"><i class="icon" data-icon="copy"></i>Duplicate<span class="kbd">⌘D</span></button>
     <button class="menu__item" disabled><i class="icon" data-icon="share"></i>Share</button>
     <hr class="menu__separator">
@@ -30,6 +33,11 @@
     <button class="menu__item"><i class="icon" data-icon="download-simple"></i>Download</button>
     <hr class="menu__separator">
     <button class="menu__item" data-variant="critical"><i class="icon" data-icon="trash"></i>Delete</button>
+  </div>
+  <div class="popover menu" id="move-to" aria-label="Move to">
+    <button class="menu__item"><i class="icon" data-icon="tray"></i>Inbox</button>
+    <button class="menu__item"><i class="icon" data-icon="archive"></i>Archive</button>
+    <button class="menu__item"><i class="icon" data-icon="star"></i>Favourites</button>
   </div>
   <script src="../ds.js"></script>
 </body>

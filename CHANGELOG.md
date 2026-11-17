@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.2.0 · 2026-11-17
+
+- Minimaly: 19 new components. App: `mention`, `stat`, `chart` (with `charts.css`), `inline-edit`, `save-status`, `toolbar`, `bulk-bar`, `load-more`, `node-map`, `graph`, `facts`, `highlight`. Site: `section`, `hero`, `logo-strip`, `feature-tabs`, `pricing`, `cta`, `site-footer`.
+- Minimaly: `table` and `list` select rows, `list` reorders them, `menu` opens a submenu, `shell` groups its rail and holds an account and a card, `media` takes an overlay and an action, `chip` is muted, `field` warns.
+- The validator knows the classes of `charts.css` (`chart`, `stat`): a screen using them no longer gets "class exists neither in Minimaly nor in the topic CSS".
+- A screen that styles its own `.hero`, `.cta`, `.site-footer`, `.facts` or `.stat` now gets the Minimaly component under its rules: rename the local class or use the component.
+
 ## 3.1.1 · 2026-11-10
 
 - The kit update works on Windows. The `tar` that ships with Windows ends the lines of its listing with CRLF, and every update was refused with "The release archive has no kit/VERSION". A kit already installed on Windows cannot get this fix through the update button, which is what was broken: replace its `kit/` folder once with the one from the release archive.

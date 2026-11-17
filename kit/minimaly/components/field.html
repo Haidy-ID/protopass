@@ -15,11 +15,21 @@
     <div class="field" style="width: 220px"><label class="field__label">Project name <span class="field__required" aria-hidden="true">*</span></label><label class="input"><input placeholder="Atlas"></label><p class="field__hint">Shown on the home page.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>A name is required.</p></div>
     <div class="field" style="width: 220px" data-invalid><label class="field__label">Project name <span class="field__required" aria-hidden="true">*</span></label><label class="input"><input placeholder="Atlas"></label><p class="field__hint">Shown on the home page.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>A name is required.</p></div>
     <div class="field" style="width: 220px"><label class="field__label">Project name <span class="field__optional">Optional</span></label><label class="input"><input value="Atlas" disabled></label><p class="field__hint">Shown on the home page.</p></div>
+    <span class="row">Warning · it does not block, and the error wins over it. Live: type more than 12 letters</span>
+    <div class="field" style="width: 220px" data-warning><label class="field__label">Project name</label><label class="input"><input value="Atlas"></label><p class="field__hint">Shown on the home page.</p><p class="field__warning"><i class="icon" data-icon="warning"></i>Another project has this name.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>A name is required.</p></div>
+    <div class="field" style="width: 220px" data-warning data-invalid><label class="field__label">Project name</label><label class="input"><input placeholder="Atlas"></label><p class="field__hint">Shown on the home page.</p><p class="field__warning"><i class="icon" data-icon="warning"></i>Another project has this name.</p><p class="field__error"><i class="icon" data-icon="warning-circle"></i>A name is required.</p></div>
+    <div class="field" style="width: 220px" id="live-warning"><label class="field__label">Project name</label><label class="input"><input value="Atlas"></label><p class="field__hint">Shown on the home page.</p><p class="field__warning"><i class="icon" data-icon="warning"></i>Long names are cut in the rail.</p></div>
     <span class="row">Choices</span>
     <div class="field" role="group" aria-labelledby="notify"><span class="field__label" id="notify">Notify me</span><div class="field__choices"><label class="checkbox"><input type="checkbox" checked><span class="checkbox__box"></span>New comments</label><label class="checkbox"><input type="checkbox"><span class="checkbox__box"></span>Status changes</label></div></div>
     <div class="field" role="radiogroup" aria-labelledby="size" data-invalid><span class="field__label" id="size">Size</span><div class="field__choices" data-variant="row"><label class="radio"><input type="radio" name="s1"><span class="radio__dot"></span>Small</label><label class="radio"><input type="radio" name="s1"><span class="radio__dot"></span>Large</label></div><p class="field__error"><i class="icon" data-icon="warning-circle"></i>Pick a size.</p></div>
     <span></span>
   </div>
   <script src="../ds.js"></script>
+  <script>
+    // Specimen only: the page decides when a value deserves a remark.
+    document.querySelector("#live-warning input").addEventListener("input", (e) => {
+      e.target.closest(".field").toggleAttribute("data-warning", e.target.value.length > 12);
+    });
+  </script>
 </body>
 </html>

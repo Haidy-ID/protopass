@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Pricing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="grid-template-columns: minmax(0, 1fr)">
+    <span class="row">Current plan · featured plan with a discount · default</span>
+    <div class="pricing">
+      <article class="pricing__plan" aria-current="true">
+        <div class="pricing__head"><h3 class="pricing__name">Free</h3></div>
+        <p class="pricing__price"><span class="pricing__amount">$0</span><span class="pricing__period">for up to 3 people</span></p>
+        <ul class="pricing__list"><li><i class="icon" data-icon="check"></i>20 loans a month</li><li><i class="icon" data-icon="check"></i>Reminders by email</li></ul>
+        <button class="btn" data-size="lg" disabled>Current plan</button>
+      </article>
+      <article class="pricing__plan" data-variant="featured">
+        <div class="pricing__head"><h3 class="pricing__name">Team</h3><span class="badge" data-variant="success">SAVE 20%</span></div>
+        <p class="pricing__price"><span class="pricing__amount">$12</span><s>$15</s><span class="pricing__period">per seat, per month</span></p>
+        <p class="pricing__plus">Everything in Free, plus</p><ul class="pricing__list"><li><i class="icon" data-icon="check"></i>Unlimited loans</li><li><i class="icon" data-icon="check"></i>Shared views</li><li><i class="icon" data-icon="check"></i>Reminders by text</li></ul>
+        <button class="btn" data-size="lg" data-variant="primary">Upgrade to Team</button>
+      </article>
+      <article class="pricing__plan">
+        <div class="pricing__head"><h3 class="pricing__name">Business</h3></div>
+        <p class="pricing__price"><span class="pricing__amount">$29</span><span class="pricing__period">per seat, per month</span></p>
+        <p class="pricing__plus">Everything in Team, plus</p><ul class="pricing__list"><li><i class="icon" data-icon="check"></i>Single sign-on</li><li><i class="icon" data-icon="check"></i>Audit log</li><li><i class="icon" data-icon="check"></i>Priority support</li></ul>
+        <button class="btn" data-size="lg">Talk to sales</button>
+      </article>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

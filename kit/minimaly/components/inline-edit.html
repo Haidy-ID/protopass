@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inline edit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Default</span><span class="col">Hover or focus</span><span class="col">Editing</span>
+    <span class="row">Text</span>
+    <span class="inline-edit"><span class="inline-edit__text">Quarterly report</span><button class="inline-edit__btn" aria-label="Rename Quarterly report"><i class="icon" data-icon="pencil-simple"></i></button></span>
+    <span class="inline-edit" data-force="hover"><span class="inline-edit__text">Quarterly report</span><button class="inline-edit__btn" aria-label="Rename Quarterly report"><i class="icon" data-icon="pencil-simple"></i></button></span>
+    <span class="inline-edit" data-editing><span class="inline-edit__text">Quarterly report</span><button class="inline-edit__btn" aria-label="Rename Quarterly report"><i class="icon" data-icon="pencil-simple"></i></button></span>
+    <span class="row">Heading: the field keeps the type and the size</span>
+    <h2 class="inline-edit" style="margin: 0; font-size: var(--font-size-4xl); font-weight: var(--font-weight-semibold); letter-spacing: var(--letter-spacing-display)"><span class="inline-edit__text">Atlas</span><button class="inline-edit__btn" aria-label="Rename Atlas"><i class="icon" data-icon="pencil-simple"></i></button></h2>
+    <h2 class="inline-edit" data-force="hover" style="margin: 0; font-size: var(--font-size-4xl); font-weight: var(--font-weight-semibold); letter-spacing: var(--letter-spacing-display)"><span class="inline-edit__text">Atlas</span><button class="inline-edit__btn" aria-label="Rename Atlas"><i class="icon" data-icon="pencil-simple"></i></button></h2>
+    <h2 class="inline-edit" data-editing style="margin: 0; font-size: var(--font-size-4xl); font-weight: var(--font-weight-semibold); letter-spacing: var(--letter-spacing-display)"><span class="inline-edit__text">Atlas</span><button class="inline-edit__btn" aria-label="Rename Atlas"><i class="icon" data-icon="pencil-simple"></i></button></h2>
+    <span class="row">Live: the pencil, or focus the text then Enter or F2. Enter saves, Esc restores, leaving saves</span>
+    <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: var(--spacing-sm)">
+      <span class="inline-edit" id="live"><span class="inline-edit__text">Budget 2026</span><button class="inline-edit__btn" aria-label="Rename Budget 2026"><i class="icon" data-icon="pencil-simple"></i></button></span>
+      <p class="col" id="edit-log" role="status" style="margin: 0">Nothing changed yet.</p>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: say what the text reports.
+    document.getElementById("live").addEventListener("change", (e) => {
+      document.getElementById("edit-log").textContent = `change: "${e.detail.previous}" became "${e.detail.value}"`;
+    });
+  </script>
+</body>
+</html>

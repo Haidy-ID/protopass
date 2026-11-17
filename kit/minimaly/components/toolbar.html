@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Toolbar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Live: type in a search field ("zz" matches nothing)</span>
+    <span class="row">Above a table</span>
+    <div style="width: 560px">
+      <div class="toolbar">
+        <label class="input toolbar__search"><i class="icon" data-icon="magnifying-glass"></i><input type="search" placeholder="Search tasks" aria-label="Search tasks" data-filter="toolbar-tasks"></label>
+        <label class="select"><span class="select__label">Status</span><select aria-label="Status"><option>All</option><option>Open</option><option>Done</option></select><i class="icon select__icon" data-icon="caret-down"></i></label>
+        <button class="btn" aria-pressed="true">Mine</button>
+        <div class="toolbar__actions"><button class="btn" data-variant="primary"><i class="icon" data-icon="plus"></i>New task</button></div>
+      </div>
+      <table class="table" id="toolbar-tasks" aria-label="Tasks">
+        <thead><tr><th>Task</th><th>Owner</th><th data-align="end">Hours</th></tr></thead>
+        <tbody>
+          <tr><td>Write the summary</td><td>Ada</td><td data-align="end">12</td></tr>
+          <tr><td>Check the numbers</td><td>Grace</td><td data-align="end">4</td></tr>
+          <tr><td>Budget table</td><td>Alan</td><td data-align="end">1,240</td></tr>
+          <tr><td>Read the sources</td><td>Barbara</td><td data-align="end">7.5</td></tr>
+        </tbody>
+      </table>
+      <div class="empty" data-variant="compact" data-for="toolbar-tasks" hidden><div class="empty__art"><i class="icon" data-icon="magnifying-glass"></i></div><h3 class="empty__title">No task matches</h3><p class="empty__text">Try another word.</p></div>
+    </div>
+    <span class="row">Above a list</span>
+    <div style="width: 300px">
+      <div class="toolbar">
+        <label class="input toolbar__search"><i class="icon" data-icon="magnifying-glass"></i><input type="search" placeholder="Search loans" aria-label="Search loans" data-filter="toolbar-loans"></label>
+        <button class="btn" aria-pressed="false">Late</button>
+      </div>
+      <ul class="list" data-variant="inset" id="toolbar-loans"><li class="list__item"><span class="list__lead avatar">SA</span><span class="list__body"><span class="list__title">Drill</span><span class="list__meta">Sam · back Sep 30</span></span></li><li class="list__item"><span class="list__lead avatar">MI</span><span class="list__body"><span class="list__title">Ladder</span><span class="list__meta">Mia · back Oct 2</span></span></li><li class="list__item"><span class="list__lead avatar">NO</span><span class="list__body"><span class="list__title">Projector</span><span class="list__meta">Noor · back Oct 9</span></span></li></ul>
+      <div class="empty" data-variant="compact" data-for="toolbar-loans" hidden><div class="empty__art"><i class="icon" data-icon="magnifying-glass"></i></div><h3 class="empty__title">No loan matches</h3><p class="empty__text">Try another word.</p></div>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

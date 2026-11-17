@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Load more</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Idle</span><span class="col">Busy</span><span class="col">End</span>
+    <span class="row">Load more</span>
+    <div class="load-more" style="width: 200px"><button class="btn" data-busy="Loading" data-done="Loaded" data-error="Try again" data-pin="idle">Load more</button><span class="load-more__count">Showing 20 of 134</span></div>
+    <div class="load-more" style="width: 200px"><button class="btn" data-busy="Loading" data-done="Loaded" data-error="Try again" data-pin="busy">Load more</button><span class="load-more__count">Showing 20 of 134</span></div>
+    <div class="load-more" style="width: 200px"><button class="btn" data-busy="Loading" data-done="Loaded" data-error="Try again" hidden>Load more</button><span class="load-more__count">All 134 shown</span></div>
+    <span class="row">Live: click it</span>
+    <div style="width: 300px; grid-column: 1 / -1">
+      <ul class="list" data-variant="inset" id="feed"><li class="list__item"><span class="list__lead avatar">SA</span><span class="list__body"><span class="list__title">Drill</span><span class="list__meta">Sam · back Sep 30</span></span></li><li class="list__item"><span class="list__lead avatar">MI</span><span class="list__body"><span class="list__title">Ladder</span><span class="list__meta">Mia · back Oct 2</span></span></li></ul>
+      <div class="load-more"><button class="btn" data-busy="Loading" data-done="Loaded" data-error="Try again" id="more">Load more</button><span class="load-more__count" id="more-count" role="status">Showing 2 of 6</span></div>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: pin each state, and feed the live list two rows at a time.
+    document.querySelectorAll("[data-pin]").forEach((b) => { b.dataset.state = b.dataset.pin; });
+    const rest = ["<li class=\"list__item\"><span class=\"list__lead avatar\">NO</span><span class=\"list__body\"><span class=\"list__title\">Projector</span><span class=\"list__meta\">Noor \u00b7 back Oct 9</span></span></li>", "<li class=\"list__item\"><span class=\"list__lead avatar\">RA</span><span class=\"list__body\"><span class=\"list__title\">Tent</span><span class=\"list__meta\">Ravi \u00b7 back Oct 12</span></span></li>", "<li class=\"list__item\"><span class=\"list__lead avatar\">LE</span><span class=\"list__body\"><span class=\"list__title\">Sander</span><span class=\"list__meta\">Lea \u00b7 back Oct 20</span></span></li>", "<li class=\"list__item\"><span class=\"list__lead avatar\">OM</span><span class=\"list__body\"><span class=\"list__title\">Bike rack</span><span class=\"list__meta\">Omar \u00b7 back Nov 3</span></span></li>"];
+    const feed = document.getElementById("feed");
+    const more = document.getElementById("more");
+    more.onclick = () => runButton(more, () => new Promise((r) => setTimeout(r, 900))).then(() => {
+      feed.insertAdjacentHTML("beforeend", rest.splice(0, 2).join(""));
+      const total = feed.children.length + rest.length;
+      more.hidden = !rest.length;
+      document.getElementById("more-count").textContent = rest.length ? `Showing ${feed.children.length} of ${total}` : `All ${total} shown`;
+    });
+  </script>
+</body>
+</html>

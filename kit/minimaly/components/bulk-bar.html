@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bulk bar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Hidden until a row is selected</span>
+    <span class="row">Shown (static)</span>
+    <div class="bulk-bar" style="position: static; margin: 0">
+      <span class="bulk-bar__count">3 selected</span>
+      <div class="bulk-bar__actions"><button class="btn"><i class="icon" data-icon="archive"></i>Archive</button><button class="btn"><i class="icon" data-icon="user-plus"></i>Assign</button><button class="btn"><i class="icon" data-icon="trash"></i>Delete</button></div>
+      <button class="btn" data-variant="icon" data-clear aria-label="Clear selection"><i class="icon" data-icon="x"></i></button>
+    </div>
+    <span class="row">Live: select rows, then clear</span>
+    <div style="width: 520px">
+    <table class="table" data-selectable id="bulk-tasks" aria-label="Tasks">
+      <thead><tr><th class="table__select"><label class="checkbox"><input type="checkbox" aria-label="Select all tasks"><span class="checkbox__box"></span></label></th><th>Task</th><th>Owner</th><th data-align="end">Hours</th><th data-sort="false">Status</th></tr></thead>
+      <tbody>
+        <tr><td class="table__select"><label class="checkbox"><input type="checkbox" aria-label="Select Write the summary"><span class="checkbox__box"></span></label></td><td>Write the summary</td><td>Ada</td><td data-align="end">12</td><td><span class="badge" data-variant="warning">OPEN</span></td></tr>
+        <tr><td class="table__select"><label class="checkbox"><input type="checkbox" aria-label="Select Check the numbers"><span class="checkbox__box"></span></label></td><td>Check the numbers</td><td>Grace</td><td data-align="end">4</td><td><span class="badge" data-variant="success">DONE</span></td></tr>
+        <tr><td class="table__select"><label class="checkbox"><input type="checkbox" aria-label="Select Budget table"><span class="checkbox__box"></span></label></td><td>Budget table</td><td>Alan</td><td data-align="end">1,240</td><td><span class="badge">LATER</span></td></tr>
+        <tr><td class="table__select"><label class="checkbox"><input type="checkbox" aria-label="Select Read the sources"><span class="checkbox__box"></span></label></td><td>Read the sources</td><td>Barbara</td><td data-align="end">7.5</td><td><span class="badge" data-variant="success">DONE</span></td></tr>
+      </tbody>
+    </table>
+    <div class="bulk-bar" data-for="bulk-tasks" hidden>
+      <span class="bulk-bar__count"></span>
+      <div class="bulk-bar__actions"><button class="btn"><i class="icon" data-icon="archive"></i>Archive</button><button class="btn"><i class="icon" data-icon="user-plus"></i>Assign</button><button class="btn"><i class="icon" data-icon="trash"></i>Delete</button></div>
+      <button class="btn" data-variant="icon" data-clear aria-label="Clear selection"><i class="icon" data-icon="x"></i></button>
+    </div>
+    <p class="col" id="bulk-log" role="status">Nothing selected.</p>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: say what the table reports.
+    document.getElementById("bulk-tasks").addEventListener("change", (e) => {
+      document.getElementById("bulk-log").textContent = `change: ${e.detail.length} row${e.detail.length === 1 ? "" : "s"}`;
+    });
+  </script>
+</body>
+</html>

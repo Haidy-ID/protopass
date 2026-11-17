@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Highlight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Hover</span><span class="col">Selected</span><span class="col">Tag below</span>
+    <span class="row">Over a paragraph</span>
+    <p class="text" style="position: relative; width: 220px; margin: var(--spacing-xl) 0 0">The rain had not stopped for three days.<span class="highlight" style="position: absolute; inset: 0"><span class="highlight__tag">farm.md:3</span></span></p>
+    <p class="text" style="position: relative; width: 220px; margin: var(--spacing-xl) 0 0">The rain had not stopped for three days.<span class="highlight" data-variant="selected" style="position: absolute; inset: 0"><span class="highlight__tag">farm.md:3</span></span></p>
+    <p class="text" style="position: relative; width: 220px; margin: var(--spacing-xl) 0 0">The rain had not stopped for three days.<span class="highlight" data-variant="selected" data-side="bottom" style="position: absolute; inset: 0"><span class="highlight__tag">farm.md:3</span></span></p>
+  </div>
+</body>
+</html>

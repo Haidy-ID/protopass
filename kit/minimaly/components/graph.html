@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Graph</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 6">
+    <span></span><span class="col">Hollow</span><span class="col">Solid</span><span class="col">Critical</span><span class="col">Critical solid</span><span class="col">Success</span><span class="col">Success solid</span>
+    <span class="row">Circle</span>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node"><circle class="graph__body" r="14"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-variant="solid"><circle class="graph__halo" r="22"/><circle class="graph__body" r="14"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-tone="critical"><circle class="graph__body" r="14"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-variant="solid" data-tone="critical"><circle class="graph__halo" r="22"/><circle class="graph__body" r="14"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-tone="success"><circle class="graph__body" r="14"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-variant="solid" data-tone="success"><circle class="graph__body" r="14"/></g></svg>
+    <span class="row">Diamond</span>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node"><rect class="graph__body" x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-variant="solid"><circle class="graph__halo" r="14"/><rect class="graph__body" x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-tone="critical"><rect class="graph__body" x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-variant="solid" data-tone="critical"><rect class="graph__body" x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-tone="success"><rect class="graph__body" x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g></svg>
+    <svg class="graph__glyph" viewBox="-26 -26 52 52"><g class="graph__node" data-variant="solid" data-tone="success"><rect class="graph__body" x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g></svg>
+    <span class="row">Ground · live: drag, ⌘ + scroll, Tab, + − 0</span>
+    <div class="graph" tabindex="0" aria-label="A loop of three steps" style="grid-column: span 6; height: 320px">
+      <div class="graph__world">
+        <svg width="420" height="300" viewBox="-210 -150 420 300">
+          <text class="graph__title" y="-4" text-anchor="middle">Loop</text>
+          <text class="graph__subtitle" y="20" text-anchor="middle">what turns</text>
+          <path class="graph__ring" d="M0 -110 A110 110 0 0 1 95.3 55"/>
+          <path class="graph__ring" data-tone="critical" d="M95.3 55 A110 110 0 0 1 -95.3 55"/>
+          <path class="graph__ring" d="M-95.3 55 A110 110 0 0 1 0 -110"/>
+          <line class="graph__edge" data-lit x1="0" y1="-110" x2="150" y2="-110"/>
+          <g class="graph__node" data-variant="solid" tabindex="0" role="button" aria-pressed="true" data-lit transform="translate(0 -110)"><circle class="graph__halo" r="23"/><circle class="graph__body" r="14"/><text x="-32" text-anchor="end" dominant-baseline="central"><tspan class="graph__slot">Start</tspan></text></g>
+          <g class="graph__node" tabindex="0" role="button" data-lit transform="translate(150 -110)"><circle class="graph__body" r="17"/><text class="graph__inside" text-anchor="middle" dominant-baseline="central">E1</text></g>
+          <g class="graph__node" data-variant="solid" data-tone="critical" tabindex="0" role="button" transform="translate(95.3 55)"><circle class="graph__halo" r="23"/><circle class="graph__body" r="14"/><text x="30" dominant-baseline="central">Empty step</text></g>
+          <g class="graph__node" data-variant="solid" tabindex="0" role="button" transform="translate(-95.3 55)"><circle class="graph__halo" data-tone="critical" r="23"/><circle class="graph__body" r="14"/><text x="-30" text-anchor="end" dominant-baseline="central"><tspan class="graph__code">P2</tspan> price</text></g>
+        </svg>
+      </div>
+      <p class="graph__hint"><span><span class="kbd">0</span>everything</span><span><span class="kbd">+</span><span class="kbd">−</span>zoom</span></p>
+    </div>
+    <span class="row">Picking</span>
+    <div class="graph" data-picking aria-label="The same loop, its first step picked" style="grid-column: span 6; height: 320px">
+      <div class="graph__world">
+        <svg width="420" height="300" viewBox="-210 -150 420 300">
+          <text class="graph__title" y="-4" text-anchor="middle">Loop</text>
+          <path class="graph__ring" d="M0 -110 A110 110 0 1 1 -0.1 -110"/>
+          <line class="graph__edge" data-lit x1="0" y1="-110" x2="150" y2="-110"/>
+          <line class="graph__edge" x1="95.3" y1="55" x2="170" y2="100"/>
+          <g class="graph__node" data-variant="solid" aria-pressed="true" data-lit transform="translate(0 -110)"><circle class="graph__halo" r="23"/><circle class="graph__body" r="14"/></g>
+          <g class="graph__node" data-lit transform="translate(150 -110)"><circle class="graph__body" r="17"/><text class="graph__inside" text-anchor="middle" dominant-baseline="central">E1</text></g>
+          <g class="graph__node" data-variant="solid" transform="translate(95.3 55)"><circle class="graph__body" r="14"/></g>
+          <g class="graph__node" transform="translate(170 100)"><rect class="graph__body" x="-7" y="-7" width="14" height="14" transform="rotate(45)"/></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+  <script>for (const graph of document.querySelectorAll(".graph")) fitGraph(graph, null, false);</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Pagination
 
-Pages of a long list or table. Needs `ds.js`, which draws the buttons.
+Pages of a long list or table. A feed, or a list on a website whose footer must stay reachable: `load-more`. Needs `ds.js`, which draws the buttons.
 
 ```html
 <nav class="pagination" data-pages="24" data-page="1" aria-label="Results pages"></nav>

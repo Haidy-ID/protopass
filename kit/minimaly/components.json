@@ -41,7 +41,8 @@
     "variants": [
       "default",
       "round",
-      "accent"
+      "accent",
+      "muted"
     ],
     "states": [
       "default"
@@ -59,6 +60,20 @@
       "initials",
       "photo",
       "stack"
+    ]
+  },
+  {
+    "id": "mention",
+    "class": "mention",
+    "name": "Mention",
+    "variants": [
+      "static",
+      "link",
+      "button"
+    ],
+    "states": [
+      "default",
+      "hover"
     ]
   },
   {
@@ -234,6 +249,36 @@
     ]
   },
   {
+    "id": "stat",
+    "class": "stat",
+    "name": "Stat",
+    "variants": [
+      "default",
+      "with sparkline",
+      "live"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "chart",
+    "class": "chart",
+    "name": "Chart",
+    "variants": [
+      "line",
+      "bars",
+      "donut",
+      "sparkline"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "empty",
+      "loading"
+    ]
+  },
+  {
     "id": "skeleton",
     "class": "skeleton",
     "name": "Skeleton",
@@ -266,13 +311,15 @@
     "name": "Menu",
     "variants": [
       "button",
-      "context"
+      "context",
+      "submenu"
     ],
     "states": [
       "item",
       "hover",
       "disabled",
-      "critical"
+      "critical",
+      "submenu open"
     ]
   },
   {
@@ -372,12 +419,14 @@
     "name": "Table",
     "variants": [
       "default",
-      "sortable"
+      "sortable",
+      "selectable"
     ],
     "states": [
       "unsorted",
       "ascending",
-      "descending"
+      "descending",
+      "selected"
     ]
   },
   {
@@ -426,7 +475,35 @@
     "states": [
       "default",
       "invalid",
-      "disabled"
+      "disabled",
+      "warning"
+    ]
+  },
+  {
+    "id": "inline-edit",
+    "class": "inline-edit",
+    "name": "Inline edit",
+    "variants": [
+      "text",
+      "heading"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "editing"
+    ]
+  },
+  {
+    "id": "save-status",
+    "class": "save-status",
+    "name": "Save status",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "saving",
+      "saved",
+      "error"
     ]
   },
   {
@@ -521,12 +598,55 @@
     "name": "List",
     "variants": [
       "plain",
-      "inset"
+      "inset",
+      "selectable",
+      "reorder"
     ],
     "states": [
       "default",
       "hover",
-      "current"
+      "current",
+      "selected",
+      "dragging"
+    ]
+  },
+  {
+    "id": "toolbar",
+    "class": "toolbar",
+    "name": "Toolbar",
+    "variants": [
+      "table",
+      "list"
+    ],
+    "states": [
+      "default",
+      "filtered",
+      "no result"
+    ]
+  },
+  {
+    "id": "bulk-bar",
+    "class": "bulk-bar",
+    "name": "Bulk bar",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "hidden",
+      "shown"
+    ]
+  },
+  {
+    "id": "load-more",
+    "class": "load-more",
+    "name": "Load more",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "busy",
+      "end"
     ]
   },
   {
@@ -535,11 +655,16 @@
     "name": "App shell",
     "variants": [
       "default",
-      "with aside"
+      "with aside",
+      "with groups",
+      "with account",
+      "with card"
     ],
     "states": [
       "expanded",
-      "collapsed"
+      "collapsed",
+      "group open",
+      "group closed"
     ]
   },
   {
@@ -846,11 +971,16 @@
     "variants": [
       "16/10",
       "4/5",
-      "with caption"
+      "with caption",
+      "overlay",
+      "overlay blur",
+      "action"
     ],
     "states": [
       "image",
-      "placeholder"
+      "placeholder",
+      "action hover",
+      "action pressed"
     ]
   },
   {
@@ -864,6 +994,94 @@
       "default",
       "hover",
       "current"
+    ]
+  },
+  {
+    "id": "section",
+    "class": "section",
+    "name": "Section",
+    "variants": [
+      "default",
+      "sunken",
+      "inverted"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "hero",
+    "class": "hero",
+    "name": "Hero",
+    "variants": [
+      "left",
+      "with media",
+      "centered"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "logo-strip",
+    "class": "logo-strip",
+    "name": "Logo strip",
+    "variants": [
+      "default",
+      "centered"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "feature-tabs",
+    "class": "feature-tabs",
+    "name": "Feature tabs",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "selected",
+      "idle"
+    ]
+  },
+  {
+    "id": "pricing",
+    "class": "pricing",
+    "name": "Pricing",
+    "variants": [
+      "default",
+      "featured",
+      "discount"
+    ],
+    "states": [
+      "default",
+      "current"
+    ]
+  },
+  {
+    "id": "cta",
+    "class": "cta",
+    "name": "Call to action",
+    "variants": [
+      "default",
+      "inverted"
+    ],
+    "states": [
+      "default"
+    ]
+  },
+  {
+    "id": "site-footer",
+    "class": "site-footer",
+    "name": "Site footer",
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "default",
+      "hover"
     ]
   },
   {
@@ -891,6 +1109,70 @@
       "start",
       "halfway",
       "read"
+    ]
+  },
+  {
+    "id": "node-map",
+    "class": "node-map",
+    "name": "Node map",
+    "variants": [
+      "default",
+      "conditional node",
+      "end"
+    ],
+    "states": [
+      "default",
+      "current column",
+      "on the way",
+      "hover",
+      "focus"
+    ]
+  },
+  {
+    "id": "highlight",
+    "class": "highlight",
+    "name": "Highlight",
+    "variants": [
+      "hover",
+      "selected",
+      "tag below"
+    ],
+    "states": [
+      "default",
+      "hidden"
+    ]
+  },
+  {
+    "id": "graph",
+    "class": "graph",
+    "name": "Graph",
+    "variants": [
+      "hollow",
+      "solid",
+      "critical",
+      "success",
+      "glyph"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "focus",
+      "pressed",
+      "picking",
+      "lit",
+      "panning"
+    ]
+  },
+  {
+    "id": "facts",
+    "class": "facts",
+    "name": "Facts",
+    "variants": [
+      "default",
+      "muted"
+    ],
+    "states": [
+      "default"
     ]
   }
 ]

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Hero</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="grid-template-columns: minmax(0, 1fr)">
+    <span class="row">Left, with a media · side by side from 960 px</span>
+    <header class="hero">
+      <div class="hero__body"><p class="text" data-variant="eyebrow">New · shared views</p><h1 class="text" data-variant="display">Lend it, track it, get it back.</h1><p class="text" data-variant="lead">Plan the week, lend what you own and see what comes back, in one calm place.</p><div class="hero__actions"><a class="btn" data-variant="primary" data-size="lg" href="#">Start free</a><a class="btn" data-size="lg" href="#">See how it works</a></div></div>
+      <figure class="media" style="--ratio: 16 / 10"><div class="media__frame"><img src="media-sample.svg" alt="Hills under a pale sun"></div></figure>
+    </header>
+    <span class="row">Left, text only</span>
+    <header class="hero">
+      <div class="hero__body"><h1 class="text" data-variant="display">Lend it, track it, get it back.</h1><p class="text" data-variant="lead">Plan the week, lend what you own and see what comes back, in one calm place.</p><div class="hero__actions"><a class="btn" data-variant="primary" data-size="lg" href="#">Start free</a><a class="btn" data-size="lg" href="#">See how it works</a></div></div>
+      
+    </header>
+    <span class="row">Centered</span>
+    <header class="hero" data-variant="centered">
+      <div class="hero__body"><p class="text" data-variant="eyebrow">New · shared views</p><h1 class="text" data-variant="display">Lend it, track it, get it back.</h1><p class="text" data-variant="lead">Plan the week, lend what you own and see what comes back, in one calm place.</p><div class="hero__actions"><a class="btn" data-variant="primary" data-size="lg" href="#">Start free</a><a class="btn" data-size="lg" href="#">See how it works</a></div></div>
+      <figure class="media" style="--ratio: 21 / 9"><div class="media__frame"><img src="media-sample.svg" alt="Hills under a pale sun"></div></figure>
+    </header>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

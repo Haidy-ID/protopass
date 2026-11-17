@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Node map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 1">
+    <span></span><span class="col">Current column, the way to it, a conditional node, an end · Live: Tab, then ↑ ↓ → ←</span>
+    <span class="row">Map</span>
+    <div class="node-map" aria-label="Story">
+      <div class="node-map__branch">
+        <section class="node-map__column"><h3 class="node-map__title">The farm</h3>
+          <ol class="node-map__nodes">
+            <li><button class="node-map__node" aria-expanded="true"><span class="node-map__dot"><i class="icon" data-icon="door"></i></span><span class="node-map__name">The door</span></button></li>
+            <li><button class="node-map__node" aria-expanded="false"><span class="node-map__dot"><i class="icon" data-icon="eye"></i></span><span class="node-map__name">The window</span></button></li>
+            <li><button class="node-map__node" data-variant="conditional"><span class="node-map__dot"></span><span class="node-map__name">The well</span><span class="node-map__meta">if rope</span></button></li>
+          </ol></section>
+        <div class="node-map__twigs">
+          <div class="node-map__branch" data-via="0">
+            <section class="node-map__column" aria-current="true"><h3 class="node-map__title">The yard</h3>
+              <ol class="node-map__nodes">
+                <li><button class="node-map__node" aria-expanded="false"><span class="node-map__dot"><i class="icon" data-icon="user"></i></span><span class="node-map__name">The officer</span><span class="node-map__text">He writes without looking up.</span></button></li>
+                <li><button class="node-map__node" data-force="hover"><span class="node-map__dot"><i class="icon" data-icon="coins"></i></span><span class="node-map__name">The purse</span><span class="node-map__meta">coins −1</span></button></li>
+              </ol></section>
+            <div class="node-map__twigs">
+              <div class="node-map__branch" data-via="0"><section class="node-map__column"><h3 class="node-map__title">The officer</h3>
+                <ol class="node-map__nodes">
+                  <li><button class="node-map__node"><span class="node-map__dot"></span><span class="node-map__name">Sign</span></button></li>
+                  <li><button class="node-map__node"><span class="node-map__dot"></span><span class="node-map__name">Refuse</span></button></li>
+                </ol></section></div>
+            </div>
+          </div>
+          <div class="node-map__branch" data-via="1"><section class="node-map__column"><h3 class="node-map__title">The window</h3><span class="node-map__end" aria-label="End"></span></section></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

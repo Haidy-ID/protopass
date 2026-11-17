@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mention</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 4">
+    <span></span><span class="col">Static</span><span class="col">Link</span><span class="col">Button</span><span class="col">Hover</span>
+    <span class="row">Initial</span>
+    <span class="mention"><span class="avatar" aria-hidden="true">S</span><span class="mention__name">Sam Adler</span></span><a class="mention" href="#"><span class="avatar" aria-hidden="true">S</span><span class="mention__name">Sam Adler</span></a><button class="mention"><span class="avatar" aria-hidden="true">S</span><span class="mention__name">Sam Adler</span></button><a class="mention" href="#" data-force="hover"><span class="avatar" aria-hidden="true">S</span><span class="mention__name">Sam Adler</span></a>
+    <span class="row">Photo</span>
+    <span class="mention"><span class="avatar" aria-hidden="true"><img src="avatar-sample.jpg" alt=""></span><span class="mention__name">Mia Chen</span></span><a class="mention" href="#"><span class="avatar" aria-hidden="true"><img src="avatar-sample.jpg" alt=""></span><span class="mention__name">Mia Chen</span></a><button class="mention"><span class="avatar" aria-hidden="true"><img src="avatar-sample.jpg" alt=""></span><span class="mention__name">Mia Chen</span></button><a class="mention" href="#" data-force="hover"><span class="avatar" aria-hidden="true"><img src="avatar-sample.jpg" alt=""></span><span class="mention__name">Mia Chen</span></a>
+    <span class="row">In a sentence, with a chip</span>
+    <p style="grid-column: 1 / -1; max-width: 420px; margin: 0"><a class="mention" href="#"><span class="avatar" aria-hidden="true">S</span><span class="mention__name">Sam Adler</span></a> moved <span class="chip"><i class="icon" data-icon="folder"></i>Atlas</span> to review and asked <a class="mention" href="#"><span class="avatar" aria-hidden="true"><img src="avatar-sample.jpg" alt=""></span><span class="mention__name">Mia Chen</span></a> to check the numbers before Friday, so the budget can go out with the report.</p>
+    <span class="row">Larger text</span>
+    <p style="grid-column: 1 / -1; max-width: 420px; margin: 0; font-size: var(--font-size-2xl)">Assigned to <span class="mention"><span class="avatar" aria-hidden="true">S</span><span class="mention__name">Sam Adler</span></span> last week.</p>
+  </div>
+  <script src="../ds.js"></script>
+</body>
+</html>

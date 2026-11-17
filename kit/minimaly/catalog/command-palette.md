@@ -14,8 +14,9 @@ Every place and action of an app behind one shortcut: ⌘K or Ctrl+K, type, Ente
 </dialog>
 ```
 
+- A second line under the title (where the thing is, what it belongs to): `<span class="command-palette__body"><span class="command-palette__title">Inbox</span><span class="command-palette__meta">Mail › Sam</span></span>` in place of the title.
 - ⌘K or Ctrl+K opens and closes it from anywhere; `data-open="<id>"` on a button too (the dialog card). Esc or the backdrop close it, focus goes back.
-- Typing filters on the titles; groups left empty hide, the empty state shows when nothing matches. The first match is active (grey). It hangs from the top of the screen, so the field never moves while results filter.
+- Typing filters on the title, the meta and `data-keywords` of each item, every word, case and accents ignored; groups left empty hide, the empty state shows when nothing matches. The first match is active (grey). It hangs from the top of the screen, so the field never moves while results filter.
 - ↑ ↓ move, Enter or a click runs the active item: the palette closes, then fires `select` on it (`event.detail.value`, `event.detail.item`). Closing clears the search. Shortcuts are `.kbd` keys in `.command-palette__keys`.
 
 ## Pick, cart, intent

@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Chart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">Default</span><span class="col">Hover</span>
+    <span class="row">Line, three series</span>
+    <figure class="chart" data-draw="lines" style="width: 320px">
+      <div class="chart__head">
+        <h3 class="chart__title">Revenue</h3>
+        <p class="chart__figure">$48.2K</p>
+        <span class="segmented" role="group" aria-label="Period"><button class="btn" aria-pressed="true">7D</button><button class="btn" aria-pressed="false">30D</button><button class="btn" aria-pressed="false">90D</button></span>
+      </div>
+      <div class="chart__plot" role="img" aria-label="Revenue per day for direct, partner and organic sales">
+        <div class="tooltip chart__tip" hidden><strong></strong><span class="tooltip__lead"></span></div>
+      </div>
+      <ul class="chart__legend">
+        <li class="chart__key" data-series="1"><i class="chart__swatch"></i>Direct</li>
+        <li class="chart__key" data-series="2"><i class="chart__swatch"></i>Partners</li>
+        <li class="chart__key" data-series="3"><i class="chart__swatch"></i>Organic</li>
+      </ul>
+    </figure>
+    <figure class="chart" data-draw="lines" data-pin="2,1" style="width: 320px">
+      <div class="chart__head">
+        <h3 class="chart__title">Revenue</h3>
+        <p class="chart__figure">$48.2K</p>
+        <span class="segmented" role="group" aria-label="Period"><button class="btn" aria-pressed="true">7D</button><button class="btn" aria-pressed="false">30D</button><button class="btn" aria-pressed="false">90D</button></span>
+      </div>
+      <div class="chart__plot" role="img" aria-label="Revenue per day, partners on Wednesday">
+        <div class="tooltip chart__tip" hidden><strong></strong><span class="tooltip__lead"></span></div>
+      </div>
+      <ul class="chart__legend">
+        <li class="chart__key" data-series="1"><i class="chart__swatch"></i>Direct</li>
+        <li class="chart__key" data-series="2"><i class="chart__swatch"></i>Partners</li>
+        <li class="chart__key" data-series="3"><i class="chart__swatch"></i>Organic</li>
+      </ul>
+    </figure>
+    <span class="row">Bars, one series</span>
+    <figure class="chart" data-draw="bars" style="width: 320px">
+      <div class="chart__head"><h3 class="chart__title">Visits</h3><p class="chart__figure">12,480</p></div>
+      <div class="chart__plot" role="img" aria-label="Visits per month">
+        <div class="tooltip chart__tip" hidden><strong></strong><span class="tooltip__lead"></span></div>
+      </div>
+    </figure>
+    <figure class="chart" data-draw="bars" data-pin="5" style="width: 320px">
+      <div class="chart__head"><h3 class="chart__title">Visits</h3><p class="chart__figure">12,480</p></div>
+      <div class="chart__plot" role="img" aria-label="Visits per month, June">
+        <div class="tooltip chart__tip" hidden><strong></strong><span class="tooltip__lead"></span></div>
+      </div>
+    </figure>
+    <span class="row">Donut, the six series</span>
+    <figure class="chart" data-variant="donut" data-draw="donut" style="width: 320px">
+      <div class="chart__head"><h3 class="chart__title">Plans</h3></div>
+      <div class="chart__plot" role="img" aria-label="Share of accounts per plan"></div>
+      <ul class="chart__legend">
+        <li class="chart__key" data-series="1"><i class="chart__swatch"></i>Free<strong>34%</strong></li>
+        <li class="chart__key" data-series="2"><i class="chart__swatch"></i>Team<strong>24%</strong></li>
+        <li class="chart__key" data-series="3"><i class="chart__swatch"></i>Business<strong>17%</strong></li>
+        <li class="chart__key" data-series="4"><i class="chart__swatch"></i>Enterprise<strong>12%</strong></li>
+        <li class="chart__key" data-series="5"><i class="chart__swatch"></i>Education<strong>8%</strong></li>
+        <li class="chart__key" data-series="6"><i class="chart__swatch"></i>Trial<strong>5%</strong></li>
+      </ul>
+    </figure>
+    <figure class="chart" data-variant="donut" data-draw="donut" data-pin="1" style="width: 320px">
+      <div class="chart__head"><h3 class="chart__title">Plans</h3></div>
+      <div class="chart__plot" role="img" aria-label="Share of accounts per plan, team"></div>
+      <ul class="chart__legend">
+        <li class="chart__key" data-series="1"><i class="chart__swatch"></i>Free<strong>34%</strong></li>
+        <li class="chart__key" data-series="2"><i class="chart__swatch"></i>Team<strong>24%</strong></li>
+        <li class="chart__key" data-series="3"><i class="chart__swatch"></i>Business<strong>17%</strong></li>
+        <li class="chart__key" data-series="4"><i class="chart__swatch"></i>Enterprise<strong>12%</strong></li>
+        <li class="chart__key" data-series="5"><i class="chart__swatch"></i>Education<strong>8%</strong></li>
+        <li class="chart__key" data-series="6"><i class="chart__swatch"></i>Trial<strong>5%</strong></li>
+      </ul>
+    </figure>
+    <span class="row">Sparkline: accent, then a series color</span>
+    <span>Latency <span class="chart" data-variant="sparkline" data-draw="sparkline" role="img" aria-label="Latency over the last 12 hours, falling"></span></span>
+    <span>Signups <span class="chart" data-variant="sparkline" data-draw="sparkline" data-series="4" role="img" aria-label="Signups over the last 12 hours, rising"></span></span>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: sample data, and the D3 a page writes. No color here: marks take theirs from charts.css.
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const series = [
+      { name: "Direct", values: [5200, 5900, 5600, 6800, 7400, 6100, 6600] },
+      { name: "Partners", values: [3100, 2800, 3600, 3900, 4800, 4300, 5200] },
+      { name: "Organic", values: [1400, 1900, 1700, 2300, 2100, 2900, 2600] },
+    ];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"];
+    const visits = [1120, 1340, 1260, 1580, 1490, 1910, 1820, 1960];
+    const shares = [34, 24, 17, 12, 8, 5];
+    const trend = [42, 44, 39, 41, 36, 37, 33, 34, 30, 31, 27, 26];
+    const size = { height: 168, top: 8, right: 8, bottom: 24, left: 36 };
+
+    // The SVG is as wide as its plot: one unit is one pixel.
+    function frame(plot, x, y) {
+      const svg = d3.select(plot).insert("svg", ":first-child").attr("viewBox", [0, 0, plot.clientWidth, size.height]).attr("aria-hidden", "true");
+      // Ticks as long as the plot is wide: the value axis is also the grid.
+      svg.append("g").attr("class", "chart__axis").attr("transform", `translate(${size.left},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(d3.format("~s")).tickSize(size.left + size.right - plot.clientWidth).tickPadding(8));
+      svg.append("g").attr("class", "chart__axis").attr("transform", `translate(0,${size.height - size.bottom})`).call(d3.axisBottom(x).tickSize(0).tickPadding(10));
+      return svg;
+    }
+
+    // The bubble: a value, an optional delta, a lead line. The page sets the tone of the delta: here up is good.
+    function showTip(plot, left, top, { value, delta, lead }) {
+      const tip = plot.querySelector(".chart__tip");
+      const strong = tip.querySelector("strong");
+      strong.textContent = value;
+      if (Number.isFinite(delta)) {
+        const badge = Object.assign(document.createElement("span"), { className: "badge", textContent: d3.format("+.0%")(delta) });
+        badge.dataset.variant = delta < 0 ? "critical" : "success";
+        strong.append(badge);
+      }
+      tip.querySelector(".tooltip__lead").textContent = lead;
+      tip.hidden = false;
+      // Kept inside the plot: a card clips what leaves it.
+      const half = tip.offsetWidth / 2;
+      tip.style.left = `${Math.max(half, Math.min(plot.clientWidth - half, left))}px`;
+      tip.style.top = `${top}px`;
+    }
+
+    const draw = {
+      lines(figure, pin) {
+        const plot = figure.querySelector(".chart__plot");
+        const x = d3.scalePoint(days, [size.left, plot.clientWidth - size.right]);
+        const y = d3.scaleLinear([0, d3.max(series, (s) => d3.max(s.values))], [size.height - size.bottom, size.top]).nice(4);
+        const svg = frame(plot, x, y);
+        const cursor = svg.append("line").attr("class", "chart__cursor").attr("y1", size.top).attr("y2", size.height - size.bottom).attr("hidden", "");
+        const groups = svg.selectAll(".chart__series").data(series).join("g").attr("class", "chart__series").attr("data-series", (s, k) => k + 1);
+        groups.append("path").attr("class", "chart__line").attr("d", (s) => d3.line((v, i) => x(days[i]), y)(s.values));
+        const dots = groups.append("circle").attr("class", "chart__dot").attr("r", 4).attr("hidden", "");
+        const keys = figure.querySelectorAll(".chart__key");
+        // Day i, series k: the cursor and the dots read the day, the series under the pointer stays bright.
+        const show = (i, k) => {
+          cursor.attr("x1", x(days[i])).attr("x2", x(days[i])).attr("hidden", null);
+          dots.attr("cx", x(days[i])).attr("cy", (s) => y(s.values[i])).attr("hidden", null);
+          groups.attr("data-active", (s, j) => (j === k ? "" : null));
+          keys.forEach((key, j) => key.toggleAttribute("data-active", j === k));
+          const values = series[k].values;
+          // Above the highest point of the day: the bubble never covers a dot.
+          showTip(plot, x(days[i]), y(d3.max(series, (s) => s.values[i])), { value: d3.format("$,")(values[i]), delta: values[i] / values[i - 1] - 1, lead: `${days[i]} · ${series[k].name}` });
+        };
+        if (pin) return show(...pin);
+        svg.on("pointermove", (event) => {
+          const [px, py] = d3.pointer(event);
+          const i = d3.leastIndex(days, (d) => Math.abs(x(d) - px));
+          show(i, d3.leastIndex(series, (s) => Math.abs(y(s.values[i]) - py)));
+        }).on("pointerleave", () => {
+          cursor.attr("hidden", "");
+          dots.attr("hidden", "");
+          groups.attr("data-active", null);
+          keys.forEach((key) => key.removeAttribute("data-active"));
+          plot.querySelector(".chart__tip").hidden = true;
+        });
+      },
+      bars(figure, pin) {
+        const plot = figure.querySelector(".chart__plot");
+        const x = d3.scaleBand(months, [size.left, plot.clientWidth - size.right]).padding(0.45);
+        const y = d3.scaleLinear([0, d3.max(visits)], [size.height - size.bottom, size.top]).nice(4);
+        const bars = frame(plot, x, y).selectAll(".chart__bar").data(visits).join("rect").attr("class", "chart__bar").attr("tabindex", 0)
+          .attr("x", (v, i) => x(months[i])).attr("y", (v) => y(v)).attr("width", x.bandwidth()).attr("height", (v) => y(0) - y(v));
+        const show = (i) => showTip(plot, x(months[i]) + x.bandwidth() / 2, y(visits[i]), { value: d3.format(",")(visits[i]), delta: visits[i] / visits[i - 1] - 1, lead: `${months[i]} · visits` });
+        if (pin) {
+          bars.filter((v, i) => i === pin[0]).attr("data-force", "hover");
+          return show(pin[0]);
+        }
+        // Focus reads like hover: the bars are in the Tab order.
+        bars.on("pointerenter focus", function () { show(bars.nodes().indexOf(this)); })
+          .on("pointerleave blur", () => { plot.querySelector(".chart__tip").hidden = true; });
+      },
+      donut(figure, pin) {
+        const plot = figure.querySelector(".chart__plot");
+        const radius = plot.clientWidth / 2;
+        // Gaps between slices come from the arc itself: nothing to paint in a surface color.
+        const arc = d3.arc().innerRadius(radius * 0.64).outerRadius(radius).padAngle(0.04).cornerRadius(2);
+        const slices = d3.select(plot).append("svg").attr("viewBox", [-radius, -radius, radius * 2, radius * 2]).attr("aria-hidden", "true")
+          .selectAll(".chart__slice").data(d3.pie().sort(null)(shares)).join("path").attr("class", "chart__slice").attr("data-series", (d, i) => i + 1).attr("d", arc);
+        const keys = figure.querySelectorAll(".chart__key");
+        const mark = (k) => keys.forEach((key, j) => key.toggleAttribute("data-active", j === k));
+        if (pin) {
+          slices.filter((d, i) => i === pin[0]).attr("data-force", "hover");
+          return mark(pin[0]);
+        }
+        slices.on("pointerenter", function () { mark(slices.nodes().indexOf(this)); }).on("pointerleave", () => mark(-1));
+      },
+      sparkline(el) {
+        const values = el.dataset.series ? trend.toReversed() : trend;
+        const [width, height, pad] = [el.clientWidth, el.clientHeight, 4];
+        const x = d3.scaleLinear([0, values.length - 1], [pad, width - pad]);
+        const y = d3.scaleLinear(d3.extent(values), [height - pad, pad]);
+        const svg = d3.select(el).append("svg").attr("viewBox", [0, 0, width, height]).attr("aria-hidden", "true");
+        svg.append("path").attr("class", "chart__area").attr("d", d3.area((v, i) => x(i), height, y)(values));
+        svg.append("path").attr("class", "chart__line").attr("d", d3.line((v, i) => x(i), y)(values));
+        svg.append("circle").attr("class", "chart__dot").attr("r", 3).attr("cx", x(values.length - 1)).attr("cy", y(values.at(-1)));
+      },
+    };
+    for (const el of document.querySelectorAll("[data-draw]")) draw[el.dataset.draw](el, el.dataset.pin?.split(",").map(Number));
+
+    // The page flips aria-pressed, ds.js slides the indicator. A real page then redraws the plot for that period.
+    document.addEventListener("click", (event) => {
+      const option = event.target.closest(".chart .segmented .btn");
+      if (option) for (const b of option.parentElement.querySelectorAll(".btn")) b.setAttribute("aria-pressed", b === option);
+    });
+  </script>
+</body>
+</html>

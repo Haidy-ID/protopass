@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 3">
+    <span></span><span class="col">Change is good</span><span class="col">Change is bad</span><span class="col">No judgement</span>
+    <span class="row">Stat</span>
+    <div class="stat" style="width: 200px"><span class="stat__label">Revenue</span><strong class="stat__figure">$8,420</strong><span class="stat__compare"><span class="badge" data-variant="success">+35%</span>vs $6,231</span></div>
+    <div class="stat" style="width: 200px"><span class="stat__label">Churn</span><strong class="stat__figure">3.1%</strong><span class="stat__compare"><span class="badge" data-variant="critical">+0.4 pt</span>vs 2.7%</span></div>
+    <div class="stat" style="width: 200px"><span class="stat__label">Sessions</span><strong class="stat__figure">12,480</strong><span class="stat__compare"><span class="badge">−2%</span>vs 12,731</span></div>
+    <span class="row">With a sparkline</span>
+    <div class="stat" style="width: 200px"><span class="stat__label">Revenue</span><strong class="stat__figure">$8,420</strong><span class="stat__compare"><span class="badge" data-variant="success">+35%</span>vs $6,231</span><span class="chart" data-variant="sparkline" data-trend="up" role="img" aria-label="Revenue over 12 weeks, rising"></span></div>
+    <div class="stat" style="width: 200px"><span class="stat__label">Churn</span><strong class="stat__figure">3.1%</strong><span class="stat__compare"><span class="badge" data-variant="critical">+0.4 pt</span>vs 2.7%</span><span class="chart" data-variant="sparkline" data-trend="up" role="img" aria-label="Churn over 12 weeks, rising"></span></div>
+    <div class="stat" style="width: 200px"><span class="stat__label">Sessions</span><strong class="stat__figure">12,480</strong><span class="stat__compare"><span class="badge">−2%</span>vs 12,731</span><span class="chart" data-variant="sparkline" data-trend="flat" role="img" aria-label="Sessions over 12 weeks, stable"></span></div>
+    <span class="row">Live figure, in a card</span>
+    <div class="card" style="width: 200px"><div class="card__body"><div class="stat"><span class="stat__label">Requests/s</span><strong class="stat__figure"><span class="value" id="live" data-label="Requests per second">1,284</span></strong><span class="stat__compare"><span class="badge" data-variant="success">+4%</span>vs 1,235</span></div></div></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="../ds.js"></script>
+  <script>
+    // Specimen only: sample trends, and the sparkline a page draws with D3. No color here: the line takes the accent.
+    const trends = { up: [26, 27, 31, 30, 34, 33, 37, 36, 41, 39, 44, 42], flat: [36, 34, 37, 35, 36, 33, 36, 35, 37, 34, 36, 35] };
+    for (const el of document.querySelectorAll(".stat .chart")) {
+      const values = trends[el.dataset.trend];
+      const [width, height, pad] = [el.clientWidth, el.clientHeight, 4];
+      const x = d3.scaleLinear([0, values.length - 1], [pad, width - pad]);
+      const y = d3.scaleLinear(d3.extent(values), [height - pad, pad]);
+      const svg = d3.select(el).append("svg").attr("viewBox", [0, 0, width, height]).attr("aria-hidden", "true");
+      svg.append("path").attr("class", "chart__area").attr("d", d3.area((v, i) => x(i), height, y)(values));
+      svg.append("path").attr("class", "chart__line").attr("d", d3.line((v, i) => x(i), y)(values));
+      svg.append("circle").attr("class", "chart__dot").attr("r", 3).attr("cx", x(values.length - 1)).attr("cy", y(values.at(-1)));
+    }
+    // The page only writes textContent, ds.js does the flash.
+    let live = 1284;
+    setInterval(() => {
+      document.getElementById("live").textContent = (live += Math.round(Math.random() * 300 - 150)).toLocaleString("en-US");
+    }, 2000);
+  </script>
+</body>
+</html>

@@ -52,6 +52,20 @@
   --green-700: #006F29;
   --green-950: #002508;
 
+  /* Primitives — chart series: teal, purple, orange, magenta, olive (series 1 is the primary blue). Categories only.
+     The steps were picked as a set: neighbours differ in lightness as well as hue, so they stay apart under protanopia
+     and deuteranopia, each one keeps 3:1 on the page and raised surfaces, and none sits on a status color. */
+  --teal-500: #06999A;
+  --teal-300: #3EDADA;
+  --purple-500: #9E66D7;
+  --purple-400: #926ABE;
+  --orange-500: #D55C13;
+  --orange-400: #BC662F;
+  --magenta-700: #8D1767;
+  --magenta-300: #E380A9;
+  --olive-700: #4C5A00;
+  --olive-300: #BDBE53;
+
   /* Type */
   --font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-family-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
@@ -186,6 +200,14 @@
   --color-status-success-subtle: var(--green-50); /* Soft fill of a success message */
   --color-status-neutral: var(--neutral-700); /* Status with no judgement */
   --color-status-neutral-subtle: var(--neutral-100); /* Soft fill of a neutral status */
+
+  /* Series: what tells chart series and categories apart, taken in this order and never cycled. Never a status. */
+  --color-series-1: var(--primary-600); /* Chart series 1, the accent hue */
+  --color-series-2: var(--teal-500); /* Chart series 2 */
+  --color-series-3: var(--purple-500); /* Chart series 3 */
+  --color-series-4: var(--orange-500); /* Chart series 4 */
+  --color-series-5: var(--magenta-700); /* Chart series 5 */
+  --color-series-6: var(--olive-700); /* Chart series 6 */
 }
 
 /* Semantic roles — dark */
@@ -226,4 +248,11 @@
   --color-status-success-subtle: var(--green-950);
   --color-status-neutral: var(--neutral-300);
   --color-status-neutral-subtle: var(--neutral-800);
+
+  --color-series-1: var(--primary-300);
+  --color-series-2: var(--teal-300);
+  --color-series-3: var(--purple-400);
+  --color-series-4: var(--orange-400);
+  --color-series-5: var(--magenta-300);
+  --color-series-6: var(--olive-300);
 }

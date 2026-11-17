@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Facts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../ds.css">
+  <link rel="stylesheet" href="../../playground/specimen.css">
+</head>
+<body>
+  <div class="specimen" style="--cols: 2">
+    <span></span><span class="col">In a card</span><span class="col">Values of every kind</span>
+    <span class="row">Facts</span>
+    <div class="card" style="width: 300px">
+      <div class="card__head"><h3 class="card__title">Work order</h3><span class="card__tag">Draft</span></div>
+      <div class="card__body">
+        <dl class="facts">
+          <div class="facts__row"><dt class="facts__label">Aircraft</dt><dd class="facts__value">F-HBXA, A320</dd></div>
+          <div class="facts__row"><dt class="facts__label">Owner</dt><dd class="facts__value" data-variant="muted">Not assigned</dd></div>
+        </dl>
+      </div>
+    </div>
+    <dl class="facts" style="width: 300px">
+      <div class="facts__row"><dt class="facts__label">Status</dt><dd class="facts__value"><span class="badge" data-variant="warning">WAITING</span></dd></div>
+      <div class="facts__row"><dt class="facts__label">Linked</dt><dd class="facts__value"><button class="btn"><span class="badge">E1</span>Fear</button><button class="btn" aria-pressed="true"><span class="badge" data-variant="critical">E2</span>Hunger</button></dd></div>
+      <div class="facts__row"><dt class="facts__label">Used in</dt><dd class="facts__value"><ul><li>Farm · the door</li><li>Cell · the bars</li></ul></dd></div>
+      <div class="facts__row"><dt class="facts__label">Note</dt><dd class="facts__value">A value that is a whole sentence wraps on as many lines as it needs, never cut.</dd></div>
+    </dl>
+  </div>
+</body>
+</html>

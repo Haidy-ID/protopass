@@ -3,8 +3,8 @@
    data-force="hover" pins the hover state for specimen pages. Tokens only, no raw values. */
 
 /* Borders and padding stay inside the declared size (32 px controls), whatever the page reset. */
-:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel, .toolbar, .bulk-bar, .load-more, .inline-edit, .save-status, .mention, .section, .hero, .logo-strip, .feature-tabs, .cta, .site-footer, .pricing, .node-map, .highlight, .graph, .facts),
-:where(.btn, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel, .toolbar, .bulk-bar, .load-more, .inline-edit, .save-status, .mention, .section, .hero, .logo-strip, .feature-tabs, .cta, .site-footer, .pricing, .node-map, .highlight, .graph, .facts) * { box-sizing: border-box; }
+:where(.btn, .btn-group, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel, .toolbar, .bulk-bar, .load-more, .inline-edit, .save-status, .mention, .section, .hero, .logo-strip, .feature-tabs, .cta, .site-footer, .pricing, .node-map, .highlight, .graph, .facts),
+:where(.btn, .btn-group, .badge, .chip, .avatar, .kbd, .card, .tooltip, .popover, .icon, .input, .select, .breadcrumb, .accordion, .skeleton, .tabs, .menu, .modal, .drawer, .toast, .stream, .typing, .steps, .progress, .pagination, .table, .toc, .sticky-header, .reading-progress, .code-block, .field, .checkbox, .radio, .switch, .textarea, .banner, .empty, .list, .shell, .composer, .reasoning, .tool-call, .cite, .dropzone, .stepper, .combobox, .rich-editor, .date-picker, .command-palette, .attachments, .attachment, .slider, .tag-input, .thread, .message, .diff, .pane, .text, .prose, .code, .quote, .media, .site-nav, .carousel, .toolbar, .bulk-bar, .load-more, .inline-edit, .save-status, .mention, .section, .hero, .logo-strip, .feature-tabs, .cta, .site-footer, .pricing, .node-map, .highlight, .graph, .facts) * { box-sizing: border-box; }
 
 /* Motion: keyframes shared by the components and the pages built on them.
    enter = fade up (page sections, cards), pop-in = fade and grow (tooltips, popovers), fade-in, fade-out.
@@ -57,6 +57,28 @@
 /* Pressed beats the transparent ghost and icon looks: a toggle on stays visible (Inspect). */
 .btn:is([data-variant="ghost"], [data-variant="icon"])[aria-pressed="true"] { background: var(--color-accent-subtle); border-color: var(--color-accent-border); }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+/* Button group: two or three buttons that act on the same thing, joined into one control (a main action and its alternates).
+   Every half stays a .btn with its own states. The variant sits on the group, so an icon half follows it. */
+.btn-group { display: inline-flex; isolation: isolate; vertical-align: middle; }
+.btn-group > .btn { position: relative; border-radius: 0; }
+.btn-group > .btn:first-child { border-start-start-radius: var(--radius-sm); border-end-start-radius: var(--radius-sm); }
+.btn-group > .btn:last-child { border-start-end-radius: var(--radius-sm); border-end-end-radius: var(--radius-sm); }
+/* Neighbours share one border line. */
+.btn-group > .btn + .btn { margin-inline-start: calc(var(--stroke-width-subtle) * -1); }
+/* The half under the pointer, pressed or focused shows its whole border, and its focus ring, above its neighbours. */
+.btn-group > .btn:is(:hover, [data-force="hover"], [aria-pressed="true"]) { z-index: 1; }
+.btn-group > .btn:focus-visible { z-index: 2; }
+/* An icon half takes the outline of the group, or it reads as a button and a stray icon. */
+.btn-group > .btn[data-variant="icon"] { border-color: var(--color-border); background: var(--color-surface-raised); }
+.btn-group > .btn[data-variant="icon"]:hover, .btn-group > .btn[data-variant="icon"][data-force="hover"] { border-color: var(--color-border-strong); background: var(--color-surface-hover); }
+.btn-group > .btn[data-variant="icon"][aria-pressed="true"] { border-color: var(--color-accent-border); background: var(--color-accent-subtle); }
+.btn-group > .btn[data-variant="icon"][data-size="lg"] { width: var(--size-row); padding: 0; }
+/* Primary: every half is ink, and the surface shows through one line between them. */
+.btn-group[data-variant="primary"] > .btn { border-color: var(--color-ink); background: var(--color-ink); color: var(--color-on-ink); }
+.btn-group[data-variant="primary"] > .btn .icon { color: var(--color-on-ink); }
+.btn-group[data-variant="primary"] > .btn:hover, .btn-group[data-variant="primary"] > .btn[data-force="hover"] { border-color: var(--color-ink); background: var(--color-ink); opacity: 0.85; }
+.btn-group[data-variant="primary"] > .btn + .btn { margin-inline-start: var(--stroke-width-subtle); }
 
 /* Async button: ds.js builds one .btn__label per state (idle, busy, done, error) from data-busy, data-done, data-error or data-copy.
    They share one grid cell: the button is as wide as its longest label from the start and never resizes. The label crossfades. */

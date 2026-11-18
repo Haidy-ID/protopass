@@ -237,6 +237,23 @@
     ]
   },
   {
+    "id": "button-group",
+    "class": "btn-group",
+    "name": "Button group",
+    "variants": [
+      "default",
+      "primary",
+      "three",
+      "copy"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "pressed",
+      "disabled"
+    ]
+  },
+  {
     "id": "value",
     "class": "value",
     "name": "Value",

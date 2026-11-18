@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.0 · 2026-11-18
+
+- Minimaly: `button-group`, two or three buttons that act on the same thing, joined into one control. Each half stays a button with its own states, an icon half takes the outline of the group, and the group can be primary.
+
 ## 3.2.0 · 2026-11-17
 
 - Minimaly: 19 new components. App: `mention`, `stat`, `chart` (with `charts.css`), `inline-edit`, `save-status`, `toolbar`, `bulk-bar`, `load-more`, `node-map`, `graph`, `facts`, `highlight`. Site: `section`, `hero`, `logo-strip`, `feature-tabs`, `pricing`, `cta`, `site-footer`.

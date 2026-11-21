@@ -16,3 +16,7 @@ jobs:
         run: node kit/skills/build-mockup/check-all.mjs
       - name: Server, updater and validator
         run: node --test kit/*.test.mjs kit/skills/build-mockup/*.test.mjs
+      - name: Pattern checker and Minimaly specimens
+        run: |
+          node --test kit/playground/patterns.test.mjs
+          node kit/playground/check.mjs

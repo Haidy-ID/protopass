@@ -22,6 +22,7 @@ kit/               the kit, replaced as a whole on update: never edit it in a pr
 - Restyle a topic or compare looks: [skills/build-mockup/restyle.md](skills/build-mockup/restyle.md). Start from an image or a web page: [skills/build-mockup/from-reference.md](skills/build-mockup/from-reference.md).
 - Create or upgrade a design system component: [skills/new-component/SKILL.md](skills/new-component/SKILL.md).
 - Animated illustrations for stories and deliverables (optional): an illustration skill such as [Hairline](https://hairline.lucasmarkes.com/skills) (`npx skills add lucasmarkes/hairline`, MIT) makes one self-contained HTML figure per idea. Save it in the topic's `figures/` and embed it with `![caption](figures/<name>.html)`.
+- Complex widgets or agent-driven demos in `free-prototype/` only (optional, beta): when a prototype-only topic needs an interaction Minimaly does not cover (tree, split panes, color picker, grid selection, or `createAgent`/WebMCP), load [UI SDK](https://ui-sdk.dev/web.md) without a build step (`<script type="module" src="https://ui-sdk.dev/web@0.js"></script>`, optional `web@0.css`, or `https://ui-sdk.dev/web@0/core.js` for behaviors). Read `https://ui-sdk.dev/web.md` first. Never use it in `screens/` or in Minimaly.
 
 ## Rules
 

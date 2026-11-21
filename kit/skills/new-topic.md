@@ -27,7 +27,7 @@ A concept with a free prototype and no screens yet:
 
 1. Copy `kit/skills/new-topic/free-prototype/` to `<group>/<topic-slug>/`.
 2. `topic.json`: `title`, `status`, `updated`, `intent`, `prototype` (entry page, relative to the topic folder).
-3. Put the prototype in `prototype/`: any structure, any design system, Minimaly by default.
+3. Put the prototype in `prototype/`: any structure, any design system, Minimaly by default. When a free prototype needs a complex widget absent from Minimaly (tree, resizable panes, color picker, cell range) or a live agent-driven UI demo (`createAgent`/WebMCP), it may optionally load [UI SDK](https://ui-sdk.dev/web.md) (beta, no build step: `https://ui-sdk.dev/web@0.js`, `web@0.css`, `web@0/core.js`). Read `https://ui-sdk.dev/web.md` first. Keep it strictly inside `prototype/`.
 4. Add the folder name to `<group>/topics.json`. The list opens the prototype directly.
 5. Need screens later: add `screens`, `flows`, `qa`… as above. The list then opens the topic page, which keeps an **Open app** button.
 

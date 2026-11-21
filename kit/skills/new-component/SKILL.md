@@ -33,24 +33,26 @@ A component "worth the name" has every state a user can meet, works with the key
    **Done when** every state change has a reason to move, and nothing moves without one.
 
 4. **Behavior** in `ds.js`, only what CSS and native elements cannot do:
+   - Before writing focus, keyboard navigation, popup placement, outside-click dismissal or type-ahead by hand, read `<ds>/catalog/behaviors.md` (when present) and compose the existing `window.Minimaly` primitives (`rovingFocus`, `setTabStop`, `createTypeahead`, `positionPopup`, `createDismissLayer`, `focusRecovery`, `labelOf`, `announce`, `normalizeText`).
    - Delegated listeners on `document`, so markup rendered later works. Setup in a `build…` function registered in `enhance()`; attribute changes the page makes go through the `MutationObserver` filter.
-   - Wire accessibility: ids, `aria-describedby`, `aria-expanded`, `aria-live` for outcomes, focus return on close.
+   - Wire accessibility: ids, accessible names on owned popups/listboxes, `aria-describedby`, `aria-expanded`, `aria-live` for outcomes, single tab stop on composite widgets, focus return on close.
    - Fire a `CustomEvent` (`change`, `dismiss`, `confirm`) for anything the page reacts to.
    **Done when** the component works with the keyboard alone.
 
-5. **Catalog entry** in `components.json`: `id`, `class`, `name`, `variants`, `states`.
+5. **Catalog entry** in `components.json`: `id`, `class`, `name`, `variants`, `states`, plus optional `pattern` when the component implements a WAI-ARIA widget (`tabs`, `menu`, `listbox`, `combobox`, `command-palette`, `dialog`, `accordion`, `disclosure`, `switch`, `checkbox`, `radio-group`, `slider`, `toolbar`, `date-picker`, `carousel`, `breadcrumb`).
 
-6. **Specimen** `components/<id>.html`: a `.specimen` grid, columns = states, rows = variants, built like `button.html`. Pin pseudo-states with `data-force`. It loads `../ds.css`, `../../playground/specimen.css` (Minimaly) or your own specimen stylesheet, and `../ds.js`.
+6. **Specimen** `components/<id>.html`: a `.specimen` grid, columns = states, rows = variants, built like `button.html`. Pin pseudo-states with `data-force`. It loads `../ds.css`, `../../playground/specimen.css` (Minimaly) or your own specimen stylesheet, and `../ds.js`. Keep static open previews clearly marked (`position: static` or `data-static-preview`) so pattern checks target the live widget only.
 
 7. **Card** `catalog/<id>.md`, under 20 lines: role and when not to use it, the markup to copy, variants, states, keyboard, what needs `ds.js`. Add the id to the list in `catalog/README.md`.
 
 8. **Verify.**
    - `kit/playground/?ds=<ds>#<id>` in light and dark: every cell renders, nothing overflows.
-   - `kit/playground/check.html?ds=<ds>` (the Playground's **Check all**): every specimen of the design system reports OK.
+   - `node kit/playground/check.mjs [--ds <ds>] <id>` (or `kit/playground/check.html?ds=<ds>` in the browser): specimen renders cleanly in both themes and passes its WAI-ARIA/keyboard pattern check (`0 issue(s)`). Run without `<id>` to verify the whole design system.
+   - Break it on purpose (when the component has JS behavior or a `pattern`): temporarily disable a key or ARIA attribute, confirm `check.mjs` fails on it, then restore the code and re-run to green.
    - Use it in a topic screen, then `node kit/skills/build-mockup/validate.mjs <group>/<topic>` (0 error) and the render linter `lint.html?topic=<group>/<topic>` (0 error).
    - Keyboard pass: Tab reaches it, the keys of step 1 work, focus is visible.
    - Motion pass with the browser visible: open, close, change state, under normal and reduced motion. A hidden browser pane does not paint frames: animations look frozen there, it proves nothing.
-   **Done when** all four pass and a screenshot shows the specimen in both themes.
+   **Done when** all checks pass and a screenshot shows the specimen in both themes.
 
 ## Limits
 

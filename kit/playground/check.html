@@ -1,7 +1,9 @@
 <!doctype html>
 <!-- Specimen check: loads every specimen of a design system in light and dark, at the width the Playground gives it,
-     and lists what breaks: script errors, icons that did not load, content wider than the frame, an empty page.
-     ?ds=<DesignSystem>&width=<px> (760 by default: the Playground on a 1024 px window). -->
+     and lists what breaks: script errors, icons that did not load, content wider than the frame, an empty page, and
+     interactive pattern checks on light.
+     ?ds=<DesignSystem>&width=<px>&component=<id>&report=<run> (760 by default: the Playground on a 1024 px window).
+     Result for agents: window.checkResult. &report=<run> posts it to the local server and closes the tab. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -28,22 +30,31 @@
     <ul class="check__rows" id="rows"></ul>
   </main>
   <iframe class="check__frame" id="frame" title="Specimen under check"></iframe>
+  <script src="patterns.js"></script>
   <script>
+    const ROOT = new URL("../../", location.href);
+    const params = new URLSearchParams(location.search);
+    const report = params.get("report");
     (async () => {
-      const get = (url) => fetch(url, { cache: "no-store" }).then((r) => r.json());
-      const ROOT = new URL("../../", location.href);
+      const get = (url) => fetch(url, { cache: "no-store" }).then((r) => {
+        if (!r.ok) throw new Error(`${url.pathname} not found.`);
+        return r.json();
+      });
       const site = await get(new URL("protopass.json", ROOT));
       const BASES = { Minimaly: new URL("../minimaly/", location.href), ...Object.fromEntries(Object.entries(site.designSystems || {}).map(([name, path]) => [name, new URL(path.replace(/\/?$/, "/"), ROOT)])) };
-      const params = new URLSearchParams(location.search);
-      const ds = BASES[params.get("ds")] ? params.get("ds") : "Minimaly";
+      const ds = params.get("ds") || "Minimaly";
+      if (!BASES[ds]) throw new Error(`Unknown design system "${ds}".`);
       const width = Number(params.get("width")) || 760;
-      const list = await get(new URL("components.json", BASES[ds]));
+      const component = params.get("component");
+      const all = await get(new URL("components.json", BASES[ds]));
+      const list = component ? all.filter((c) => c.id === component) : all;
+      if (component && !list.length) throw new Error(`No component "${component}" in ${ds}.`);
       const frame = document.getElementById("frame");
       frame.style.width = `${width}px`; // playground.css stretches every iframe: the width must win over it
       const $ = (id) => document.getElementById(id);
       const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
       $("title").textContent = `${ds} · specimen check`;
-      $("meta").textContent = `${list.length} specimens, light and dark, in a ${width} px frame.`;
+      $("meta").textContent = `${list.length} specimen${list.length === 1 ? "" : "s"}, light and dark, in a ${width} px frame.`;
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       const load = (url) => new Promise((resolve) => {
         const errors = [];
@@ -56,6 +67,7 @@
       const settle = async (doc) => {
         for (let t = 0; t < 20 && doc.querySelector("[data-icon]:not(:has(svg))"); t++) await wait(100);
       };
+      const components = [];
       let failed = 0;
       for (const c of list) {
         const issues = [];
@@ -74,14 +86,39 @@
             !doc.body?.innerText.trim() && "empty page",
           ].filter(Boolean).map((f) => `${theme}: ${f}`);
           issues.push(...found);
+          if (theme === "light" && c.pattern && typeof window.checkPattern === "function") {
+            try {
+              const patternIssues = await window.checkPattern(doc, c.pattern);
+              for (const issue of patternIssues) issues.push(`pattern (${c.pattern}): ${issue}`);
+            } catch (e) {
+              issues.push(`pattern (${c.pattern}): error: ${e?.message ?? String(e)}`);
+            }
+          }
         }
         if (issues.length) failed++;
+        components.push({ id: c.id, name: c.name, pattern: c.pattern || null, issues });
         $("rows").insertAdjacentHTML("beforeend", `<li><a href="./?ds=${encodeURIComponent(ds)}#${c.id}">${esc(c.name)}</a><span class="badge"${issues.length ? ' data-variant="critical"' : ' data-variant="success"'}>${issues.length ? "FIX" : "OK"}</span><span class="check__issues">${esc(issues.join(" · "))}</span></li>`);
       }
+      window.checkResult = { ds, total: list.length, failed, components };
       $("summary").textContent = failed ? `${failed} TO FIX` : "ALL OK";
       $("summary").dataset.variant = failed ? "critical" : "success";
       document.body.dataset.done = "";
-    })();
+    })().catch((e) => {
+      const message = e?.message ?? String(e);
+      document.getElementById("summary").textContent = "ERROR";
+      document.getElementById("summary").dataset.variant = "critical";
+      document.getElementById("meta").textContent = message;
+      window.checkResult = { error: message };
+      document.body.dataset.done = "";
+    }).finally(async () => {
+      if (!report) return;
+      await fetch(new URL("__protopass/lint/" + encodeURIComponent(report), ROOT), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-protopass": "lint" },
+        body: JSON.stringify(window.checkResult),
+      });
+      window.close();
+    });
   </script>
 </body>
 </html>

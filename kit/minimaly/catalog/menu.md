@@ -13,7 +13,7 @@ A list of actions on one thing, opened from a button or by right-click. To pick 
 <div class="popover menu" id="move-to" aria-label="Move to"><button class="menu__item">Inbox</button><button class="menu__item">Archive</button></div>
 ```
 
-- `data-menu="<id>"` opens it below the button, above when there is no room. `data-context-menu="<id>"` opens it at the pointer on right-click, and at the surface with the menu key or Shift+F10.
-- ↑ ↓ Home End move, disabled items are skipped. Esc and Tab close. Choosing an item closes the menu and puts focus back on the trigger; the page listens to the item's `click`.
+- `data-menu="<id>"` opens it below the button, above when there is no room; ↓ or ↑ on the button opens it on the first or last item. `data-context-menu="<id>"` opens it at the pointer on right-click, and at the surface with the menu key or Shift+F10.
+- ↑ ↓ Home End and typing move, disabled items are skipped. Esc and Tab close. Choosing an item closes the menu and puts focus back on the trigger; the page listens to the item's `click`.
 - `data-submenu="<id>"` on an item opens that menu beside it, one level deep: on hover, on a click, or with → (focus goes in). ← and Esc close it and focus returns to the item; choosing the item itself keeps the menu open. A pointer travelling fast towards the submenu crosses the items in between without lighting them.
 - `aria-label` names the thing the menu acts on. Shortcuts are a `.kbd` at the end of the row. Destructive items are `data-variant="critical"`, last, after a separator.

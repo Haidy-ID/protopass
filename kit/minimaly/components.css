@@ -240,6 +240,7 @@ a.card:focus-visible { outline: 0; box-shadow: 0 0 0 var(--stroke-width-mid) var
 .combobox { position: relative; display: inline-flex; flex-direction: column; }
 .combobox > .input { width: 100%; }
 .combobox__list { position: absolute; top: calc(100% + var(--spacing-xs)); left: 0; right: 0; z-index: 1000; width: auto; max-height: 320px; overflow: auto; gap: 0; margin: 0; padding: var(--spacing-xs); list-style: none; }
+.combobox__list[data-side="top"] { top: auto; bottom: calc(100% + var(--spacing-xs)); }
 .combobox__option { display: flex; align-items: center; gap: var(--spacing-md); min-height: var(--control-height); padding: var(--spacing-sm); border-radius: var(--radius-md); cursor: pointer; transition: background var(--duration-fast) var(--ease-out); }
 .combobox__option[hidden] { display: none; }
 .combobox__option > .icon:first-child { color: var(--color-text-secondary); }

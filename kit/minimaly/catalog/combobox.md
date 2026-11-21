@@ -15,4 +15,4 @@ A search field whose results drop under it, each with an icon, a title and a det
 - Focus or typing opens the list; typing filters it on title and detail, and the first match is active (grey, chevron shown).
 - ↑ ↓ move, Enter picks, Escape closes; a click picks. Picking writes the title in the field and fires `select` on the combobox (`event.detail.value`, `event.detail.option`).
 - ds.js sets the combobox and listbox roles, `aria-expanded` and `aria-activedescendant`. Results from a server: the page replaces the options, then dispatches `input` on the field.
-- The list opens under the field, inside the page flow's stacking: leave room below it.
+- The list opens under the field, or above it when there is no room below (`data-side="top"`).

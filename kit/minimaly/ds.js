@@ -26,6 +26,165 @@
   // Resolved once every icon of the page is in place; the render linter waits on it.
   window.iconsReady = window.renderIcons();
 
+  // Composable behaviors kernel (shared by Minimaly components and exported on window.Minimaly for custom components).
+  // Live region shared by components: a screen reader hears outcomes, visible labels can stay short.
+  const status = document.createElement("div");
+  status.setAttribute("role", "status");
+  status.style.cssText = "position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap";
+  const announce = (text) => {
+    if (!status.isConnected) document.body.append(status);
+    status.textContent = "";
+    // Cleared first, so the same outcome twice in a row is announced twice.
+    setTimeout(() => { status.textContent = text; }, 50);
+  };
+
+  // Case and accents do not count: "echeance" finds "Échéance".
+  const normalizeText = (text) => String(text ?? "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+
+  // Visible text of an element without shortcut hints or decorative nodes.
+  const cleanText = (el) => {
+    if (!el) return "";
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll('.kbd, [aria-hidden="true"], select, option').forEach((n) => n.remove());
+    return clone.textContent.replace(/\s+/g, " ").trim();
+  };
+
+  // Accessible name of a control or item (for naming owned popups/listboxes and for type-ahead).
+  const labelOf = (el) => {
+    if (!el) return "";
+    const direct = el.getAttribute("aria-label")?.trim();
+    if (direct) return direct;
+    const labelledBy = el.getAttribute("aria-labelledby");
+    if (labelledBy) {
+      const text = labelledBy.split(/\s+/).map((id) => cleanText(document.getElementById(id))).filter(Boolean).join(" ").trim();
+      if (text) return text;
+    }
+    const selectLabel = el.closest?.(".select")?.querySelector(":scope > .select__label");
+    if (selectLabel) return cleanText(selectLabel);
+    if (el.labels?.length) {
+      const text = [...el.labels].map(cleanText).filter(Boolean).join(" ").trim();
+      if (text) return text;
+    }
+    const fieldLabel = el.closest?.(".field")?.querySelector(":scope > .field__label");
+    if (fieldLabel) return cleanText(fieldLabel);
+    return cleanText(el);
+  };
+
+  // Roving tabindex: keeps at most one tab stop inside a composite widget (tablist, menu, listbox, toolbar).
+  const setTabStop = (items, active = items[0]) => {
+    for (const item of items) item.tabIndex = item === active ? 0 : -1;
+  };
+
+  const rovingFocus = (items, current, event, { orientation = "vertical", loop = true, focus = true, onMove } = {}) => {
+    if (!items.length || event.metaKey || event.ctrlKey || event.altKey) return null;
+    const prevKey = orientation === "horizontal" ? "ArrowLeft" : "ArrowUp";
+    const nextKey = orientation === "horizontal" ? "ArrowRight" : "ArrowDown";
+    const i = items.indexOf(current);
+    let target = null;
+    if (event.key === nextKey) target = items[loop ? (i + 1) % items.length : Math.min(items.length - 1, i + 1)];
+    else if (event.key === prevKey) target = items[loop ? (i - 1 + items.length) % items.length : Math.max(0, i - 1)];
+    else if (event.key === "Home") target = items[0];
+    else if (event.key === "End") target = items.at(-1);
+    if (!target) return null;
+    event.preventDefault();
+    setTabStop(items, target);
+    if (focus) target.focus();
+    onMove?.(target, event);
+    return target;
+  };
+
+  // Type-ahead: typing printable letters jumps to the next matching item; repeating a letter cycles matches.
+  const createTypeahead = ({ timeout = 500, textOf = labelOf } = {}) => {
+    let buffer = "";
+    let timer = 0;
+    const reset = () => { clearTimeout(timer); timer = 0; buffer = ""; };
+    const match = (items, current, event) => {
+      if (!items.length || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return null;
+      if (event.key.length !== 1 || (event.key === " " && !buffer)) return null;
+      const ch = normalizeText(event.key);
+      if (!ch) return null;
+      const sameChar = buffer.length > 0 && [...buffer].every((c) => c === ch);
+      buffer = sameChar ? ch : buffer + ch;
+      clearTimeout(timer);
+      timer = setTimeout(reset, timeout);
+      const start = items.indexOf(current);
+      const offset = sameChar || buffer.length === 1 ? 1 : 0;
+      const find = (query, fromOffset) => {
+        for (let k = 0; k < items.length; k++) {
+          const item = items[(Math.max(0, start) + fromOffset + k) % items.length];
+          if (normalizeText(textOf(item)).startsWith(query)) return item;
+        }
+        return null;
+      };
+      const hit = find(buffer, offset) || (buffer.length > 1 ? find(ch, 1) : null);
+      if (hit) event.preventDefault();
+      return hit;
+    };
+    return { match, reset };
+  };
+
+  // Popup placement: handles viewport collision flipping and sets data-side (and data-align) for entrance motion.
+  // mode "fixed": viewport coordinates (tooltip, select, menu, submenu). mode "anchored": CSS position: absolute (date-picker, combobox).
+  const positionPopup = (el, anchor, { side = "bottom", align = "start", gap = 4, margin = 8, matchWidth = false, point = null, mode = "fixed", alignOffset = 0, box = null } = {}) => {
+    const r = point ? { left: point.x, right: point.x, top: point.y, bottom: point.y, width: 0, height: 0 } : anchor.getBoundingClientRect();
+    if (mode === "anchored") {
+      const below = r.bottom + gap + el.offsetHeight <= innerHeight || r.top - gap - el.offsetHeight < 0;
+      el.dataset.side = below ? "bottom" : "top";
+      if (align === "auto") r.left + el.offsetWidth > innerWidth - margin ? (el.dataset.align = "end") : delete el.dataset.align;
+      return;
+    }
+    if (side === "right" || side === "left") {
+      const ref = (box || anchor).getBoundingClientRect();
+      const fitsRight = ref.right + gap + el.offsetWidth < innerWidth - margin;
+      const fitsLeft = ref.left - gap - el.offsetWidth >= margin;
+      const right = side === "right" ? (fitsRight || !fitsLeft) : (!fitsLeft && fitsRight);
+      el.style.left = `${right ? ref.right + gap : Math.max(margin, ref.left - gap - el.offsetWidth)}px`;
+      el.style.top = `${Math.max(margin, Math.min(r.top - alignOffset, innerHeight - el.offsetHeight - margin))}px`;
+      el.dataset.side = right ? "right" : "left";
+      return;
+    }
+    if (matchWidth) el.style.minWidth = `${r.width}px`;
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    const rawLeft = align === "center" ? r.left + r.width / 2 - w / 2 : align === "end" ? r.right - w : r.left;
+    el.style.left = `${Math.max(margin, Math.min(rawLeft, innerWidth - w - margin))}px`;
+    const fitsBelow = r.bottom + gap + h < innerHeight;
+    const fitsAbove = r.top - gap - h > 0;
+    const below = side === "top" ? !fitsAbove : (fitsBelow || !fitsAbove);
+    el.style.top = `${below ? r.bottom + gap : Math.max(margin, r.top - gap - h)}px`;
+    el.dataset.side = below ? "bottom" : "top";
+  };
+
+  // Dismiss layer: closes a floating surface on outside pointer press, resize, or optional outside scroll/focusout.
+  const createDismissLayer = ({ isInside, onDismiss, closeOnScroll = false, closeOnResize = true, closeOnFocusOut = false }) => {
+    const onDown = (e) => { if (!isInside(e.target)) onDismiss("outside"); };
+    const onScroll = (e) => { if (!isInside(e.target)) onDismiss("scroll"); };
+    const onResize = () => onDismiss("resize");
+    const onFocusOut = (e) => { if (e.relatedTarget && isInside(e.target) && !isInside(e.relatedTarget)) onDismiss("focusout"); };
+    document.addEventListener("mousedown", onDown);
+    if (closeOnScroll) addEventListener("scroll", onScroll, true);
+    if (closeOnResize) addEventListener("resize", onResize);
+    if (closeOnFocusOut) document.addEventListener("focusout", onFocusOut);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      if (closeOnScroll) removeEventListener("scroll", onScroll, true);
+      if (closeOnResize) removeEventListener("resize", onResize);
+      if (closeOnFocusOut) document.removeEventListener("focusout", onFocusOut);
+    };
+  };
+
+  // Focus recovery: moves focus to the next remaining sibling, else previous, else fallback when a focused node leaves.
+  const focusRecovery = (container, removed, { itemSelector, focusSelector, fallback } = {}) => {
+    if (!removed?.contains(document.activeElement)) return;
+    const items = itemSelector ? [...container.querySelectorAll(itemSelector)] : [...container.children];
+    const i = items.indexOf(removed);
+    const neighbor = items[i + 1] || items[i - 1];
+    const target = (focusSelector ? neighbor?.querySelector(focusSelector) : neighbor) || (typeof fallback === "function" ? fallback() : fallback);
+    target?.focus();
+  };
+
+  window.Minimaly = { announce, normalizeText, labelOf, setTabStop, rovingFocus, createTypeahead, positionPopup, createDismissLayer, focusRecovery };
+
   // Tooltips: any element with data-tip="…" shows a .tooltip on hover or keyboard focus.
   // Works for markup rendered later (delegated). Placed above the element, or below when there is no room.
   // Timing from interior.dev's Tooltip Group: a cold pointer rests 200 ms before a bubble opens. Leaving waits 120 ms,
@@ -54,16 +213,7 @@
     // Moving along a warm group swaps the text in place: no pop-in for each neighbour.
     tip.toggleAttribute("data-instant", instant);
     tip.hidden = false;
-    const r = el.getBoundingClientRect();
-    // Layout size, not the bounding box: the pop-in animation starts slightly scaled down.
-    const t = { width: tip.offsetWidth, height: tip.offsetHeight };
-    const left = Math.max(8, Math.min(innerWidth - t.width - 8, r.left + r.width / 2 - t.width / 2));
-    // Above the element; below only when there is no room above.
-    const above = r.top - 8 - t.height > 0;
-    tip.style.left = `${left}px`;
-    tip.style.top = `${above ? r.top - 8 - t.height : r.bottom + 8}px`;
-    // The side drives the direction it opens from (CSS --from).
-    tip.dataset.side = above ? "top" : "bottom";
+    positionPopup(tip, el, { side: "top", align: "center", gap: 8 });
   };
   const arm = (el, delay) => {
     clearTimeout(leaveTimer);
@@ -90,12 +240,15 @@
   document.addEventListener("pointerout", (e) => { if (!e.relatedTarget) leave(); });
 
   // Select: the native <select> keeps the value and fires "change"; its list opens as a Minimaly menu instead of the
-  // browser's. Works for selects rendered later (delegated). Keys: Enter, Space or ↓ open; ↑ ↓ move; Enter picks; Esc closes.
+  // browser's. Works for selects rendered later (delegated). Keys: Enter, Space or ↓ open; ↑ ↓ Home End and typing move; Enter picks; Esc closes.
   let menu = null;
+  const selectTypeahead = createTypeahead();
   const close = (refocus) => {
     if (!menu) return;
-    const { el, select } = menu;
+    const { el, select, dismiss } = menu;
     menu = null;
+    dismiss();
+    selectTypeahead.reset();
     // hidden plays the closing transition (CSS), then the list goes.
     el.hidden = true;
     setTimeout(() => el.remove(), parseFloat(getComputedStyle(el).transitionDuration) * 1000 || 0);
@@ -112,18 +265,22 @@
   const open = (select) => {
     close();
     const el = Object.assign(document.createElement("div"), { className: "popover select__menu", role: "listbox" });
-    el.innerHTML = [...select.options].map((o) => `<button type="button" class="select__option" role="option" data-value="${o.value.replace(/"/g, "&quot;")}" aria-selected="${o.selected}"><span></span><i class="icon" data-icon="check"></i></button>`).join("");
+    el.setAttribute("aria-label", labelOf(select) || "Options");
+    el.innerHTML = [...select.options].map((o) => `<button type="button" class="select__option" role="option" tabindex="-1" data-value="${o.value.replace(/"/g, "&quot;")}" aria-selected="${o.selected}"><span></span><i class="icon" data-icon="check"></i></button>`).join("");
     el.querySelectorAll(".select__option").forEach((b, i) => { b.firstChild.textContent = select.options[i].text; });
     document.body.append(el);
     window.renderIcons(el);
-    const r = select.closest(".select").getBoundingClientRect();
-    el.style.minWidth = `${r.width}px`;
-    el.style.left = `${Math.min(r.left, innerWidth - el.offsetWidth - 8)}px`;
-    const below = r.bottom + 4 + el.offsetHeight < innerHeight;
-    el.style.top = `${below ? r.bottom + 4 : r.top - 4 - el.offsetHeight}px`;
-    el.dataset.side = below ? "bottom" : "top";
-    menu = { el, select };
-    (el.querySelector('[aria-selected="true"]') || el.firstElementChild).focus();
+    const box = select.closest(".select");
+    positionPopup(el, box, { side: "bottom", gap: 4, matchWidth: true });
+    const dismiss = createDismissLayer({
+      isInside: (target) => el.contains(target) || box.contains(target),
+      onDismiss: () => close(),
+    });
+    menu = { el, select, dismiss };
+    const items = [...el.querySelectorAll(".select__option")];
+    const active = el.querySelector('[aria-selected="true"]') || items[0];
+    setTabStop(items, active);
+    active?.focus();
   };
   document.addEventListener("mousedown", (e) => {
     // The whole box opens the list: the inline label and the caret included.
@@ -131,7 +288,7 @@
     if (select) {
       e.preventDefault();
       menu?.select === select ? close(true) : open(select);
-    } else if (menu && !menu.el.contains(e.target)) close();
+    }
   });
   document.addEventListener("click", (e) => {
     const option = menu && e.target.closest(".select__option");
@@ -140,27 +297,17 @@
   document.addEventListener("keydown", (e) => {
     if (menu) {
       const items = [...menu.el.querySelectorAll(".select__option")];
-      const i = items.indexOf(document.activeElement);
       if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); close(true); }
-      else if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); items[Math.max(0, Math.min(items.length - 1, i + (e.key === "ArrowDown" ? 1 : -1)))].focus(); }
+      else if (!rovingFocus(items, document.activeElement, e, { orientation: "vertical", loop: false })) {
+        const hit = selectTypeahead.match(items, document.activeElement, e);
+        if (hit) { setTabStop(items, hit); hit.focus(); }
+      }
       e.stopPropagation();
       return;
     }
     const select = e.target.closest?.(".select select");
     if (select && ["Enter", " ", "ArrowDown", "ArrowUp"].includes(e.key)) { e.preventDefault(); open(select); }
   }, true);
-  addEventListener("resize", () => close());
-
-  // Live region shared by the behaviours below: a screen reader hears outcomes, the visible labels can stay short.
-  const status = document.createElement("div");
-  status.setAttribute("role", "status");
-  status.style.cssText = "position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap";
-  const announce = (text) => {
-    if (!status.isConnected) document.body.append(status);
-    status.textContent = "";
-    // Cleared first, so the same outcome twice in a row is announced twice.
-    setTimeout(() => { status.textContent = text; }, 50);
-  };
 
   // Segmented and tabs: one indicator per group slides under the chosen option, the highlight never jumps (interior.dev).
   // The page only flips aria-pressed (segmented) or aria-selected (tabs); the indicator follows, also for groups rendered later.
@@ -356,29 +503,28 @@
   });
   document.addEventListener("keydown", (e) => {
     const tab = e.target.closest?.('.tabs > [role="tab"]');
-    if (!tab || !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
-    e.preventDefault();
+    if (!tab) return;
     const tabs = tabsOf(tab.closest(".tabs")).filter((t) => !t.disabled);
-    const i = tabs.indexOf(tab);
-    const next = { ArrowLeft: tabs[(i - 1 + tabs.length) % tabs.length], ArrowRight: tabs[(i + 1) % tabs.length], Home: tabs[0], End: tabs.at(-1) }[e.key];
-    selectTab(next, true);
+    rovingFocus(tabs, tab, e, { orientation: "horizontal", loop: true, focus: false, onMove: (next) => selectTab(next, true) });
   });
 
   // Menu (interior.dev Dropdown and Context Menu): a .popover.menu of .menu__item buttons, hidden in the markup.
   // data-menu="<id>" on a button opens it below; data-context-menu="<id>" on a surface opens it at the pointer on right-click,
-  // or at the surface with the menu key or Shift+F10. Arrows move, Esc and Tab close, a chosen item closes it and focus returns.
+  // or at the surface with the menu key or Shift+F10. Arrows, Home, End and typing move, Esc and Tab close, a chosen item closes it and focus returns.
   // Submenu: data-submenu="<id>" on an item opens that menu beside it, on hover, on a click or with →; ← and Esc close it
   // and focus returns to the item. One level deep.
   let openMenu = null;
   let openSub = null;
   let aimFrom = null;
   let aimTimer = 0;
+  const menuTypeahead = createTypeahead();
   const menuItems = (el) => [...el.querySelectorAll('.menu__item:not(:disabled):not([aria-disabled="true"])')];
   const closeSub = (refocus) => {
     if (!openSub) return;
     const { el, item } = openSub;
     openSub = null;
     clearTimeout(aimTimer);
+    menuTypeahead.reset();
     el.hidden = true;
     item.setAttribute("aria-expanded", "false");
     item.closest(".menu").removeAttribute("data-aiming");
@@ -393,53 +539,59 @@
       // The side is set before it shows: its entrance starts from the side written at that moment.
       el.dataset.side = "right";
       el.hidden = false;
-      const r = item.getBoundingClientRect();
-      const menu = item.closest(".menu").getBoundingClientRect();
-      const right = menu.right + 2 + el.offsetWidth < innerWidth - 8;
-      el.style.left = `${right ? menu.right + 2 : Math.max(8, menu.left - 2 - el.offsetWidth)}px`;
-      const top = r.top - el.clientTop - (menuItems(el)[0]?.offsetTop || 0);
-      el.style.top = `${Math.max(8, Math.min(top, innerHeight - el.offsetHeight - 8))}px`;
-      el.dataset.side = right ? "right" : "left";
+      const items = menuItems(el);
+      positionPopup(el, item, { side: "right", gap: 2, box: item.closest(".menu"), alignOffset: el.clientTop + (items[0]?.offsetTop || 0) });
+      setTabStop(items, items[0]);
       openSub = { el, item };
       item.setAttribute("aria-expanded", "true");
     }
-    if (focus) menuItems(openSub.el)[0]?.focus();
+    if (focus) {
+      const items = menuItems(openSub.el);
+      setTabStop(items, items[0]);
+      items[0]?.focus();
+    }
   };
   const closeMenu = (refocus) => {
     if (!openMenu) return;
     closeSub();
-    const { el, trigger } = openMenu;
+    const { el, trigger, dismiss } = openMenu;
     openMenu = null;
+    dismiss();
+    menuTypeahead.reset();
     el.hidden = true;
     if (trigger.hasAttribute("data-menu")) trigger.setAttribute("aria-expanded", "false");
     if (refocus) trigger.focus();
   };
-  const showMenu = (el, trigger, at) => {
+  const showMenu = (el, trigger, at, focusLast = false) => {
     closeMenu();
     // Out of any transformed or clipping parent, so position: fixed means the viewport.
     if (el.parentElement !== document.body) document.body.append(el);
     el.hidden = false;
-    const r = at ? { left: at.x, top: at.y, bottom: at.y } : trigger.getBoundingClientRect();
-    el.style.left = `${Math.max(8, Math.min(r.left, innerWidth - el.offsetWidth - 8))}px`;
-    const below = r.bottom + 4 + el.offsetHeight < innerHeight;
-    el.style.top = `${below ? r.bottom + 4 : Math.max(8, r.top - 4 - el.offsetHeight)}px`;
-    el.dataset.side = below ? "bottom" : "top";
-    openMenu = { el, trigger };
+    positionPopup(el, trigger, { side: "bottom", gap: 4, point: at });
+    const dismiss = createDismissLayer({
+      isInside: (target) => el.contains(target) || !!openSub?.el.contains(target) || trigger.contains(target),
+      onDismiss: () => closeMenu(),
+      closeOnScroll: true,
+    });
+    openMenu = { el, trigger, dismiss };
     if (trigger.hasAttribute("data-menu")) trigger.setAttribute("aria-expanded", "true");
-    menuItems(el)[0]?.focus();
+    const items = menuItems(el);
+    const active = focusLast ? items.at(-1) : items[0];
+    setTabStop(items, active);
+    active?.focus();
   };
   const initMenuTrigger = (trigger) => {
     const el = document.getElementById(trigger.dataset.menu || trigger.dataset.contextMenu);
     if (!el) return;
     el.setAttribute("role", "menu");
     el.hidden = true;
-    el.querySelectorAll(".menu__item").forEach((item) => item.setAttribute("role", "menuitem"));
+    el.querySelectorAll(".menu__item").forEach((item) => { item.setAttribute("role", "menuitem"); item.tabIndex = -1; });
     for (const item of el.querySelectorAll(".menu__item[data-submenu]")) {
       const sub = document.getElementById(item.dataset.submenu);
       if (!sub) continue;
       sub.setAttribute("role", "menu");
       sub.hidden = true;
-      sub.querySelectorAll(".menu__item").forEach((x) => x.setAttribute("role", "menuitem"));
+      sub.querySelectorAll(".menu__item").forEach((x) => { x.setAttribute("role", "menuitem"); x.tabIndex = -1; });
       item.setAttribute("aria-haspopup", "menu");
       item.setAttribute("aria-expanded", "false");
       item.setAttribute("aria-controls", sub.id);
@@ -508,26 +660,27 @@
     const at = e.clientX || e.clientY ? { x: e.clientX, y: e.clientY } : { x: r.left, y: r.bottom };
     showMenu(document.getElementById(surface.dataset.contextMenu), surface, at);
   });
-  document.addEventListener("mousedown", (e) => {
-    if (openMenu && !openMenu.el.contains(e.target) && !openSub?.el.contains(e.target) && !openMenu.trigger.contains(e.target)) closeMenu();
-  });
   document.addEventListener("keydown", (e) => {
-    if (!openMenu) return;
+    if (!openMenu) {
+      const trigger = e.target.closest?.("[data-menu]");
+      if (trigger && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+        e.preventDefault();
+        showMenu(document.getElementById(trigger.dataset.menu), trigger, null, e.key === "ArrowUp");
+      }
+      return;
+    }
     const focused = document.activeElement;
     const inSub = openSub?.el.contains(focused);
     const items = menuItems(inSub ? openSub.el : openMenu.el);
-    const i = items.indexOf(focused);
-    const go = { ArrowDown: items[(i + 1) % items.length], ArrowUp: items[(i - 1 + items.length) % items.length], Home: items[0], End: items.at(-1) }[e.key];
-    if (go) {
-      e.preventDefault();
-      if (!inSub) closeSub();
-      go.focus();
-    } else if (e.key === "ArrowRight" && focused.matches(".menu__item[data-submenu]")) { e.preventDefault(); showSub(focused, true); }
+    if (rovingFocus(items, focused, e, { orientation: "vertical", loop: true, onMove: () => { if (!inSub) closeSub(); } })) return;
+    if (e.key === "ArrowRight" && focused.matches(".menu__item[data-submenu]")) { e.preventDefault(); showSub(focused, true); }
     else if (inSub && (e.key === "ArrowLeft" || e.key === "Escape")) { e.preventDefault(); closeSub(true); }
     else if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); closeMenu(true); }
+    else {
+      const hit = menuTypeahead.match(items, focused, e);
+      if (hit) { if (!inSub) closeSub(); setTabStop(items, hit); hit.focus(); }
+    }
   });
-  addEventListener("scroll", (e) => { if (openMenu && !openMenu.el.contains(e.target) && !openSub?.el.contains(e.target)) closeMenu(); }, true);
-  addEventListener("resize", () => closeMenu());
 
   // Modal and drawer: native <dialog class="modal|drawer">. data-open="<id>" opens one, data-close closes the one it sits in.
   // Esc closes the top one and focus returns to the opener (both native). The backdrop closes only on a press that both
@@ -1355,14 +1508,15 @@
   const openCombo = (box, open) => {
     const { field, list } = comboParts(box);
     list.hidden = !open;
+    if (open) positionPopup(list, box, { mode: "anchored", gap: 4 });
     field.setAttribute("aria-expanded", String(open));
   };
   const filterCombo = (box) => {
     const { field, options, empty } = comboParts(box);
-    const q = field.value.trim().toLowerCase();
+    const q = normalizeText(field.value.trim());
     // Suggestions of a tag input already added as tags stay out of the list until their tag is removed.
-    const taken = new Set([...box.querySelectorAll(".tag-input__tag")].map((t) => t.dataset.value.toLowerCase()));
-    for (const o of options) o.hidden = (!!q && !o.textContent.toLowerCase().includes(q)) || taken.has((o.dataset.value || o.textContent.trim()).toLowerCase());
+    const taken = new Set([...box.querySelectorAll(".tag-input__tag")].map((t) => normalizeText(t.dataset.value)));
+    for (const o of options) o.hidden = (!!q && !normalizeText(o.textContent).includes(q)) || taken.has(normalizeText(o.dataset.value || o.textContent.trim()));
     const shown = options.filter((o) => !o.hidden);
     if (empty) empty.hidden = shown.length > 0;
     setActive(box, shown[0]);
@@ -1378,6 +1532,7 @@
     if (!field || !list || list.id) return;
     list.id = `combobox-${++comboIds}`;
     list.setAttribute("role", "listbox");
+    if (!list.hasAttribute("aria-label") && !list.hasAttribute("aria-labelledby")) list.setAttribute("aria-label", labelOf(field) || "Suggestions");
     list.hidden = true;
     Object.assign(field, { autocomplete: "off" });
     field.setAttribute("role", "combobox");
@@ -1649,13 +1804,8 @@
       if (b) act(b.dataset.format);
     });
     $(".rich-editor__toolbar").addEventListener("keydown", (e) => {
-      const i = buttons.indexOf(document.activeElement);
-      const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: buttons.length - 1 }[e.key];
-      if (i < 0 || next === undefined) return;
-      e.preventDefault();
-      current = buttons[(next + buttons.length) % buttons.length];
-      syncState();
-      current.focus();
+      if (!buttons.includes(document.activeElement)) return;
+      rovingFocus(buttons, document.activeElement, e, { orientation: "horizontal", loop: true, onMove: (next) => { current = next; } });
     });
     area.addEventListener("keydown", (e) => {
       if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
@@ -1788,10 +1938,13 @@
     renderMonth(root, swap);
     if (focus) root.picker.calendar.querySelector(`[data-date="${isoOf(target)}"]`).focus();
   };
+  let pickerDismiss = null;
   const closeDatePicker = (refocus) => {
     if (!openPicker) return;
     const { field, calendar } = openPicker.picker;
     openPicker = null;
+    pickerDismiss?.();
+    pickerDismiss = null;
     calendar.hidden = true;
     field.setAttribute("aria-expanded", "false");
     if (refocus) field.focus();
@@ -1805,10 +1958,13 @@
     renderMonth(root);
     calendar.hidden = false;
     // Below the field, above it when only there is room; aligned on its right edge when the right side is short.
-    const r = field.getBoundingClientRect();
-    const below = r.bottom + 4 + calendar.offsetHeight <= innerHeight || r.top - 4 - calendar.offsetHeight < 0;
-    calendar.dataset.side = below ? "bottom" : "top";
-    r.left + calendar.offsetWidth > innerWidth - 8 ? (calendar.dataset.align = "end") : delete calendar.dataset.align;
+    positionPopup(calendar, field, { mode: "anchored", align: "auto", gap: 4 });
+    pickerDismiss = createDismissLayer({
+      isInside: (target) => root.contains(target),
+      onDismiss: () => closeDatePicker(),
+      closeOnResize: false,
+      closeOnFocusOut: true,
+    });
     field.setAttribute("aria-expanded", "true");
     calendar.querySelector('.date-picker__day[tabindex="0"]').focus();
   };
@@ -1880,8 +2036,6 @@
     }[e.key];
     if (to) { e.preventDefault(); moveToDay(root, to); }
   });
-  document.addEventListener("mousedown", (e) => { if (openPicker && !openPicker.contains(e.target)) closeDatePicker(); });
-  document.addEventListener("focusout", (e) => { if (openPicker && e.target.closest?.(".date-picker") === openPicker && e.relatedTarget && !openPicker.contains(e.relatedTarget)) closeDatePicker(); });
 
   // Command palette: ⌘K or Ctrl+K opens the page's dialog.command-palette and closes it again; data-open works too.
   // Typing filters the items on their title, meta and data-keywords, every word, and hides the groups left empty; the first match is active. ↑ ↓ move, Enter
@@ -1896,8 +2050,6 @@
   const commandTitle = (item) => (item.querySelector(".command-palette__title") || item).textContent.trim();
   const commandValue = (item) => item.dataset.value ?? commandTitle(item);
   const countOf = (item) => Math.max(0, parseInt(item.dataset.count, 10) || 0);
-  // Case and accents do not count: "echeance" finds "Échéance".
-  const plainText = (text) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
   // Out of the search, only the visible space counts; a search looks through every space.
   const shownCommands = (dialog) => paletteParts(dialog).items.filter((i) => !i.hidden && !i.closest(".command-palette__group[hidden]") && (dialog.hasAttribute("data-searching") || !i.closest(".tabs__panel[hidden]")));
   const activateCommand = (dialog, item, scroll = false) => {
@@ -1911,10 +2063,10 @@
   };
   const filterCommands = (dialog) => {
     const { field, list, items } = paletteParts(dialog);
-    const words = plainText(field.value).split(/\s+/).filter(Boolean);
+    const words = normalizeText(field.value).split(/\s+/).filter(Boolean);
     dialog.toggleAttribute("data-searching", words.length > 0);
     for (const i of items) {
-      const text = plainText(`${commandTitle(i)} ${i.querySelector(".command-palette__meta")?.textContent ?? ""} ${i.dataset.keywords ?? ""}`);
+      const text = normalizeText(`${commandTitle(i)} ${i.querySelector(".command-palette__meta")?.textContent ?? ""} ${i.dataset.keywords ?? ""}`);
       i.hidden = !words.every((w) => text.includes(w));
     }
     for (const g of dialog.querySelectorAll(".command-palette__group")) g.hidden = !g.querySelector(".command-palette__item:not([hidden])");
@@ -1972,7 +2124,7 @@
         line.querySelector(".command-palette__qty").textContent = countOf(item);
       }
       for (const line of lines.values()) {
-        if (line.contains(document.activeElement)) (paletteParts(dialog).field || dialog).focus();
+        focusRecovery(cart, line, { fallback: () => paletteParts(dialog).field || dialog });
         line.remove();
       }
     }
@@ -2017,6 +2169,7 @@
     if (!field || !list || list.id) return;
     list.id = `command-palette-${++paletteIds}`;
     list.setAttribute("role", "listbox");
+    if (!list.hasAttribute("aria-label") && !list.hasAttribute("aria-labelledby")) list.setAttribute("aria-label", labelOf(dialog) || labelOf(field) || "Commands");
     if (isMultiple(dialog)) list.setAttribute("aria-multiselectable", "true");
     dialog.tabIndex = -1;
     field.autocomplete = "off";
@@ -2149,11 +2302,11 @@
   };
   const removeAttachment = (el) => {
     if (el.hasAttribute("data-leaving")) return;
-    const files = [...el.parentElement.querySelectorAll(":scope > .attachment:not([data-leaving])")];
-    const i = files.indexOf(el);
-    // Focus moves on to the next file, else the previous one, else the field of the composer it belongs to.
-    const next = (files[i + 1] || files[i - 1])?.querySelector('[data-attachment="remove"]') || el.closest(".composer")?.querySelector(".composer__input");
-    if (el.contains(document.activeElement)) next?.focus();
+    focusRecovery(el.parentElement, el, {
+      itemSelector: ":scope > .attachment:not([data-leaving])",
+      focusSelector: '[data-attachment="remove"]',
+      fallback: () => el.closest(".composer")?.querySelector(".composer__input"),
+    });
     el.setAttribute("data-leaving", "");
     el.dispatchEvent(new CustomEvent("remove", { bubbles: true, detail: { name: el.dataset.name } }));
     el.addEventListener("animationend", (a) => a.animationName === "attachment-out" && el.remove());

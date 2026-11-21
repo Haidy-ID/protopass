@@ -172,6 +172,7 @@
     "id": "select",
     "class": "select",
     "name": "Select",
+    "pattern": "listbox",
     "variants": [
       "default",
       "labelled"
@@ -199,6 +200,7 @@
     "id": "breadcrumb",
     "class": "breadcrumb",
     "name": "Breadcrumb",
+    "pattern": "breadcrumb",
     "variants": [
       "default"
     ],
@@ -211,6 +213,7 @@
     "id": "accordion",
     "class": "accordion",
     "name": "Accordion",
+    "pattern": "accordion",
     "variants": [
       "default"
     ],
@@ -311,6 +314,7 @@
     "id": "tabs",
     "class": "tabs",
     "name": "Tabs",
+    "pattern": "tabs",
     "variants": [
       "default",
       "count"
@@ -326,6 +330,7 @@
     "id": "menu",
     "class": "menu",
     "name": "Menu",
+    "pattern": "menu",
     "variants": [
       "button",
       "context",
@@ -343,6 +348,7 @@
     "id": "dialog",
     "class": "modal",
     "name": "Modal and drawer",
+    "pattern": "dialog",
     "variants": [
       "modal",
       "drawer"
@@ -527,6 +533,7 @@
     "id": "checkbox",
     "class": "checkbox",
     "name": "Checkbox",
+    "pattern": "checkbox",
     "variants": [
       "default"
     ],
@@ -542,6 +549,7 @@
     "id": "radio",
     "class": "radio",
     "name": "Radio",
+    "pattern": "radio-group",
     "variants": [
       "default"
     ],
@@ -556,6 +564,7 @@
     "id": "switch",
     "class": "switch",
     "name": "Switch",
+    "pattern": "switch",
     "variants": [
       "default"
     ],
@@ -703,6 +712,7 @@
     "id": "reasoning",
     "class": "reasoning",
     "name": "Reasoning",
+    "pattern": "disclosure",
     "variants": [
       "default"
     ],
@@ -716,6 +726,7 @@
     "id": "tool-call",
     "class": "tool-call",
     "name": "Tool call",
+    "pattern": "disclosure",
     "variants": [
       "default"
     ],
@@ -772,6 +783,7 @@
     "id": "combobox",
     "class": "combobox",
     "name": "Combobox",
+    "pattern": "combobox",
     "variants": [
       "default"
     ],
@@ -787,6 +799,7 @@
     "id": "rich-editor",
     "class": "rich-editor",
     "name": "Rich editor",
+    "pattern": "toolbar",
     "variants": [
       "default",
       "counter"
@@ -805,6 +818,7 @@
     "id": "date-picker",
     "class": "date-picker",
     "name": "Date picker",
+    "pattern": "date-picker",
     "variants": [
       "default"
     ],
@@ -822,6 +836,7 @@
     "id": "command-palette",
     "class": "command-palette",
     "name": "Command palette",
+    "pattern": "command-palette",
     "variants": [
       "default",
       "sheet",
@@ -856,6 +871,7 @@
     "id": "slider",
     "class": "slider",
     "name": "Slider",
+    "pattern": "slider",
     "variants": [
       "default",
       "value and scale",
@@ -873,6 +889,7 @@
     "id": "tag-input",
     "class": "tag-input",
     "name": "Tag input",
+    "pattern": "combobox",
     "variants": [
       "default",
       "suggestions"
@@ -1055,6 +1072,7 @@
     "id": "feature-tabs",
     "class": "feature-tabs",
     "name": "Feature tabs",
+    "pattern": "tabs",
     "variants": [
       "default"
     ],
@@ -1105,6 +1123,7 @@
     "id": "carousel",
     "class": "carousel",
     "name": "Carousel",
+    "pattern": "carousel",
     "variants": [
       "default"
     ],

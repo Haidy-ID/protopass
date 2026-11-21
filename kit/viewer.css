@@ -342,3 +342,17 @@ section { margin-top: 48px; }
 .md-figure img, .md-figure iframe { display: block; width: 100%; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--color-surface-raised); }
 .md-figure iframe { aspect-ratio: 16 / 10; }
 .md-figure figcaption { margin-top: 8px; color: var(--text-3); font-size: 13px; text-align: center; }
+/* A screen of the topic in a document: a frame of its design size, scaled down to the room its row leaves it (doc.html sets --screen-scale). */
+.md-screens { display: flex; align-items: flex-start; justify-content: center; gap: 16px; margin: 16px 0; }
+.md-screen { flex: 0 1 calc(var(--screen-w) * 1px); min-width: 0; margin: 0; }
+.md-screen__frame { aspect-ratio: var(--screen-w) / var(--screen-h); overflow: hidden; border-radius: var(--radius-lg); background: var(--color-surface-raised); box-shadow: 0 0 0 1px var(--line); }
+.md-screen iframe { width: calc(var(--screen-w) * 1px); height: calc(var(--screen-h) * 1px); aspect-ratio: auto; border: 0; border-radius: 0; transform: scale(var(--screen-scale, 1)); transform-origin: 0 0; }
+.md-screen figcaption a { color: inherit; }
+.md-table { margin: 16px 0; overflow-x: auto; }
+.md table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; }
+.md th, .md td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.md th { color: var(--text); font-weight: 600; }
+.md th:first-child, .md td:first-child { padding-left: 0; }
+.md th:last-child, .md td:last-child { padding-right: 0; }
+.md [data-align="right"] { text-align: right; font-variant-numeric: tabular-nums; }
+.md [data-align="center"] { text-align: center; }

@@ -53,18 +53,19 @@ A new group: add its entry, create the folder with a copy of `prototypes/index.h
 
 ## Prototypes
 
-[kit/skills/new-topic.md](kit/skills/new-topic.md) describes a prototype, its required and optional fields, the journal and stories. In short:
+[kit/skills/new-topic.md](kit/skills/new-topic.md) describes a prototype, its required and optional fields, the journal, stories and specs. In short:
 
 - Copy `kit/skills/new-topic/template/` (or `kit/skills/new-topic/free-prototype/` for screens alone) into a group, fill `topic.json`, add the folder name to the group's `topics.json`.
 - Screens read their state from `?state=<name>`. A flow step is `screen-id` or `screen-id:state`.
 - `"brands": ["Calm", "Bold"]` gives the same screens several looks, one token file each in `brands/`. [restyle.md](kit/skills/build-mockup/restyle.md) explains it.
-- A `.md` deliverable opens in a reader where `[label](screen:<id>)` plays that screen and `> Gap: …` marks a moment no screen shows yet.
+- A `.md` deliverable opens in a reader where `[label](screen:<id>)` plays that screen, `![caption](screen:<id>)` shows it in the page and `> Gap: …` marks a moment no screen shows yet.
 
 ## Checks
 
 - `node kit/skills/build-mockup/validate.mjs <group>/<prototype> [screen-id]` checks the screens against the design system. In Claude Code, `.claude/settings.json` runs it after each file edit.
 - Check render on a prototype page, or `node kit/skills/build-mockup/render-check.mjs <group>/<prototype> [screen-id]` from a terminal, measures contrast, overflow, overlaps and tap targets on every screen, state, device and theme. It does not judge the design.
 - `node kit/skills/build-mockup/contract.mjs "<design system>"` prints its roles, their use and the safe pairs.
+- `node kit/playground/check.mjs [--ds <name>] [component-id]` runs every design system specimen in light and dark plus WAI-ARIA and keyboard pattern checks.
 - `node kit/skills/build-mockup/check-all.mjs` checks every script, JSON file, design system and prototype of the workshop.
 
 ## Your own design system
@@ -90,6 +91,6 @@ The update button (arrow in a circle) in the topbar compares the installed versi
 
 ## Develop the kit
 
-`node kit/skills/build-mockup/check-all.mjs` and `node --test kit/*.test.mjs kit/skills/build-mockup/*.test.mjs` run on each push. A `v*` tag that matches `kit/VERSION` publishes a release with `protopass.tar.gz`, the workshop that `install.md` downloads, and its notes from [CHANGELOG.md](CHANGELOG.md). A push to `site/` or `install.md` on main deploys https://protopass.dev to GitHub Pages.
+`node kit/skills/build-mockup/check-all.mjs`, `node --test kit/*.test.mjs kit/skills/build-mockup/*.test.mjs kit/playground/*.test.mjs` and `node kit/playground/check.mjs` run on each push. A `v*` tag that matches `kit/VERSION` publishes a release with `protopass.tar.gz`, the workshop that `install.md` downloads, and its notes from [CHANGELOG.md](CHANGELOG.md). A push to `site/` or `install.md` on main deploys https://protopass.dev to GitHub Pages.
 
 MIT license.

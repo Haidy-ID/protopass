@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.4.0 · 2026-11-21
+
+- A Markdown deliverable can show its screens in the page: `![caption](screen:<id>:<state>)` on its own line embeds the screen, live, at the size it was designed at. Screens on lines that follow each other sit side by side. A screen of another topic is written with the folder of that topic.
+- A Markdown deliverable and the journal render tables: a header row, a rule, then the rows. `--:` aligns a column of figures to the right.
+- `new-topic.md` describes the spec: a deliverable that states what the product does, rule by rule, with the screens that show each rule.
+- Minimaly: composable interaction behaviors in `ds.js` (`window.Minimaly`: `rovingFocus`, `createTypeahead`, `positionPopup`, `createDismissLayer`, `focusRecovery`, `labelOf`, `announce`, `normalizeText`), documented in `catalog/behaviors.md` and used by `new-component`. `select`, `menu`, `combobox`, `command-palette` and `radio` gain missing ARIA names, single tab stops, `Home`/`End`, type-ahead and viewport flipping.
+- Specimen check: `kit/playground/patterns.js` runs zero-dependency WAI-ARIA and keyboard checks on every component declaring a `pattern` in `components.json`. `node kit/playground/check.mjs [--ds <name>] [component-id]` runs the full specimen check headlessly from a terminal and in CI.
+- `free-prototype/` topics may optionally load UI SDK (`https://ui-sdk.dev/web@0.js`, beta) for complex widgets absent from Minimaly or agent-driven demos (`kit/AGENTS.md`, `kit/skills/new-topic.md`).
+
 ## 3.3.0 · 2026-11-18
 
 - Minimaly: `button-group`, two or three buttons that act on the same thing, joined into one control. Each half stays a button with its own states, an icon half takes the outline of the group, and the group can be primary.

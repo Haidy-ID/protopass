@@ -1,6 +1,8 @@
 <!doctype html>
 <!-- Reader for a Markdown deliverable of a topic: doc.html?topic=<topic folder from the root>&file=<file in the topic>.
-     [label](screen:<id>) or [label](screen:<id>:<state>) opens that screen in the topic's prototype. -->
+     [label](screen:<id>) or [label](screen:<id>:<state>) opens that screen in the topic's prototype.
+     ![caption](screen:<id>:<state>) on its own line embeds it, live, at its design size. A screen of another topic is
+     written with the folder of that topic, from this one: screen:../<topic>/<id>:<state>. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -38,13 +40,48 @@
       const name = topic.deliverables?.find((d) => d.file === params.get("file"))?.name || params.get("file");
       document.getElementById("crumb-doc").textContent = name;
       document.title = `${name} · ${topic.title}`;
-      // screen:<id>[:<state>] → the topic's prototype on that screen; other relative links resolve from the document.
+      // A screen reference: [<folder of another topic>/]<id>[:<state>]. The topics it names are read before the document renders.
+      const stateId = (label) => label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      const parseRef = (ref) => {
+        const m = ref.match(/^((?:[\w.-]+\/)*)([\w-]+)(?::([\w-]+))?$/);
+        return m && { folder: m[1], id: m[2], state: m[3] || "" };
+      };
+      const topics = new Map([["", { url: topicUrl, topic }]]);
+      const folders = new Set([...text.matchAll(/\(screen:((?:[\w.-]+\/)+)[\w-]+(?::[\w-]+)?\)/g)].map((m) => m[1]));
+      await Promise.all([...folders].map(async (folder) => {
+        const url = new URL(folder, topicUrl);
+        // Only topics of this site.
+        if (!url.href.startsWith(ROOT.href)) return;
+        const other = await get(new URL("topic.json", url)).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        if (other) topics.set(folder, { url, topic: other });
+      }));
+      const find = (ref) => {
+        const r = parseRef(ref);
+        const t = r && topics.get(r.folder);
+        const s = t?.topic.screens?.find((x) => x.id === r.id);
+        const state = s && r.state ? (s.states || []).map((st) => st.name ?? st).find((name) => stateId(name) === r.state) : "";
+        return s && (!r.state || state) ? { ...r, t, s, stateName: state } : null;
+      };
+      const prototypeUrl = (f) => `${f.t.url}?view=prototype&flow=all&at=${encodeURIComponent(`${f.id}:${f.state}`)}`;
+      // screen:<ref> → the topic's prototype on that screen; other relative links resolve from the document.
       const link = (href) => {
-        const m = href.match(/^screen:([\w-]+)(?::([\w-]+))?$/);
-        if (m) return `${topicUrl}?view=prototype&flow=all&at=${encodeURIComponent(`${m[1]}:${m[2] || ""}`)}`;
+        if (href.startsWith("screen:")) { const f = find(href.slice(7)); return f ? prototypeUrl(f) : null; }
         return /^https?:/i.test(href) ? href : new URL(href, fileUrl).href;
       };
-      document.getElementById("doc").innerHTML = renderMarkdown(text, { link });
+      // An embedded screen plays in a frame of the viewport of its topic.
+      const screen = (ref) => {
+        const f = find(ref);
+        if (!f) return null;
+        const { width, height } = f.t.topic.viewport || { width: 390, height: 780 };
+        return { src: new URL(`${f.s.file}${f.state ? `?state=${f.state}` : ""}`, f.t.url).href, width, height, href: prototypeUrl(f), label: f.stateName ? `${f.s.label} · ${f.stateName}` : f.s.label };
+      };
+      const doc = document.getElementById("doc");
+      doc.innerHTML = renderMarkdown(text, { link, screen });
+      // A frame keeps the size its screen was designed at and is scaled down to the room its row leaves it.
+      const fit = new ResizeObserver((entries) => entries.forEach(({ target }) => {
+        target.style.setProperty("--screen-scale", Math.min(1, target.clientWidth / parseFloat(getComputedStyle(target).getPropertyValue("--screen-w"))));
+      }));
+      doc.querySelectorAll(".md-screen__frame").forEach((frame) => fit.observe(frame));
       // The theme chosen on the topic pages, for the reader and its figures (they read html[data-theme], like screens).
       let theme = "light";
       try { theme = localStorage.getItem("protopass-theme") || theme; } catch {}
